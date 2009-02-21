@@ -1,0 +1,34 @@
+// Coding style for SrdGame(c)
+// Version: 0.0.1
+// Author: cch@srdgame
+// Updated Data: 2009-02-21
+// 
+
+##
+# exmple listed below:
+##
+
+const int g_globle_number = 10;
+const char* g_globle_name = "name";
+
+#.h
+namespace srdgame {
+	class ExampleClass {
+	public:
+		void set_len(int len);
+	private:
+		int _len;
+	}
+}
+
+#.cpp
+using namespace srdgame;
+void ExampleClass::set_len(int) {
+	if (_len >= len) {
+		_len = len;
+	} else {
+		while (_len < 0) {
+			++_len;
+		}
+	}
+}
