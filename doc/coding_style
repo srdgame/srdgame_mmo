@@ -12,8 +12,10 @@ const int g_globle_number = 10;
 const char* g_globle_name = "name";
 
 #.h
-namespace srdgame {
-	class ExampleClass {
+namespace srdgame 
+{
+	class ExampleClass 
+	{
 	public:
 		void set_len(int len);
 	private:
@@ -23,11 +25,16 @@ namespace srdgame {
 
 #.cpp
 using namespace srdgame;
-void ExampleClass::set_len(int) {
-	if (_len >= len) {
+void ExampleClass::set_len(int)
+{
+	if (_len >= len)
+	{
 		_len = len;
-	} else {
-		while (_len < 0) {
+	} 
+	else
+	{
+		while (_len < 0)
+		{
 			++_len;
 		}
 	}
