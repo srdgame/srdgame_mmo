@@ -1,0 +1,80 @@
+/**============================================================================
+ * Copyright (C) 2009 SrdGame Team
+ *
+ * File: singleton.h
+ * Description:
+        This file is to define and surpport different complier and system.
+ * Author: cch
+ * Update: 2009-2-21
+ * Verison: 0.0.2
+ * Message: I copy this from my orginal project:RioWow, and adjust the coding
+ * style
+=============================================================================*/
+
+#ifndef THREAD_POOL_H_
+#define THREAD_POOL_H_
+
+#include "singleton.h"
+#include "mutex.h"
+#include "threadcontroller.h"
+#include "threadbase.h"
+
+namespace srdgame
+{
+
+class ThreadPool : public Singleton<ThreadPool>
+{
+	struct ThreadHandle
+	{
+		ThreadHandle() : task(NULL), reuse(true)
+		{
+		}
+		ThreadController controller;
+		ThreadBase* task;
+		bool reuse;
+		Mutex lock;
+	};
+public:
+	ThreadPool();
+	void init(unsigned int cap = 10);
+	void shutdown();
+	
+	//ThreadHandle* start_thread(ThreadBase* task);
+	//void close_thread(ThreadHandle* thread);
+
+	void execute(ThreadBase* task);
+
+	void print_state();
+
+protected:
+	class PoolAdjust : public ThreadBase
+	{
+		virtual bool run();
+		virtual void on_close();
+	};
+
+	// Adjust pool, expecially the threads which are free.
+	void adjust();
+
+	// When one thread want to run its task
+	void on_thread_run(ThreadHandle* thread);
+	// When one thread finishes his job.
+	void on_thread_finish(ThreadHandle* thread);
+	// Create one new thread to execut task.
+	ThreadHandle* create_thread(ThreadBase* task);
+
+	void kill_idle_thread(unsigned int count);
+
+	// static function
+	static void* thread_proc(void* param);
+
+protected:
+	typedef std::set<ThreadHandle*> ThreadSet;
+	ThreadSet _active_set;
+	ThreadSet _idle_set;
+	bool _inited;
+	Mutex _lock;
+}
+}
+
+#endif
