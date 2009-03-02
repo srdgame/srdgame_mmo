@@ -2,8 +2,7 @@
 #define DATABASE_H_
 
 #include "threadbase.h"
-#include <string>size_t _max_con_size;
-	size_t _buf_size;
+#include <string>
 
 #include <vector>
 #include "fastqueue.h"
@@ -35,7 +34,10 @@ public:
 
 
 protected:
+	DatabaseConn _conn;
 	std::vector<DBConnection*> _connections;
+	size_t _max_con_size;
+	size_t _buf_size;
 };
 }
 

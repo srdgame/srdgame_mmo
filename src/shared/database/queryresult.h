@@ -9,16 +9,16 @@ class Field;
 class QueryResult
 {
 public:
-	QueryResult(size_t field_size, size_t row_size) _field_size(field_size), _row_size(row_size), _cur(NULL)
+	QueryResult(size_t field_size, size_t row_size): _field_size(field_size), _row_size(row_size), _cur(NULL)
 	{
 	}
-	virtual QueryResult()
+	virtual ~QueryResult()
 	{
 	}
 
 	virtual bool next() = 0;
 	
-	inline delete_this()
+	inline void delete_this()
 	{
 		delete this;
 	}
@@ -27,18 +27,18 @@ public:
 	{
 		return _cur;
 	}
-	inline get_field_size()
+	inline size_t get_field_size()
 	{
 		return _field_size;
 	}
-	inline get_row_size()
+	inline size_t get_row_size()
 	{
 		return _row_size;
 	}
 private:
 	size_t _field_size;
 	size_t _row_size;
-	Filed* _cur;
+	Field* _cur;
 };
 class Database;
 class QueryThread : public ThreadBase

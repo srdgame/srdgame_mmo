@@ -7,7 +7,7 @@ class DBConnection
 {
 public:
 	DBConnection();
-	virtual DBConnection();
+	virtual ~DBConnection();
 
 };
 };

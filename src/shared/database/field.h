@@ -22,7 +22,7 @@ public:
 	}
 private:
 	std::string _val;
-}
+};
 }
 
 #endif

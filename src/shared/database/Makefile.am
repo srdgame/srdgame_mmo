@@ -1,7 +1,12 @@
-AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/../util -I$(srcdir)/../thread
+AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/../util -I$(srcdir)/../thread -I$(srcdir)/../log
 
 noinst_LIBRARIES = libdatabase.a
 
-libdatabase_a_SOURCES = field.h \
-		   database.h \
-		   database.cpp
+libdatabase_a_SOURCES = database.h \
+			dbconnection.h \
+			dbmanager.h \
+			field.h \
+			mysqldatabase.h \
+			queryresult.h \
+			database.cpp \
+			mysqldatabase.cpp

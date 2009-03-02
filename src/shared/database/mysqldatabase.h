@@ -1,23 +1,27 @@
 #include "database.h"
 #include "queryresult.h"
+#include "dbconnection.h"
 
-#if PLATFORM == PLATFORM_APPLE
-#include <mysql.h>
-#else
+//#if PLATFORM == PLATFORM_APPLE
+//#include <mysql.h>
+//#else
 #include <mysql/mysql.h>
-#endif
+//#endif
+
+#include <vector>
 
 namespace srdgame
 {
-class MySQLConnection : DBConnection
+class MySQLConnection : public DBConnection
 {
+public:
 	MYSQL* MySql;
 };
 class MySQLQueryResult : public QueryResult
 {
 	friend class MySQLDatabase;
 protected:
-	MySQLQueryResult(){}
+	MySQLQueryResult() : QueryResult(0, 0){}
 public:
 	bool next();
 	
@@ -26,11 +30,14 @@ protected:
 };
 class MySQLDatabase : public Database
 {
+	friend class DBManager;
+	virtual ~MySQLDatabase();
 public:
 	bool open(const DatabaseConn& conn);
 	void close() = 0;
 
 	QueryResult* query(const char* sql, ...);
 	bool execute(const char* sql, ...);
+private:
 };
 };
