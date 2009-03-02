@@ -18,12 +18,14 @@
 #include "mutex.h"
 #include "threadcontroller.h"
 #include "threadbase.h"
+#include <set>
 
 namespace srdgame
 {
 
 class ThreadPool : public Singleton<ThreadPool>
 {
+protected:
 	struct ThreadHandle
 	{
 		ThreadHandle() : task(NULL), reuse(true)
@@ -51,15 +53,17 @@ protected:
 	{
 		virtual bool run();
 		virtual void on_close();
+		virtual void shutdown();
+		virtual bool is_running();
 	};
 
 	// Adjust pool, expecially the threads which are free.
 	void adjust();
 
-	// When one thread want to run its task
-	void on_thread_run(ThreadHandle* thread);
+	// When one thread want to run its task, return true will delete the thread or hold it for next run
+	bool on_thread_run(ThreadHandle* thread);
 	// When one thread finishes his job.
-	void on_thread_finish(ThreadHandle* thread);
+	bool on_thread_finish(ThreadHandle* thread);
 	// Create one new thread to execut task.
 	ThreadHandle* create_thread(ThreadBase* task);
 
@@ -74,7 +78,7 @@ protected:
 	ThreadSet _idle_set;
 	bool _inited;
 	Mutex _lock;
-}
+};
 }
 
 #endif

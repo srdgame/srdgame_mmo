@@ -14,6 +14,10 @@
 #ifndef AUTOLOCK_H_
 #define AUTOLOCK_H_
 
+#include "mutex.h"
+
+namespace srdgame
+{
 class AutoLock
 {
 public:
@@ -32,6 +36,7 @@ public:
 	}
 private:
 	Mutex& _mutex;
+};
 }
 
 #endif

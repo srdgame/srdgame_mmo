@@ -15,15 +15,17 @@
 #include "bufferbase.h"
 
 #ifndef SYS_PAGE_SIZE
-#define SYS_PAGE_SIZE
+#define SYS_PAGE_SIZE 4096
 #endif
+
+using std::size_t;
 
 namespace srdgame
 {
 class BipBuffer : public BufferBase
 {
 public:
-	inline BipBuffer(size_t buf_size = 4096) : buf(NULL), len(buf_size), ixa(0), sza(0), ixb(0), szb(0), ixr(0), szr(0)
+	inline BipBuffer(size_t buf_size = SYS_PAGE_SIZE) : BufferBase(), buf(NULL), len(buf_size), ixa(0), sza(0), ixb(0), szb(0), ixr(0), szr(0)
 	{
 		// 分配页面整数倍的内存
 		len = len + ((SYS_PAGE_SIZE) / SYS_PAGE_SIZE ) * SYS_PAGE_SIZE;
@@ -156,6 +158,10 @@ public:
 			ixa += size;
 		}
 	}
+	inline size_t spare_size()
+	{
+		return max(get_a_free(), get_b_free());
+	}
 	inline size_t reserved_size()
 	{
 		return szr;
@@ -186,7 +192,7 @@ private:
 	size_t szb;
 	size_t ixr;
 	size_t szr;
-}
 };
+}
 
 #endif

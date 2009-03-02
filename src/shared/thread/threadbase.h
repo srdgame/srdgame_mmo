@@ -18,15 +18,22 @@ namespace srdgame
 {
 class ThreadBase
 {
+public:
 	ThreadBase()
 	{
 	}
 	virtual ~ThreadBase()
 	{
 	}
+	// blocking function, return true means delete this threadobject.
 	virtual bool run() = 0;
-	virtual bool on_close() = 0;
-}
+	// call to shutdown this thread.
+	virtual void shutdown() = 0;
+	// call when this get closing? not work yet?
+	virtual void on_close() = 0;
+	// call to checking whether it is running.
+	virtual bool is_running() = 0;
+};
 }
 
 #endif

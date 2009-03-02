@@ -1,29 +1,51 @@
-/**=============================================================================
- * Copyright (C) 2006 Team RioWow
- *
- * File: common.h
- * Description:
-        This file is to define and surpport different complier and system.
- * Author: cch
- * Update: 2009-2-21
- * Message: Copied from my RioWow project
-==============================================================================*/
 #include "log.h"
-#include <iostream>
-using namespace std;
+#include "loggui.h"
+#include "logfile.h"
+using namespace srdgame;
+
+#define GUI LogGui::get_singleton()
+
 //------------------------------------------------------------------------------
-void Log::out_string(const string& str)
+void Log::append(LogLevel lvl, const char* source, const char* format, ...)
 {
-    cout << str;
+	va_list ap;
+	va_start(ap, format);
+
+	LogLevel s_lvl = lvl > _s_lvl ? lvl : LL_NONE;
+	switch (s_lvl)
+	{
+		case LL_SUCCESS:
+			GUI.Success(source, format, ap);
+			break;
+		case LL_ERROR:
+			GUI.Error(source, format, ap);
+			break;
+		case LL_WARNING:
+			GUI.Warning(source, format, ap);
+			break;
+		case LL_NOTICE:
+			GUI.Notice(source, format, ap);
+			break;
+		case LL_DEBUG:
+			GUI.Debug(source, format, ap);
+			break;
+		default:
+			//GUI.Debug(source, format, ap);
+			break;
+	}
+	if (_file && lvl <= _f_lvl)
+	{
+		_file->append(source, format, ap);
+	}
+	va_end(ap);
 }
-//------------------------------------------------------------------------------
-void Log::out_error(const string& err)
+void Log::out_line()
 {
-    cerr << err;
+	GUI.Line();
+	if (_file)
+	{
+		_file->append(NULL, "====================================================================================");
+	}
 }
-//------------------------------------------------------------------------------
-void Log::out_chat(const string& chat)
-{
-    cout << chat;
-}
+
 

@@ -13,8 +13,12 @@
 #ifndef FAST_QUEUE_H_
 #define FAST_QUEUE_H_
 
+#include "condition.h"
+#include "mutex.h"
+
 namespace srdgame
 {
+
 template <typename T>
 class FastQueue
 {
@@ -24,7 +28,7 @@ class FastQueue
 		{}
 		T val;
 		Node* next;
-	}
+	};
 public:
 	inline FastQueue() : _cond(_mutex), _first(NULL), _last(NULL), _size(0)
 	{
@@ -44,7 +48,7 @@ public:
 	{
 		Node* node = new Node(item);
 		_cond.lock();
-		if (last)
+		if (_last)
 		{
 			_last->next = node;
 			_last = node;
@@ -67,14 +71,14 @@ public:
 			return false;
 		}
 		val = _first->val;
-		delete _first
-		if (--size)
+		delete _first;
+		if (--_size)
 		{
 			_first = _last = NULL;
 		}
 		else
 		{
-			_first = _fist->next;
+			_first = _first->next;
 		}
 		_cond.unlock();
 		return true;
@@ -94,13 +98,13 @@ public:
 	bool pop(T& val)
 	{
 		_cond.lock();
-		if (0 == size || _first == NULL)
+		if (0 == _size || _first == NULL)
 		{
 			_cond.wait();
 		}
 		val = _first->val;
 		delete _first;
-		if (--size)
+		if (--_size)
 		{
 			_first = _first->next;
 		}

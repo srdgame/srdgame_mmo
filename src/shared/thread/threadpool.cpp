@@ -1,4 +1,5 @@
 #include "threadpool.h"
+#include "autolock.h"
 
 using namespace srdgame;
 
@@ -8,7 +9,7 @@ ThreadPool::ThreadPool() : _inited(false)
 
 void ThreadPool::init(unsigned int cap)
 {
-	AutoLock(_lock) lock;
+	AutoLock lock(_lock);
 	if (_inited)
 		return;
 
@@ -36,7 +37,7 @@ void ThreadPool::shutdown()
 		handle->lock.lock();
 		handle->reuse = false;
 		handle->lock.unlock();
-		handle->exit();
+		handle->task->shutdown();
 	}
 	// set the reuse to false, and active the thread, then it will be deleted.
 	this->kill_idle_thread((unsigned int)_idle_set.size());
@@ -49,7 +50,7 @@ void ThreadPool::shutdown()
 		if (_active_set.empty() && _idle_set.empty())
 		{
 			_inited = false;
-			_lock.unlcok();
+			_lock.unlock();
 			break;
 		}
 		_lock.unlock();
@@ -62,14 +63,14 @@ void ThreadPool::close_thread(ThreadHandle*)
 
 }
 */
-void ThreadPool:execute(ThreadBase* task)
+void ThreadPool::execute(ThreadBase* task)
 {
 	ThreadHandle* handle = NULL;
 	_lock.lock();
 	if (_idle_set.size() == 0)
 	{
 		handle = *_idle_set.begin();
-		_idle_set.earse(_idle_set.begin());
+		_idle_set.erase(_idle_set.begin());
 
 		handle->task = task;
 		handle->controller.resume();
@@ -78,7 +79,7 @@ void ThreadPool:execute(ThreadBase* task)
 	{
 		handle = create_thread(task);
 	}
-	_active_set.insert(handle)
+	_active_set.insert(handle);
 	_lock.unlock();
 }
 
@@ -122,15 +123,15 @@ bool ThreadPool::on_thread_finish(ThreadHandle* thread)
 	return need_delete;
 }
 
-ThreadHandle* ThreadPool::create_thread(ThreadBase* task)
+ThreadPool::ThreadHandle* ThreadPool::create_thread(ThreadBase* task)
 {
 	pthread_t thread;
 	ThreadHandle* handle = new ThreadHandle();
 	
 	handle->lock.lock();
 	handle->task = task;
-	pthread_create(&thread, NULL, &ThreadPool::thread_proc, (void*)handle);
-	handle->controller.bind(thread);
+	::pthread_create(&thread, NULL, &ThreadPool::thread_proc, (void*)handle);
+	handle->controller.setup(thread);
 	handle->lock.unlock();
 
 	return handle;

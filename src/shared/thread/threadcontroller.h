@@ -17,6 +17,10 @@
 #ifndef HAVE_DARWIN
 #include <semaphore.h>
 
+#include <cassert>
+
+#define ASSERT(x) assert(x)
+
 namespace srdgame
 {
 unsigned int GenerateThreadId();

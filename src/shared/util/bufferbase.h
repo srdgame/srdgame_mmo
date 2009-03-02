@@ -11,13 +11,18 @@
 
 #ifndef BUFFER_BASE_H_
 #define BUFFER_BASE_H_
+
+#include <cstddef>
+
+using std::size_t;
+
 namespace srdgame
 {
 class BufferBase
 {
 public:
 	BufferBase(){}
-	virtual BufferBase(){}
+	virtual ~BufferBase(){}
 
 	virtual void clear() = 0;
 
@@ -30,6 +35,6 @@ public:
 	virtual size_t reserved_size() = 0;
 	virtual size_t buf_size() = 0;
 	virtual size_t data_size() = 0;
+};
 }
-
 #endif

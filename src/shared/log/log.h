@@ -1,38 +1,84 @@
-/**=============================================================================
- * Copyright (C) 2006 Team RioWow
- *
- * File: common.h
- * Description:
-        This file is to define and surpport different complier and system.
- * Author: cch
- * Update: 2009-2-21
- * Message:Copy from my RioWow project
-==============================================================================*/
 #ifndef LOG_H
 #define LOG_H
 
 #include "singleton.h"
-#include <string>
-using namespace std;
+#include <cstdarg>
 //------------------------------------------------------------------------------
+namespace srdgame
+{
+class LogFile;
+enum LogLevel
+{
+	LL_NONE = 0,
+	LL_SUCCESS,
+	LL_ERROR,
+	LL_WARNING,
+	LL_NOTICE,
+	LL_DEBUG,
+};
 class Log : public Singleton<Log>
 {
 public:
-  void out_string(const string& str);
-  void out_error(const string& err);
-  void out_chat(const string& chat);
+	void setup(LogLevel s_lvl, LogLevel f_lvl)
+	{
+		_s_lvl = s_lvl;
+		_f_lvl = f_lvl;
+	}
+	void bind(LogFile* file)
+	{
+		_file = file;
+	}
+	
+	void append(LogLevel lvl, const char* source, const char* format, ...);
+
+	void out_line();
+private:
+	LogFile* _file;
+	LogLevel _s_lvl;
+	LogLevel _f_lvl;
 };
-inline void LogString(const string& str)
+Log& LOG = Log::get_singleton();
+inline void LogSuccess(const char* source, const char* format, ...)
 {
-    Log::get_singleton().out_string(str);
+	va_list ap;
+	va_start(ap, format);
+	LOG.append(LL_SUCCESS, source, format, ap);
+	va_end(ap);
 }
-inline void LogError(const string& err)
+
+inline void LogError(const char* source, const char* format, ...)
 {
-    Log::get_singleton().out_error(err);
+	va_list ap;
+	va_start(ap, format);
+	LOG.append(LL_ERROR, source, format, ap);
+	va_end(ap);
 }
-inline void LogChat(const string& chat)
+inline void LogWarning(const char* source, const char* format, ...)
 {
-    Log::get_singleton().out_chat(chat);
+	va_list ap;
+	va_start(ap, format);
+	LOG.append(LL_WARNING, source, format, ap);
+	va_end(ap);
+}
+
+inline void LogNotice(const char* source, const char* format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	LOG.append(LL_NOTICE, source, format, ap);
+	va_end(ap);
+}
+inline void LogDebug(const char* source, const char* format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	LOG.append(LL_DEBUG, source, format, ap);
+	va_end(ap);
+}
+inline void LogLine()
+{
+	LOG.out_line();
+}
 }
 #endif
 //------------------------------------------------------------------------------

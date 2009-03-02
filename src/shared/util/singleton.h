@@ -13,6 +13,9 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
+namespace srdgame
+{
+
 template <class T>
 class Singleton
 {
@@ -33,5 +36,6 @@ protected:
     Singleton(){};
 }
 ;
+}
 #endif
 //------------------------------------------------------------------------------
