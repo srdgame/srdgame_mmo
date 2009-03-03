@@ -49,7 +49,6 @@ AC_CONFIG_FILES([Makefile
                  src/shared/database/Makefile
                  src/shared/log/Makefile
                  src/shared/network/Makefile
-                 src/shared/network_et/Makefile
                  src/shared/thread/Makefile
                  src/shared/util/Makefile
                  src/world/Makefile])
