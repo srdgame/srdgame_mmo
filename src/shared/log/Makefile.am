@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/../util -I$(srcdir)/../thread
+INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../util -I$(srcdir)/../thread
 
 noinst_LIBRARIES = liblog.a
 
@@ -8,3 +8,4 @@ liblog_a_SOURCES = log.h \
 		   loggui.cpp\
 		   logfile.h
 		   logfile.cpp
+

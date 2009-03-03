@@ -1,6 +1,10 @@
-AM_CPPFLAGS = $(SRDGAME_INCLUDES) -I$(scrdir)/shared/log -I$(srcdir)/shared/network -I$(srcdir)/thread -I$(srcdir)/shared/util -I$(srcdir)
+INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir)/../shared/log -I$(srcdir)/../shared/network -I$(srcdir)/../shared/thread -I$(srcdir)/../shared/util -I$(srcdir)
 
-noinst_PROGRAMS = srdgame-world
 
-srdgame_world_SOURCES  = \
+noinst_PROGRAMS = srdgame-worldserver
+
+srdgame_worldserver_SOURCES  = \
 	main.cpp
+
+srdgame_worldserver_LDADD = -llog -lthread -lconfig -lpthread
+srdgame_worldserver_LDFLAGS = -L$(srcdir)/../shared/log -L$(srcdir)/../shared/thread -L$(srcdir)/../shared/config

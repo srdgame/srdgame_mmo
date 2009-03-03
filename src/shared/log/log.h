@@ -1,5 +1,5 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef LOG_H_
+#define LOG_H_
 
 #include "singleton.h"
 #include <cstdarg>
@@ -37,7 +37,7 @@ private:
 	LogLevel _s_lvl;
 	LogLevel _f_lvl;
 };
-Log& LOG = Log::get_singleton();
+#define LOG Log::get_singleton()
 inline void LogSuccess(const char* source, const char* format, ...)
 {
 	va_list ap;
