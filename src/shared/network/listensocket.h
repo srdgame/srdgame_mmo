@@ -8,6 +8,7 @@ namespace srdgame
 class ListenSocket
 {
 public:
+	virtual ~ListenSocket(){};
 	virtual void on_accept() = 0;
 	virtual SOCKET get_fd() = 0;
 };
