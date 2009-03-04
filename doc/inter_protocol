@@ -1,0 +1,11 @@
+// This is the the defination of internel protocol used between login server , realm server and world server.
+
+the package:
+
+struct Package
+{
+	int len; // the total length of this package.
+	int id; // the package index? or Id?
+	int opcode; // the package type.
+	void* param; // the parameters.
+};
