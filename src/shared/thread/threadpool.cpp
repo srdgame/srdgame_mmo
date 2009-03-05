@@ -183,4 +183,10 @@ bool ThreadPool::PoolAdjust::run()
 void ThreadPool::PoolAdjust::on_close()
 {
 }
-
+void ThreadPool::PoolAdjust::shutdown()
+{
+}
+bool ThreadPool::PoolAdjust::is_running()
+{
+	return true;
+}

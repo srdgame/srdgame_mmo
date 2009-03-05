@@ -12,7 +12,7 @@ class ConfigFile;
 class RealmServer
 {
 public:
-	RealmServer(const char* conf_fn);
+	RealmServer(const std::string& conf_fn);
 	virtual ~RealmServer();
 
 	// methods

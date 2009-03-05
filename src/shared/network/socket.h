@@ -22,9 +22,9 @@ class Socket
 {
 public:
 	// Create socket to connect to other pc,
-	inline Socket(){}
+	Socket();
 	// 
-	inline virtual ~Socket(){}
+	virtual ~Socket();
 
 	// method?
 	virtual bool accept(sockaddr_in* addr, SOCKET fd) = 0;
@@ -59,9 +59,9 @@ protected:
 
 protected:
 	friend class SocketWorker;
-	virtual void read_callback(size_t size);
-	virtual void write_callback();
-	virtual void post_event(int epoll_fd, unsigned int event);
+	virtual void read_callback(size_t size) = 0;
+	virtual void write_callback() = 0;
+	virtual void post_event(int epoll_fd, unsigned int event) = 0;
 };
 }
 

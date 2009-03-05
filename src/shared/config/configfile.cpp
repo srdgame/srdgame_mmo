@@ -5,16 +5,22 @@
 #include <fstream>
 #include "configfile.h"
 #include "conversion_cast.h"
+#include "log.h"
 
 using namespace std;
 using namespace srdgame;
 
 ConfigFile::ConfigFile(std::string& fn) : _loaded (false)
 {
+	if (fn.empty())
+	{
+		LogDebug("ConfigFile", "Empty configure file name used");
+	}
 	if (0 == load_file(fn))
 	{
 		_loaded = false;
-		std::cout << "ERROR for conf file: " << fn << std::endl;
+		//std::cout << "ERROR for conf file: " << fn << std::endl;
+		LogDebug("ConfigFile", "Could not open configure file: %s", fn.c_str());
 	}
 	else
 	{

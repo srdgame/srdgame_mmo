@@ -23,17 +23,22 @@
 
 namespace srdgame
 {
-unsigned int GenerateThreadId();
+unsigned int generate_thread_id();
 
 class ThreadController
 {
+	volatile static unsigned int _s_thread_id_count;
+	unsigned int generate_thread_id()
+	{
+		return ++_s_thread_id_count;
+	}
 
 public:
 	void setup(pthread_t thread)
 	{
 		_thread = thread;
 		sem_init(&_sem, PTHREAD_PROCESS_PRIVATE, 0);
-		_id = GenerateThreadId();
+		_id = generate_thread_id();
 	}
 	~ThreadController()
 	{
