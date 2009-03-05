@@ -23,6 +23,7 @@ public:
 	~SocketManager();
 public:
 	void add(Socket* s);
+	void add(ListenSocket* s);
 	void remove(Socket* s);
 	inline size_t count()
 	{

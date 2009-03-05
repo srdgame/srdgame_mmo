@@ -19,6 +19,9 @@ enum LogLevel
 class Log : public Singleton<Log>
 {
 public:
+	Log() : _file(0), _s_lvl(LL_DEBUG), _f_lvl(LL_DEBUG)
+	{
+	}
 	void setup(LogLevel s_lvl, LogLevel f_lvl)
 	{
 		_s_lvl = s_lvl;

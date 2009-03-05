@@ -11,7 +11,7 @@ void Log::append(LogLevel lvl, const char* source, const char* format, ...)
 	va_list ap;
 	va_start(ap, format);
 
-	LogLevel s_lvl = lvl > _s_lvl ? lvl : LL_NONE;
+	LogLevel s_lvl = lvl <= _s_lvl ? lvl : LL_NONE;
 	switch (s_lvl)
 	{
 		case LL_SUCCESS:

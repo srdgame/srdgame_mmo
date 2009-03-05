@@ -33,7 +33,7 @@ public:
 	// method?
 	virtual bool connect(const std::string& addr, int port);
 	// accept connection
-	virtual bool accept(sockaddr_in* addr);
+	virtual bool accept(sockaddr_in* addr, SOCKET fd);
 	// close/disconnect
 	virtual bool close();
 	// whether the connection still there.
@@ -45,7 +45,7 @@ public:
 	virtual bool send(const char* data, size_t size);
 	virtual bool send(std::string& data);
 	// access the buffer directly, if you donot want to create the buffer by yourself.
-	inline virtual BufferBase* get_rev_buffer()
+	inline virtual BufferBase* get_rev_buf()
 	{
 		return &_rev_buf;
 	}
@@ -75,10 +75,10 @@ public:
 
 protected:
 	// events.
-	virtual void on_rev();
-	virtual void on_send();
-	virtual void on_connect();
-	virtual void on_close();
+	virtual void on_rev() = 0;
+	virtual void on_send() = 0;
+	virtual void on_connect() = 0;
+	virtual void on_close() = 0;
 
 protected:
 	// helper functions

@@ -1,8 +1,8 @@
-#include <string>
-#include <sstream>
-
 #ifndef CONVERSION_CAST_H_
 #define CONVERSION_CAST_H_
+
+#include <string>
+#include <sstream>
 
 namespace srdgame
 {
@@ -18,7 +18,7 @@ DT conversion_cast(const ST& val)
 }
 
 template <>
-std::string conversion_cast(const std::string& val)
+inline std::string conversion_cast(const std::string& val)
 {
 	return val;
 }

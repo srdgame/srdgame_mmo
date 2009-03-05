@@ -52,8 +52,9 @@ bool TcpSocket::connect(const std::string& addr, int port)
 
 }
 
-bool TcpSocket::accept(sockaddr_in* addr)
+bool TcpSocket::accept(sockaddr_in* addr, SOCKET fd)
 {
+	_fd = fd;
 	memcpy(&_r_addr, addr, sizeof(*addr));
 	_on_connect();
 	return true;
@@ -137,23 +138,6 @@ std::string TcpSocket::get_remote_ip()
 	}
 }
 
-void TcpSocket::on_rev()
-{
-}
-void TcpSocket::on_send()
-{
-
-}
-
-void TcpSocket::on_connect()
-{
-
-
-}
-
-void TcpSocket::on_close()
-{
-}
 void TcpSocket::_on_connect()
 {
 	SocketFunc::nonblocking(_fd);

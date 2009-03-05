@@ -50,6 +50,7 @@ AC_CONFIG_FILES([Makefile
                  src/shared/log/Makefile
                  src/shared/network/Makefile
 		 src/shared/packet/Makefile
+		 src/shared/script/Makefile
                  src/shared/thread/Makefile
                  src/shared/util/Makefile
                  src/world/Makefile])
