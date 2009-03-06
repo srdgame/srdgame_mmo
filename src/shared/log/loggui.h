@@ -105,7 +105,7 @@ public:
 		va_start(ap, format);
 		Time();
 		fputs("N ", stdout);
-		if(*source)
+		if(source && *source)
 		{
 			Color(TWHITE);
 			fputs(source, stdout);
@@ -120,6 +120,23 @@ public:
 		Color(TNORMAL);
 		_lock.unlock();
 	}
+	void Notice(const char* source, const char* format, va_list ap)
+	{
+		_lock.lock();
+		Time();
+		fputs("N ", stdout);
+		if (source && *source)
+		{
+			Color(TWHITE);
+			fputs(source, stdout);
+			putchar(':');
+			putchar(' ');
+			Color(TNORMAL);
+		}
+		vprintf(format, ap);
+		putchar('\n');
+		_lock.unlock();
+	}
 
 	void Warning(const char * source, const char * format, ...)
 	{
@@ -130,7 +147,7 @@ public:
 		Time();
 		Color(TYELLOW);
 		fputs("W ", stdout);
-		if(*source)
+		if(source && *source)
 		{
 			Color(TWHITE);
 			fputs(source, stdout);
@@ -145,6 +162,26 @@ public:
 		Color(TNORMAL);
 		_lock.unlock();
 	}
+	void Warning(const char* source, const char* format, va_list ap)
+	{
+		_lock.lock();
+		Time();
+		Color(TYELLOW);
+		fputs("N ", stdout);
+		if (source && *source)
+		{
+			Color(TWHITE);
+			fputs(source, stdout);
+			putchar(':');
+			putchar(' ');
+			Color(TYELLOW);
+		}
+		vprintf(format, ap);
+		putchar('\n');
+		Color(TNORMAL);
+		_lock.unlock();
+	}
+
 
 	void Success(const char * source, const char * format, ...)
 	{
@@ -154,7 +191,7 @@ public:
 		Time();
 		Color(TGREEN);
 		fputs("S ", stdout);
-		if(*source)
+		if(source && *source)
 		{
 			Color(TWHITE);
 			fputs(source, stdout);
@@ -169,6 +206,26 @@ public:
 		Color(TNORMAL);
 		_lock.unlock();
 	}
+	void Success(const char* source, const char* format, va_list ap)
+	{
+		_lock.lock();
+		Time();
+		Color(TGREEN);
+		fputs("N ", stdout);
+		if (source && *source)
+		{
+			Color(TWHITE);
+			fputs(source, stdout);
+			putchar(':');
+			putchar(' ');
+			Color(TGREEN);
+		}
+		vprintf(format, ap);
+		putchar('\n');
+		Color(TNORMAL);
+		_lock.unlock();
+	}
+
 
 	void Error(const char * source, const char * format, ...)
 	{
@@ -178,7 +235,7 @@ public:
 		Time();
 		Color(TRED);
 		fputs("E ", stdout);
-		if(*source)
+		if(source && *source)
 		{
 			Color(TWHITE);
 			fputs(source, stdout);
@@ -193,6 +250,26 @@ public:
 		Color(TNORMAL);
 		_lock.unlock();
 	}
+	void Error(const char* source, const char* format, va_list ap)
+	{
+		_lock.lock();
+		Time();
+		Color(TRED);
+		fputs("N ", stdout);
+		if (source && *source)
+		{
+			Color(TWHITE);
+			fputs(source, stdout);
+			putchar(':');
+			putchar(' ');
+			Color(TRED);
+		}
+		vprintf(format, ap);
+		putchar('\n');
+		Color(TNORMAL);
+		_lock.unlock();
+	}
+
 
 	void Line()
 	{
@@ -209,7 +286,7 @@ public:
 		Time();
 		Color(TBLUE);
 		fputs("D ", stdout);
-		if(*source)
+		if(source && *source)
 		{
 			Color(TWHITE);
 			fputs(source, stdout);
@@ -224,6 +301,26 @@ public:
 		Color(TNORMAL);
 		_lock.unlock();
 	}
+	void Debug(const char* source, const char* format, va_list ap)
+	{
+		_lock.lock();
+		Time();
+		Color(TBLUE);
+		fputs("N ", stdout);
+		if (source && *source)
+		{
+			Color(TWHITE);
+			fputs(source, stdout);
+			putchar(':');
+			putchar(' ');
+			Color(TBLUE);
+		}
+		vprintf(format, ap);
+		putchar('\n');
+		Color(TNORMAL);
+		_lock.unlock();
+	}
+
 
 #define LARGERRORMESSAGE_ERROR 1
 #define LARGERRORMESSAGE_WARNING 2

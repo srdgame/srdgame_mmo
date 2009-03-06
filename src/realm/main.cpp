@@ -6,6 +6,6 @@ using namespace srdgame;
 int main()
 {
 	LogSuccess("RealmSrv", "Starting");
-	RealmServer s("realm.conf");
+	RealmServer s(string("./realm.conf"));
 	s.run();
 }

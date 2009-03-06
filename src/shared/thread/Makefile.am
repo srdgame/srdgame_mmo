@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(srcdir)
+AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/../log -I$(srcdir)/../util
 
 noinst_LIBRARIES = libthread.a
 

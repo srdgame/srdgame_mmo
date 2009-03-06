@@ -5,6 +5,7 @@
 #include "socketmanager.h"
 #include "socketfun.h"
 #include <string>
+#include "log.h"
 
 using namespace srdgame;
 
@@ -160,6 +161,8 @@ void TcpSocket::read_callback(size_t size)
 
 	int bytes = recv(_fd, buf, spare, 0);
 
+	LogDebug("SOCKET", "Data received, size is : %d", bytes);
+
 
 	if(bytes <= 0)
 	{
@@ -170,6 +173,12 @@ void TcpSocket::read_callback(size_t size)
 	}    
 	else if(bytes > 0)
 	{
+		// for debug:
+		char* new_buf = new char[bytes+1];
+		::memset(new_buf, 0, bytes + 1);
+		::memcpy(new_buf, buf, bytes);
+		LogDebug("SOCKET", "Data received, data is : %s", new_buf);
+		delete[] new_buf;
 		_rev_buf.commit(bytes);
 		on_rev();
 	}

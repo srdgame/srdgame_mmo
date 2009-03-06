@@ -14,6 +14,13 @@
 
 #include "bufferbase.h"
 
+// Define debug
+//#define _BIP_DEBUG_
+
+#ifdef _BIP_DEBUG_
+#include "log.h"
+#endif
+
 #ifndef SYS_PAGE_SIZE
 #define SYS_PAGE_SIZE 4096
 #endif
@@ -51,10 +58,16 @@ public:
 
 	inline char* reserve(size_t size, size_t& reserved)
 	{
+#ifdef _BIP_DEBUG_
+		LogDebug("BipBuffer", "Reserve size : %d", size);
+#endif
 		if (size == 0)
 			return NULL;
 		if (szb)
 		{
+#ifdef _BIP_DEBUG_
+			LogDebug("BipBuffer", "Now using B region");
+#endif
 			// 当B部分存在的时候只从B部分后面分配数据区
 			size_t free = get_b_free();
 			if (size < free)
@@ -68,11 +81,17 @@ public:
 		}
 		else
 		{
+#ifdef _BIP_DEBUG_
+			LogDebug("BipBuffer", "Only using A region");
+#endif
 			// 当只有A部分的时候
 			size_t free = get_a_free();
 			if (free > size)
 			{
 				// 当A区剩余区域够用
+#ifdef _BIP_DEBUG_
+				LogDebug("BipBuffer", "Region A is enough to buf");
+#endif
 				szr = size;
 				reserved = size;
 				ixr = ixa + sza;
@@ -80,13 +99,20 @@ public:
 			}
 			else if (free > ixa)
 			{
+#ifdef _BIP_DEBUG_
+				LogDebug("BipBuffer", "Region A has bigger ares");
+#endif
 				// 当A区剩余比较大
 				reserved = free;
+				szr = free;
 				ixr = ixa + sza;
 				return buf + ixr;
 			}
 			else
 			{
+#ifdef _BIP_DEBUG_
+				LogDebug("BipBuffer", "Create Region B");
+#endif
 				if (ixa == 0)
 					return NULL;
 
@@ -102,6 +128,9 @@ public:
 	}
 	inline void commit(size_t size)
 	{
+#ifdef _BIP_DEBUG_
+		LogDebug("BipBuffer", "Commiting size : %d", size);
+#endif
 		if (size == 0)
 		{
 			ixr = szr = 0;
@@ -117,6 +146,9 @@ public:
 			ixa = ixr;
 			sza = szr;
 			ixr = szr = 0;
+#ifdef _BIP_DEBUG_
+			LogDebug("BipBuffer", "ixa : %d\t sza : %d", ixa, sza);
+#endif
 			return;
 		}
 		if (ixr == ixa + sza)
@@ -131,14 +163,23 @@ public:
 			szb += size;
 		}
 		ixr = szr = 0;
+#ifdef _BIP_DEBUG_
+		LogDebug("BipBuffer", "Commit finished");
+#endif
 	}
 	inline char* get_data(size_t& size)
 	{
 		if (sza == 0)
 		{
+#ifdef _BIP_DEBUG_
+			LogDebug("BipBuffer", "No data avaliable");
+#endif
 			size = 0;
 			return 0;
 		}
+#ifdef _BIP_DEBUG_
+		LogDebug("BipBuffer", "Avaliable size : %d", sza);
+#endif
 		size = sza;
 		return buf + ixa;
 	}

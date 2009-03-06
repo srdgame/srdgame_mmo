@@ -16,7 +16,7 @@ ConfigFile::ConfigFile(std::string& fn) : _loaded (false)
 	{
 		LogDebug("ConfigFile", "Empty configure file name used");
 	}
-	if (0 == load_file(fn))
+	if (0 != load_file(fn))
 	{
 		_loaded = false;
 		//std::cout << "ERROR for conf file: " << fn << std::endl;

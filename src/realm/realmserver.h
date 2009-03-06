@@ -20,6 +20,7 @@ public:
 
 protected:
 	bool load_conf();
+	bool init_env();
 	bool start_listen();
 	bool stop_listen();
 

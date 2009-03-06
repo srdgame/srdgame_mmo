@@ -21,6 +21,8 @@
 
 #define ASSERT(x) assert(x)
 
+#include "log.h"
+
 namespace srdgame
 {
 unsigned int generate_thread_id();
@@ -36,6 +38,7 @@ class ThreadController
 public:
 	void setup(pthread_t thread)
 	{
+		LogDebug("ThreadController", "Setup with thread id: %d", thread);
 		_thread = thread;
 		sem_init(&_sem, PTHREAD_PROCESS_PRIVATE, 0);
 		_id = generate_thread_id();

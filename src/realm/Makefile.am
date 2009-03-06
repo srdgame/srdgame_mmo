@@ -5,6 +5,8 @@ noinst_PROGRAMS = srdgame-realmserver
 
 srdgame_realmserver_SOURCES  = realmserver.h \
 			       realmserver.cpp \
+			       realmsocket.h \
+			       realmsocket.cpp \
 			       main.cpp
 
 srdgame_realmserver_LDADD = -llog -lnetwork -lthread -lconfig -lpthread

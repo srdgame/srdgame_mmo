@@ -8,10 +8,10 @@ namespace srdgame
 class RealmSocket : public TcpSocket
 {
 public:
-	virtual void on_rev(){};
-	virtual void on_send(){};
-	virtual void on_connect() {};
-	virtual void on_close() {};
+	virtual void on_rev();
+	virtual void on_send();
+	virtual void on_connect();
+	virtual void on_close();
 };
 }
 

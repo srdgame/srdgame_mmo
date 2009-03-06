@@ -32,9 +32,9 @@ public:
 	void close_all();
 
 	void show_info();
-protected:
+
 	void start_worker();
-	
+protected:	
 	size_t _count;
 	
     	int _epoll_fd;

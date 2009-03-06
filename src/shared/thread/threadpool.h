@@ -38,6 +38,7 @@ protected:
 	};
 public:
 	ThreadPool();
+	~ThreadPool();
 	void init(unsigned int cap = 10);
 	void shutdown();
 	
@@ -66,6 +67,9 @@ protected:
 	bool on_thread_finish(ThreadHandle* thread);
 	// Create one new thread to execut task.
 	ThreadHandle* create_thread(ThreadBase* task);
+
+	// call this to remove one thread that will not be used later.
+	void remove_thread(ThreadHandle* thread);
 
 	void kill_idle_thread(unsigned int count);
 

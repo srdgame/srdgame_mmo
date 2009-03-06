@@ -33,6 +33,7 @@ public:
 	}
 	
 	void append(LogLevel lvl, const char* source, const char* format, ...);
+	void append(LogLevel lvl, const char* source, const char* format, va_list ap);
 
 	void out_line();
 private:

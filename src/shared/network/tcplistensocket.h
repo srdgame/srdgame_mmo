@@ -20,7 +20,7 @@ public:
 		  , _port(port)
 		  , _open(false)
 	{
-
+		//LogDebug("Network", "Trying to listen on: %d", port);
 		// Initialize the socket.
 		_addr_size = sizeof(sockaddr_in);
 		_fd = SocketFunc::create_tcp_socket();
@@ -57,6 +57,7 @@ public:
 			return;
 		}
 		_open = true;
+		LogSuccess("SOCKET", "Listening on port: %u", port);
 		SocketManager::get_singleton().add(this);
 	}
 	virtual ~TcpListenSocket()
