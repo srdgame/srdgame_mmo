@@ -21,7 +21,17 @@ enum InterOpcode
 	IS_INFO = 51, //
 	
 	// More
-}; 
+};
+
+union PacketParam
+{
+	char* Data;
+	int Int;
+	long Long;
+	float Float;
+	short Short;
+	bool Bool;
+};
 
 // TODO: should I consider about size of int?  So far let me just simply assume it is 32.
 struct Packet
@@ -29,7 +39,7 @@ struct Packet
 	int len; // the length of whole packet.
 	int id; // the packet id/index ?
 	int op; // opcode of this packet.
-	void* param; // the param point or the value of param (if it just one int or less than int.
+	PacketParam param; // the param point or the value of param (if it just one int or less than int.
 };
 
 }

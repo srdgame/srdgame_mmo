@@ -20,12 +20,12 @@ size_t PacketParser::from_inter(Packet& dest, const char* src)
 	{
 		char* buf = new char[param_len];
 		::memcpy(buf, src + g_header_len, param_len);
-		dest.param = buf; // outside of here needs to handle the deletes.
+		dest.param.Data = buf; // outside of here needs to handle the deletes.
 	}
 	else
 	{
-		dest.param = NULL;
-		::memcpy((char*)&dest.param, src + g_header_len, param_len);
+		dest.param.Long = 0L;
+		::memcpy((char*)&dest.param.Long, src + g_header_len, param_len);
 	}
 
 	return dest.len;
@@ -44,11 +44,11 @@ size_t PacketParser::to_inter(char* dest, const Packet& src)
 	int param_len = src.len - g_header_len;
 	if (param_len > g_void_ptr_len)
 	{
-		::memcpy(dest + g_header_len, (char*)src.param, param_len);
+		::memcpy(dest + g_header_len, (char*)src.param.Data, param_len);
 	}
 	else
 	{
-		::memcpy(dest + g_header_len, (char*)&src.param, param_len);
+		::memcpy(dest + g_header_len, (char*)&src.param.Long, param_len);
 	}
 	return src.len;
 }

@@ -55,7 +55,48 @@ int ConfigFile::load_file(std::string& fn)
 
 		string key = buf.substr(0, index);
 		string val = buf.substr(index + 1);
+
+		index = 0;
+		while (key[index] == ' ')
+		{
+			++index;
+		}
+		if (index)
+		{
+			key = key.substr(index);
+		}
+
+		index = key.size() - 1;
+		while (key[index] == ' ')
+		{
+			--index;
+		}
+		if (++index != key.size())
+		{
+			key = key.substr(0, index);
+		}
+
+		index = 0;
+		while (val[index] == ' ')
+		{
+			++index;
+		}
+		if (index)
+		{
+			val = val.substr(index);
+		}
+
+		index = val.size() - 1;
+		while (key[index] == ' ')
+		{
+			--index;
+		}
+		if (++index != val.size())
+		{
+			val = val.substr(0, index);
+		}
 		//std::cout << "key : " << key << " val: " << val << std::endl;
+//		std::cout << key << "=" << val << "@" <<std::endl;
 		_attrs.insert(make_pair< string, string>(key, val));
 	}
 	return 0;

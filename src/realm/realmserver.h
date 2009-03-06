@@ -22,6 +22,7 @@ protected:
 	bool load_conf();
 	bool init_env();
 	bool start_listen();
+	bool start_inter_listen();
 	bool stop_listen();
 
 	// return true to quit.
@@ -31,6 +32,7 @@ protected:
 	std::string _conf_fn;
 	ConfigFile* _config;
 	TcpListenSocket<RealmSocket>* _socket;
+	TcpListenSocket<RealmSocket>* _inter_socket;
 };
 }
 

@@ -68,6 +68,7 @@ void SocketManager::add(Socket* s)
 }
 void SocketManager::add(ListenSocket* s)
 {
+	LogDebug("SOCKET", "Adding listening socket : %d", s->get_fd());
 	ASSERT(_listen_fds[s->get_fd()] == 0);
 	_listen_fds[s->get_fd()] = s;
 	
