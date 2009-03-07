@@ -1,5 +1,7 @@
 #include "realmworker.h"
 #include "realmsocket.h"
+#include "realmmgr.h"
+#include "packetparser.h"
 
 #include "log.h"
 using namespace srdgame;
@@ -34,10 +36,9 @@ bool RealmWorker::run()
 		_socket->_worker = NULL;
 		return true;
 	}
-	// One data got.
-	// Pcessing data
-	p.free(); // Free the space that we have done.
 
+	handle(&p);
+	
 	return false;
 }
 
@@ -52,4 +53,61 @@ void RealmWorker::on_close()
 bool RealmWorker::is_running()
 {
 	return _running;
+}
+
+void RealmWorker::handle(Packet* packet)
+{
+	// One data got.
+	// Pcessing data
+	//
+	if (!_socket)
+	{
+		packet->free();
+		return;
+	}
+	switch (packet->op)
+	{
+		case I_PING:
+			packet->param.Int++;
+			this->send(packet);
+			break;
+		case I_OFFLINE:
+			if (_socket->_inter)
+			{
+				RealmMgr::get_singleton().remove_login_server(_socket);
+			}
+			else
+			{
+				RealmMgr::get_singleton().remove_client(_socket);
+			}
+			break;
+		case I_NOTIFY:
+			if (_socket->_inter)
+			{
+				RealmMgr::get_singleton().add_login_server(_socket);
+			}
+			else
+			{
+				RealmMgr::get_singleton().add_client(_socket);
+			}
+
+			// TODO: Ask for info?
+			break;
+		default:
+			break;
+	}
+	
+	packet->free(); // Free the space that we have done.
+}
+
+bool RealmWorker::send(Packet* packet)
+{
+	char sz[MAX_PACKET_LEN];
+	::memset(sz, 0, MAX_PACKET_LEN);
+	size_t size = PacketParser::get_singleton().to_inter(sz, *packet);
+	if (size && _socket && _socket->is_connected())
+	{
+		return _socket->send(sz, size);
+	}
+	return false;
 }

@@ -11,6 +11,7 @@
 namespace srdgame
 {
 class RealmSocket;
+struct Packet;
 class RealmWorker : public ThreadBase
 {
 public:
@@ -27,6 +28,10 @@ public:
 	virtual void on_close();
 	// call to checking whether it is running.
 	virtual bool is_running();
+
+protected:
+	void handle(Packet* packet);
+	bool send(Packet* packet);
 
 protected:
 	bool _running;
