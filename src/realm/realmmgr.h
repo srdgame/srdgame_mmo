@@ -13,11 +13,11 @@ struct ServerInfo
 {
 };
 class RealmSocket;
-class RealmManager : public Singleton < RealmManager >
+class RealmMgr : public Singleton < RealmMgr >
 {
 public:
-	RealmManager();
-	virtual ~RealmManager();
+	RealmMgr();
+	virtual ~RealmMgr();
 
 	std::vector<ServerInfo> enum_login_servers();
 
