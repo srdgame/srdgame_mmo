@@ -1,4 +1,4 @@
-#include "threadcontroller.h"
+#include "threadctl.h"
 
 using namespace srdgame;
 

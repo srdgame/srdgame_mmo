@@ -9,8 +9,8 @@ srdgame_realmserver_SOURCES  = realmserver.h \
 			       realmsocket.cpp \
 			       realmworker.h \
 			       realmworker.cpp \
-			       realmmanager.h \
-			       realmmanager.cpp \
+			       realmmgr.h \
+			       realmmgr.cpp \
 			       main.cpp
 
 srdgame_realmserver_LDADD = -llog -lnetwork -lthread -lconfig -lpthread

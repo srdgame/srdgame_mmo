@@ -1,6 +1,6 @@
 #include "socketworker.h"
 #include "socket.h"
-#include "socketmanager.h"
+#include "socketmgr.h"
 #include "listensocket.h"
 #include "log.h"
 
@@ -21,7 +21,7 @@ bool SocketWorker::run()
 	Socket * ptr;
 	int i;
 	_running = true;
-	SocketManager* mgr = SocketManager::get_instance();
+	SocketMgr* mgr = SocketMgr::get_instance();
 
 	while(_running)
 	{

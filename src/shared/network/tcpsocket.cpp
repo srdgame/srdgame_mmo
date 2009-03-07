@@ -66,8 +66,8 @@ bool TcpSocket::close()
 	_connected = false;
 
 	// remove from mgr
-	//SocketManager::get_instance()->remove(this);
-	SocketManager::get_singleton().remove(this);
+	//SocketMgr::get_instance()->remove(this);
+	SocketMgr::get_singleton().remove(this);
 
 	SocketFunc::close_socket(_fd);
 
@@ -145,7 +145,7 @@ void TcpSocket::_on_connect()
 	SocketFunc::disable_buffering(_fd);
 	_connected = true;
 
-	SocketManager::get_singleton().add(this);
+	SocketMgr::get_singleton().add(this);
 	on_connect();
 }
 

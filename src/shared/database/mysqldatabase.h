@@ -33,7 +33,7 @@ class MySQLDatabase : public Database
 	friend class DBManager;
 	virtual ~MySQLDatabase();
 public:
-	bool open(const DatabaseConn& conn);
+	bool open(const DatabaseInfo& info);
 	void close() = 0;
 
 	QueryResult* query(const char* sql, ...);

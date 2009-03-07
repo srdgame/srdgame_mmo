@@ -9,7 +9,7 @@
 
 namespace srdgame
 {
-struct DatabaseConn
+struct DatabaseInfo
 {
 	std::string _host_ip;
 	unsigned int _host_port;
@@ -18,7 +18,7 @@ struct DatabaseConn
 	std::string _database;
 };
 class QueryResult;
-class DBConnection;
+class DBConn;
 class Database
 {
 	friend class DBManager;
@@ -26,7 +26,7 @@ protected:
 	Database(){}
 public:
 	// databse methods
-	virtual bool open(const DatabaseConn& conn) = 0;
+	virtual bool open(const DatabaseInfo& info) = 0;
 	virtual void close() = 0;
 
 	virtual QueryResult* query(const char* sql, ...) = 0;
@@ -34,8 +34,8 @@ public:
 
 
 protected:
-	DatabaseConn _conn;
-	std::vector<DBConnection*> _connections;
+	DatabaseInfo _info;
+	std::vector<DBConn*> _connections;
 	size_t _max_con_size;
 	size_t _buf_size;
 };

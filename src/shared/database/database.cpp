@@ -1,5 +1,5 @@
 #include "database.h"
-#include "dbconnection.h"
+#include "dbconn.h"
 
 using namespace std;
 

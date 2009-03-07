@@ -58,7 +58,7 @@ public:
 		}
 		_open = true;
 		LogSuccess("SOCKET", "Listening on port: %u", port);
-		SocketManager::get_singleton().add(this);
+		SocketMgr::get_singleton().add(this);
 	}
 	virtual ~TcpListenSocket()
 	{

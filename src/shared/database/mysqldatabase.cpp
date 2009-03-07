@@ -26,11 +26,11 @@ MySQLDatabase::~MySQLDatabase()
 	_connections.clear();
 }
 
-bool MySQLDatabase::open(const DatabaseConn& conn)
+bool MySQLDatabase::open(const DatabaseInfo& info)
 {
-	_conn = conn;
+	_info = info;
 	LogNotice(DB_NAME, "Connecting to '%s' : '%d', database: '%s' username: '%s' password:*******", 
-			conn._host_ip.c_str(), conn._host_port, conn._database.c_str(), conn._username.c_str());
+			_info._host_ip.c_str(), _info._host_port, _info._database.c_str(), _info._username.c_str());
 	size_t con_size = 0;
 	MYSQL* con;
 	MYSQL* real_con;
@@ -49,7 +49,7 @@ bool MySQLDatabase::open(const DatabaseConn& conn)
 			LogError(DB_NAME, "MYSQL_OPT_RECONNECT could not be set, connection drops may occur but will be counteracted.");
 		}
 
-		real_con = mysql_real_connect( con, _conn._host_ip.c_str(), _conn._username.c_str(), _conn._password.c_str(), _conn._database.c_str(), _conn._host_port, NULL, 0 );
+		real_con = mysql_real_connect( con, _info._host_ip.c_str(), _info._username.c_str(), _info._password.c_str(), _info._database.c_str(), _info._host_port, NULL, 0 );
 		if (real_con == NULL )
 		{
 			LogError("MySQLDatabase", "Conn failed due to: `%s`", mysql_error( con ) );

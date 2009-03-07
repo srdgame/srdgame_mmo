@@ -7,6 +7,8 @@
 #include <vector>
 #include <map>
 
+#include "socketdefs.h"
+
 namespace srdgame
 {
 struct ServerInfo
@@ -29,7 +31,7 @@ public:
 
 protected:
 	std::map<SOCKET, RealmSocket*> _servers;
-	std::map<SOCKET< RealmSOcket*> _clients;
+	std::map<SOCKET, RealmSocket*> _clients;
 };
 
 }

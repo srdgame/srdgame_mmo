@@ -49,7 +49,7 @@ void RealmServer::run()
 bool RealmServer::init_env()
 {
 	ThreadPool::get_singleton().init(10);
-	SocketManager::get_singleton().start_worker();
+	SocketMgr::get_singleton().start_worker();
 	return true;
 }
 
