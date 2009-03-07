@@ -73,14 +73,14 @@ bool LoginServer::start_listen()
 	int port = _config->get_value<int>("PORT");
 	if (port == 0)
 	{
-		LogWarning("LoginServer", "Invalid port found, change it to: %d", 6001);
-		port = 6001;
+		LogWarning("LoginServer", "Invalid listen port found, change it to: %d", 7001);
+		port = 7001;
 	}
 	std::string addr = _config->get_value<std::string>("ADDRESS");
 	if (addr.empty())
 	{
 		addr = "127.0.0.1";
-		LogWarning("LoginServer", "Invalid inter address has found");
+		LogWarning("LoginServer", "Invalid listen address has found");
 	}
 
 	LogDebug("LoginServer", "Try to listen on: %s %d", addr.c_str(), port);
@@ -99,7 +99,7 @@ bool LoginServer::start_inter_listen()
 	int port = _config->get_value<int>("INTER_PORT");
 	if (port == 0)
 	{
-		port = 6101;
+		port = 7101;
 		LogWarning("LoginServer", "Inavlid inter port has found, change it to: %d", port);
 	}
 	std::string addr = _config->get_value<std::string>("INTER_ADDRESS");
@@ -111,7 +111,7 @@ bool LoginServer::start_inter_listen()
 	LogDebug("LoginServer", "Try to inter listen on: %s %d", addr.c_str(), port);
 	if (_inter_socket)
 		delete _inter_socket;
-	_inter_socket = new TcpListenSocket<LoginSocketInter>(addr.c_str(), port);
+	_inter_socket = new TcpListenSocket<LoginInterSocketW>(addr.c_str(), port);
 	if (_inter_socket->is_open())
 	{
 		LogSuccess("LoginServer", "Register listening on port: %d", port);
@@ -137,7 +137,7 @@ bool LoginServer::wait_command()
 	else if (str == "list")
 	{
 		std::vector<LoginSrvInfo> info;
-		LoginMgr::get_singleton().enum_login_servers(info);
+		LoginMgr::get_singleton().enum_world_servers(info);
 		size_t i = 0;
 		if (0 == info.size())
 		{

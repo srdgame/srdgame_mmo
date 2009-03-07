@@ -1,8 +1,9 @@
-#ifndef LOGIN_SOCKET_H_
-#define LOGIN_SOCKET_H_
+#ifndef LOGIN_INTER_SOCKET_W_H_
+#define LOGIN_INTER_SOCKET_W_H_
 
 #include "loginsocketbase.h"
 #include "packetdefs.h"
+#include "fastqueue.h"
 
 
 namespace srdgame
@@ -10,13 +11,13 @@ namespace srdgame
 class LoginWorker;
 struct Packet;
 
-// Handle the communication with game clients.
-class LoginSocket : public LoginSocketBase
+// Handle the communication with world server.
+class LoginInterSocketW : public LoginSocketBase
 {
 	friend class LoginWorker;
 public:
-	LoginSocket();
-	virtual ~LoginSocket();
+	LoginInterSocketW();
+	virtual ~LoginInterSocketW();
 	virtual void on_rev();
 	virtual void on_send();
 	virtual void on_connect();

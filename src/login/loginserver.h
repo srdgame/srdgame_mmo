@@ -1,9 +1,10 @@
-#ifndef REALM_SERVER_H_
-#define REALM_SERVER_H_
+#ifndef LOGIN_SERVER_H_
+#define LOGIN_SERVER_H_
 
 #include <string>
 //#include "configfile.h"
 #include "loginsocket.h"
+#include "loginsocketw.h"
 #include "network.h"
 
 namespace srdgame
@@ -32,7 +33,7 @@ protected:
 	std::string _conf_fn;
 	ConfigFile* _config;
 	TcpListenSocket<LoginSocket>* _socket;
-	TcpListenSocket<LoginSocketInter>* _inter_socket;
+	TcpListenSocket<LoginInterSocketW>* _inter_socket;
 };
 }
 

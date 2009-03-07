@@ -5,8 +5,14 @@ noinst_PROGRAMS = srdgame-loginserver
 
 srdgame_loginserver_SOURCES  = loginserver.h \
 			       loginserver.cpp \
+			       loginsocketbase.h \
+			       loginsocketbase.cpp \
 			       loginsocket.h \
 			       loginsocket.cpp \
+			       loginsocketr.h \
+			       loginsocketr.cpp \
+			       loginsocketw.h \
+			       loginsocketw.cpp \
 			       loginworker.h \
 			       loginworker.cpp \
 			       loginmgr.h \

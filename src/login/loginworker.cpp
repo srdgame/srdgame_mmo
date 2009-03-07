@@ -1,12 +1,12 @@
 #include "loginworker.h"
-#include "loginsocket.h"
+#include "loginsocketbase.h"
 #include "loginmgr.h"
 #include "packetparser.h"
 
 #include "log.h"
 using namespace srdgame;
 
-LoginWorker::LoginWorker() : ThreadBase(), _running(false), _socket(NULL)
+LoginWorker::LoginWorker(LoginSocketBase* socket) : ThreadBase(), _running(false), _socket(socket)
 {
 }
 LoginWorker::~LoginWorker()
@@ -57,92 +57,7 @@ bool LoginWorker::is_running()
 
 void LoginWorker::handle(Packet* packet)
 {
-	// One data got.
-	// Pcessing data
-	//
-	if (!_socket)
-	{
-		packet->free();
-		return;
-	}
-	switch (packet->op)
-	{
-		case I_PING:
-			packet->param.Int++;
-			this->send(packet);
-			break;
-		case I_OFFLINE:
-			if (_socket->_inter)
-			{
-				LoginMgr::get_singleton().remove_login_server(_socket);
-			}
-			else
-			{
-				LoginMgr::get_singleton().remove_client(_socket);
-			}
-			break;
-		case I_NOTIFY:
-			if (_socket->_inter)
-			{
-				LoginMgr::get_singleton().add_login_server(_socket);
-				// send ask name and info status packets.
-				Packet p;
-				p.op = IS_GET_NAME;
-				p.len = sizeof(p);
-				this->send(&p);
-
-				p.op = IS_GET_INFO;
-				this->send(&p);
-
-				p.op = IS_GET_STATUS;
-				this->send(&p);
-			}
-			else
-			{
-				LoginMgr::get_singleton().add_client(_socket);
-			}
-
-			// TODO: Ask for info?
-			break;
-		case IC_NAME:
-			if (_socket->_inter)
-			{
-				int size = packet->get_ex_len();
-				if (size > 0)
-				{
-					char* sz = new char[size + 1];
-					::memset(sz, 0, size + 1);
-					::memcpy(sz, packet->param.Data, size);
-					LoginMgr::get_singleton().update_login_server_name(_socket, std::string(sz));
-				}
-			}
-			break;
-		case IC_STATUS:
-		case IC_POST_STATUS:
-			if (_socket->_inter)
-			{
-				LoginSrvStatus status = (LoginSrvStatus)packet->param.Long;
-				LoginMgr::get_singleton().update_login_server_status(_socket, status);
-
-			}
-			break;
-		case IC_INFO:
-			if (_socket->_inter)
-			{
-				int size = packet->get_ex_len();
-				if (size > 0)
-				{
-					char* sz = new char[size + 1];
-					::memset(sz, 0, size + 1);
-					::memcpy(sz, packet->param.Data, size);
-					LoginMgr::get_singleton().update_login_server_info(_socket, std::string(sz));
-				}
-			}
-			break;
-		default:
-			break;
-	}
-	
+	_socket->on_handle(packet);
 	packet->free(); // Free the space that we have done.
 }
 

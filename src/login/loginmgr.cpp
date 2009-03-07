@@ -14,19 +14,19 @@ LoginMgr::LoginMgr()
 LoginMgr::~LoginMgr()
 {
 }
-void LoginMgr::enum_login_servers(std::vector<LoginSrvInfo>& info)
+void LoginMgr::enum_world_servers(std::vector<LoginSrvInfo>& info)
 {
 	AutoLock lock(_server_lock);
-	std::map<LoginSocket*, LoginSrvInfo>::iterator ptr = _servers_info.begin();
+	std::map<LoginSocketBase*, LoginSrvInfo>::iterator ptr = _servers_info.begin();
 	for (; ptr != _servers_info.end(); ++ptr)
 	{
 		info.push_back(ptr->second);
 	}
 }
-void LoginMgr::add_login_server(LoginSocket* s)
+void LoginMgr::add_world_server(LoginSocketBase* s)
 {
 	AutoLock lock(_server_lock);
-	LoginSocket* org = _servers[s->get_fd()];
+	LoginSocketBase* org = _servers[s->get_fd()];
 	if (org && org->is_connected())
 	{
 		LogError("LoginServer", "Two conflict server are registed, id : %d", s->get_fd());
@@ -35,7 +35,7 @@ void LoginMgr::add_login_server(LoginSocket* s)
 	}
 	_servers[s->get_fd()] = s;
 }
-void LoginMgr::remove_login_server(LoginSocket* s)
+void LoginMgr::remove_world_server(LoginSocketBase* s)
 {
 	AutoLock lock(_server_lock);
 	s->close();
@@ -43,34 +43,34 @@ void LoginMgr::remove_login_server(LoginSocket* s)
 	_servers_info.erase(s);
 }
 
-void LoginMgr::update_login_server(LoginSocket* s, LoginSrvInfo& info)
+void LoginMgr::update_world_server(LoginSocketBase* s, LoginSrvInfo& info)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s] = info;
 }
 
-void LoginMgr::update_login_server_name(LoginSocket* s, std::string name)
+void LoginMgr::update_world_server_name(LoginSocketBase* s, std::string name)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].name = name;
 }
 
-void LoginMgr::update_login_server_info(LoginSocket* s, std::string info)
+void LoginMgr::update_world_server_info(LoginSocketBase* s, std::string info)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].info = info;
 }
 
-void LoginMgr::update_login_server_status(LoginSocket* s, LoginSrvStatus status)
+void LoginMgr::update_world_server_status(LoginSocketBase* s, LoginSrvStatus status)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].status = status;
 }
 
-void LoginMgr::add_client(LoginSocket* s)
+void LoginMgr::add_client(LoginSocketBase* s)
 {
 	AutoLock lock(_client_lock);
-	LoginSocket* org = _clients[s->get_fd()];
+	LoginSocketBase* org = _clients[s->get_fd()];
 	if (org && org->is_connected())
 	{
 		LogError("LoginServer", "Two conflict clients are registed, id : %d", s->get_fd());
@@ -79,7 +79,7 @@ void LoginMgr::add_client(LoginSocket* s)
 	}
 	_clients[s->get_fd()] = s;
 }
-void LoginMgr::remove_client(LoginSocket* s)
+void LoginMgr::remove_client(LoginSocketBase* s)
 {
 	AutoLock lock(_client_lock);
 	s->close();

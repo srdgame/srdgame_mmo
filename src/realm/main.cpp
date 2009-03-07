@@ -3,9 +3,14 @@
 #include "config.h"
 
 using namespace srdgame;
-int main()
+int main(int argc, char** argv)
 {
-	LogSuccess("RealmSrv", "Starting");
-	RealmServer s(string("./realm.conf"));
+	std::string filename = "realm.conf";
+	if (argc == 2)
+	{
+		filename = std::string(argv[1]);
+	}
+	LogSuccess("LoginSrv", "Starting....................");
+	RealmServer s(filename);
 	s.run();
 }

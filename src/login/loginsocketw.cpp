@@ -1,24 +1,21 @@
-#include "loginsocket.h"
+#include "loginsocketw.h"
 #include "log.h"
 #include "packetparser.h"
 #include "loginworker.h"
 
 using namespace srdgame;
 
-LoginSocket::LoginSocket()
-	: LoginSocketBase(/* using the default buffer size */)
+LoginInterSocketW::LoginInterSocketW()
+	: LoginSocketBase()
 {
 }
 
-LoginSocket::~LoginSocket()
+LoginInterSocketW::~LoginInterSocketW()
 {
-	if (_worker && _worker->is_running())
-	{
-		_worker->shutdown();
-	}
+	
 }
 
-void LoginSocket::on_rev()
+void LoginInterSocketW::on_rev()
 {
 	lock_rev_buf();
 	BufferBase* buf = get_rev_buf();
@@ -35,7 +32,7 @@ void LoginSocket::on_rev()
 		while (true)
 		{
 			Packet p;
-			size_t used = PacketParser::get_singleton().from_ex(p, data + index, size - index);
+			size_t used = PacketParser::get_singleton().from_inter(p, data + index, size - index);
 			if (!used)
 			{
 				if (size - index >= MAX_PACKET_LEN)
@@ -45,7 +42,7 @@ void LoginSocket::on_rev()
 				}
 				break;
 			}
-			LogDebug("LoginSocket", "One packet received");
+			LogDebug("LoginInterSocketW", "One packet received");
 			index += used;
 			_packets.push(p);
 		}
@@ -60,15 +57,15 @@ void LoginSocket::on_rev()
 	unlock_rev_buf();
 }
 
-void LoginSocket::on_send()
+void LoginInterSocketW::on_send()
 {
 }
 
-void LoginSocket::on_connect()
+void LoginInterSocketW::on_connect()
 {
 }
 
-void LoginSocket::on_close()
+void LoginInterSocketW::on_close()
 {
 }
 
