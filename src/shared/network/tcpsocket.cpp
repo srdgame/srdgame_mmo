@@ -2,7 +2,7 @@
 //
 
 #include "tcpsocket.h"
-#include "socketmanager.h"
+#include "socketmgr.h"
 #include "socketfun.h"
 #include <string>
 #include "log.h"

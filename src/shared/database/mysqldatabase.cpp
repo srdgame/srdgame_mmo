@@ -19,7 +19,7 @@ MySQLDatabase::~MySQLDatabase()
 {
 	for (size_t i = 0; i < _connections.size(); ++i)
 	{
-		MySQLConnection* con = (MySQLConnection*)_connections[i];
+		MySQLConn* con = (MySQLConn*)_connections[i];
 		mysql_close(con->MySql);
 		delete con;
 	}
@@ -52,12 +52,12 @@ bool MySQLDatabase::open(const DatabaseConn& conn)
 		real_con = mysql_real_connect( con, _conn._host_ip.c_str(), _conn._username.c_str(), _conn._password.c_str(), _conn._database.c_str(), _conn._host_port, NULL, 0 );
 		if (real_con == NULL )
 		{
-			LogError("MySQLDatabase", "Connection failed due to: `%s`", mysql_error( con ) );
+			LogError("MySQLDatabase", "Conn failed due to: `%s`", mysql_error( con ) );
 			mysql_close(con);
 			return false;
 		}
 
-		MySQLConnection* new_con = new MySQLConnection;
+		MySQLConn* new_con = new MySQLConn;
 		new_con->MySql = real_con;
 		_connections.push_back(new_con);
 	}

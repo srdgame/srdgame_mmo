@@ -5,8 +5,8 @@ noinst_LIBRARIES = libthread.a
 libthread_a_SOURCES = \
 		      mutex.h \
 		   mutex.cpp \
-		   threadcontroller.h \
-		   threadcontroller.cpp \
+		   threadctl.h \
+		   threadctl.cpp \
 		   threadpoll.h \
 		   threadpool.cpp
 

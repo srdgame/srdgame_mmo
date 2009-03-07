@@ -1,6 +1,6 @@
 #include "database.h"
 #include "queryresult.h"
-#include "dbconnection.h"
+#include "dbconn.h"
 
 //#if PLATFORM == PLATFORM_APPLE
 //#include <mysql.h>
@@ -12,7 +12,7 @@
 
 namespace srdgame
 {
-class MySQLConnection : public DBConnection
+class MySQLConn : public DBConn
 {
 public:
 	MYSQL* MySql;

@@ -15,12 +15,12 @@ namespace srdgame
 
 class Socket;
 class ListenSocket;
-class SocketManager : public Singleton<SocketManager>
+class SocketMgr : public Singleton<SocketMgr>
 {
 	friend class SocketWorker;
 public:
-	SocketManager();
-	~SocketManager();
+	SocketMgr();
+	~SocketMgr();
 public:
 	void add(Socket* s);
 	void add(ListenSocket* s);
@@ -46,6 +46,6 @@ protected:
 
 	static Mutex _lock;
 };
-//SocketManager& pManager = SocketManager::get_singleton();
+//SocketMgr& pMgr = SocketMgr::get_singleton();
 }
 #endif

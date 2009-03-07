@@ -1,4 +1,4 @@
-#include "socketmanager.h"
+#include "socketmgr.h"
 #include "socket.h"
 #include "listensocket.h"
 #include <cstdlib>
@@ -9,9 +9,9 @@
 
 using namespace srdgame;
 
-Mutex SocketManager::_lock;
+Mutex SocketMgr::_lock;
 
-SocketManager::SocketManager() : _count(0), _epoll_fd(0), _max_fd(0)
+SocketMgr::SocketMgr() : _count(0), _epoll_fd(0), _max_fd(0)
 {
 	_lock.lock();
 	_epoll_fd = epoll_create(SOCKET_HOLDER_SIZE);
@@ -25,12 +25,12 @@ SocketManager::SocketManager() : _count(0), _epoll_fd(0), _max_fd(0)
 	_lock.unlock();
 }
 
-SocketManager::~SocketManager()
+SocketMgr::~SocketMgr()
 {
 	close(_epoll_fd);
 }
 
-void SocketManager::add(Socket* s)
+void SocketMgr::add(Socket* s)
 {
 	if (!NetworkConfig::get_singleton().socket_check(s))
 	{
@@ -66,7 +66,7 @@ void SocketManager::add(Socket* s)
 	++_count;
 	_lock.unlock();
 }
-void SocketManager::add(ListenSocket* s)
+void SocketMgr::add(ListenSocket* s)
 {
 	LogDebug("SOCKET", "Adding listening socket : %d", s->get_fd());
 	ASSERT(_listen_fds[s->get_fd()] == 0);
@@ -83,7 +83,7 @@ void SocketManager::add(ListenSocket* s)
 		LogError("SOCKET", "Could not add to epoll event set on fd: %u", event.data.fd);
 	}
 }
-void SocketManager::remove(Socket* s)
+void SocketMgr::remove(Socket* s)
 {
 	_lock.lock();
 	if (_fds[s->get_fd()] != s)
@@ -111,7 +111,7 @@ void SocketManager::remove(Socket* s)
 	--_count;
 	_lock.unlock();
 }
-void SocketManager::close_all()
+void SocketMgr::close_all()
 {
 	_lock.lock();
 	for (size_t i = 0; i < SOCKET_HOLDER_SIZE; ++i)
@@ -123,11 +123,11 @@ void SocketManager::close_all()
 	}
 	_lock.unlock();
 }
-void SocketManager::show_info()
+void SocketMgr::show_info()
 {
 	// TODO: show what?
 }
-void SocketManager::start_worker()
+void SocketMgr::start_worker()
 {
 	ThreadPool::get_singleton().execute(new SocketWorker());
 }

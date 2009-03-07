@@ -3,11 +3,11 @@
 
 namespace srdgame
 {
-class DBConnection
+class DBConn
 {
 public:
-	DBConnection();
-	virtual ~DBConnection();
+	DBConn();
+	virtual ~DBConn();
 
 };
 };

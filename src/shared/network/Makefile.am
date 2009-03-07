@@ -9,9 +9,9 @@ libnetwork_a_SOURCES = network.h\
 		       socketdefs.h \
 		       tcpsocket.h \
 		       socketworker.h \
-		       socketmanager.h \
+		       socketmgr.h \
 		       socketfun.h \
 		   tcpsocket.cpp \
 		   socketworker.cpp \
-		   socketmanager.cpp \
+		   socketmgr.cpp \
 		   tcplistensocket.h 

@@ -16,7 +16,7 @@
 
 #include "singleton.h"
 #include "mutex.h"
-#include "threadcontroller.h"
+#include "threadctl.h"
 #include "threadbase.h"
 #include <set>
 
@@ -31,7 +31,7 @@ protected:
 		ThreadHandle() : task(NULL), reuse(true)
 		{
 		}
-		ThreadController controller;
+		ThreadCtl controller;
 		ThreadBase* task;
 		bool reuse;
 		Mutex lock;
