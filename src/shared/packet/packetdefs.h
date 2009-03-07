@@ -20,7 +20,7 @@ enum InterOpcode
 	IC_POST_STATUS = 42, // Post the status to server
 
 	IS_GET_INFO = 50, // ask for more detail info, the reply structure is to be defined.
-	IS_INFO = 51, //
+	IC_INFO = 51, //
 	
 	// More
 };
@@ -45,6 +45,7 @@ struct Packet
 	int op; // opcode of this packet.
 	PacketParam param; // the param point or the value of param (if it just one int or less than int.
 	void free();
+	int get_ex_len();
 };
 
 }

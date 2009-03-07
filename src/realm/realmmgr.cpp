@@ -14,7 +14,15 @@ RealmMgr::RealmMgr()
 RealmMgr::~RealmMgr()
 {
 }
-
+void RealmMgr::enum_login_servers(std::vector<LoginSrvInfo>& info)
+{
+	AutoLock lock(_server_lock);
+	std::map<RealmSocket*, LoginSrvInfo>::iterator ptr = _servers_info.begin();
+	for (; ptr != _servers_info.end(); ++ptr)
+	{
+		info.push_back(ptr->second);
+	}
+}
 void RealmMgr::add_login_server(RealmSocket* s)
 {
 	AutoLock lock(_server_lock);
@@ -39,6 +47,24 @@ void RealmMgr::update_login_server(RealmSocket* s, LoginSrvInfo& info)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s] = info;
+}
+
+void RealmMgr::update_login_server_name(RealmSocket* s, std::string name)
+{
+	AutoLock lock(_server_lock);
+	_servers_info[s].name = name;
+}
+
+void RealmMgr::update_login_server_info(RealmSocket* s, std::string info)
+{
+	AutoLock lock(_server_lock);
+	_servers_info[s].info = info;
+}
+
+void RealmMgr::update_login_server_status(RealmSocket* s, LoginSrvStatus status)
+{
+	AutoLock lock(_server_lock);
+	_servers_info[s].status = status;
 }
 
 void RealmMgr::add_client(RealmSocket* s)

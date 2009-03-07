@@ -22,6 +22,11 @@ void Packet::free()
 	return;
 }
 
+int Packet::get_ex_len()
+{
+	return len - g_header_len;
+}
+
 size_t PacketParser::from_inter(Packet& dest, const char* src, size_t size)
 {
 	// Check whether the data is really big to convert.

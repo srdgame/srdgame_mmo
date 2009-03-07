@@ -1,15 +1,15 @@
-#include "realmworker.h"
-#include "realmsocket.h"
-#include "realmmgr.h"
+#include "loginworker.h"
+#include "loginsocket.h"
+#include "loginmgr.h"
 #include "packetparser.h"
 
 #include "log.h"
 using namespace srdgame;
 
-RealmWorker::RealmWorker() : ThreadBase(), _running(false), _socket(NULL)
+LoginWorker::LoginWorker() : ThreadBase(), _running(false), _socket(NULL)
 {
 }
-RealmWorker::~RealmWorker()
+LoginWorker::~LoginWorker()
 {
 	if (is_running())
 	{
@@ -17,7 +17,7 @@ RealmWorker::~RealmWorker()
 	}
 }
 
-bool RealmWorker::run()
+bool LoginWorker::run()
 {
 	
 	// return true to delete this object.
@@ -42,20 +42,20 @@ bool RealmWorker::run()
 	return false;
 }
 
-void RealmWorker::shutdown()
+void LoginWorker::shutdown()
 {
 	_running =false;
 }
-void RealmWorker::on_close()
+void LoginWorker::on_close()
 {
 }
 
-bool RealmWorker::is_running()
+bool LoginWorker::is_running()
 {
 	return _running;
 }
 
-void RealmWorker::handle(Packet* packet)
+void LoginWorker::handle(Packet* packet)
 {
 	// One data got.
 	// Pcessing data
@@ -74,17 +74,17 @@ void RealmWorker::handle(Packet* packet)
 		case I_OFFLINE:
 			if (_socket->_inter)
 			{
-				RealmMgr::get_singleton().remove_login_server(_socket);
+				LoginMgr::get_singleton().remove_login_server(_socket);
 			}
 			else
 			{
-				RealmMgr::get_singleton().remove_client(_socket);
+				LoginMgr::get_singleton().remove_client(_socket);
 			}
 			break;
 		case I_NOTIFY:
 			if (_socket->_inter)
 			{
-				RealmMgr::get_singleton().add_login_server(_socket);
+				LoginMgr::get_singleton().add_login_server(_socket);
 				// send ask name and info status packets.
 				Packet p;
 				p.op = IS_GET_NAME;
@@ -99,7 +99,7 @@ void RealmWorker::handle(Packet* packet)
 			}
 			else
 			{
-				RealmMgr::get_singleton().add_client(_socket);
+				LoginMgr::get_singleton().add_client(_socket);
 			}
 
 			// TODO: Ask for info?
@@ -113,7 +113,7 @@ void RealmWorker::handle(Packet* packet)
 					char* sz = new char[size + 1];
 					::memset(sz, 0, size + 1);
 					::memcpy(sz, packet->param.Data, size);
-					RealmMgr::get_singleton().update_login_server_name(_socket, std::string(sz));
+					LoginMgr::get_singleton().update_login_server_name(_socket, std::string(sz));
 				}
 			}
 			break;
@@ -122,7 +122,7 @@ void RealmWorker::handle(Packet* packet)
 			if (_socket->_inter)
 			{
 				LoginSrvStatus status = (LoginSrvStatus)packet->param.Long;
-				RealmMgr::get_singleton().update_login_server_status(_socket, status);
+				LoginMgr::get_singleton().update_login_server_status(_socket, status);
 
 			}
 			break;
@@ -135,7 +135,7 @@ void RealmWorker::handle(Packet* packet)
 					char* sz = new char[size + 1];
 					::memset(sz, 0, size + 1);
 					::memcpy(sz, packet->param.Data, size);
-					RealmMgr::get_singleton().update_login_server_info(_socket, std::string(sz));
+					LoginMgr::get_singleton().update_login_server_info(_socket, std::string(sz));
 				}
 			}
 			break;
@@ -146,7 +146,7 @@ void RealmWorker::handle(Packet* packet)
 	packet->free(); // Free the space that we have done.
 }
 
-bool RealmWorker::send(Packet* packet)
+bool LoginWorker::send(Packet* packet)
 {
 	char sz[MAX_PACKET_LEN];
 	::memset(sz, 0, MAX_PACKET_LEN);

@@ -20,12 +20,15 @@ public:
 	RealmMgr();
 	virtual ~RealmMgr();
 
-	std::vector<LoginSrvInfo> enum_login_servers();
+	void enum_login_servers(std::vector<LoginSrvInfo>& info);
 
 	void add_login_server(RealmSocket* s);
 	void remove_login_server(RealmSocket* s);
 
 	void update_login_server(RealmSocket* s, LoginSrvInfo& info);
+	void update_login_server_name(RealmSocket* s, std::string name);
+	void update_login_server_info(RealmSocket* s, std::string info);
+	void update_login_server_status(RealmSocket* s, LoginSrvStatus status);
 
 	void add_client(RealmSocket* s);
 	void remove_client(RealmSocket* s);

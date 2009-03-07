@@ -4,6 +4,9 @@
 #include "network.h"
 #include "threadpool.h"
 #include <iostream>
+#include <vector>
+#include "typedefs.h"
+#include "realmmgr.h"
 
 using namespace srdgame;
 
@@ -130,6 +133,43 @@ bool RealmServer::wait_command()
 	if (str == "quit")
 	{
 		return true;
+	}
+	else if (str == "list")
+	{
+		std::vector<LoginSrvInfo> info;
+		RealmMgr::get_singleton().enum_login_servers(info);
+		size_t i = 0;
+		if (0 == info.size())
+		{
+			LogSuccess("RealmServer", "No login server avaliable yet!");
+		}
+		for (; i < info.size(); ++i)
+		{
+			LogSuccess("RealmServer", "Login Server : %d", i);
+			LogSuccess("RealmServer", "Name: %s\t Info: %s", info[i].name.c_str(), info[i].info.c_str());
+			switch (info[i].status)
+			{
+				case LS_OFFLINE:
+					LogSuccess("RealmServer", "Status: Offline");
+					break;
+				case LS_READY:
+					LogSuccess("RealmServer", "Status: Ready");
+					break;
+				case LS_FULL:
+					LogSuccess("RealmServer", "Status: Closing");
+					break;
+				case LS_TESTING:
+					LogSuccess("RealmServer", "Status: Testing");
+					break;
+				default:
+					LogSuccess("RealmServer", "Status: Unknown");
+					break;
+			}
+		}
+	}
+	else
+	{
+		LogWarning("RealmServer", "Unknow command : %s", str.c_str());
 	}
 	return false;
 }
