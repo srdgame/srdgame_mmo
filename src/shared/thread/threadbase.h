@@ -25,7 +25,8 @@ public:
 	virtual ~ThreadBase()
 	{
 	}
-	// blocking function, return true means delete this threadobject.
+	// blocking function, return true means this thread finished to run, 
+	// return false means continue to call this run function
 	virtual bool run() = 0;
 	// call to shutdown this thread.
 	virtual void shutdown() = 0;

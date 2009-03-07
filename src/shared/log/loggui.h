@@ -94,7 +94,7 @@ private:
 		time_t now;
 		::time(&now);
         	tm * t = ::localtime(&now);
-		::printf("%02u:%02u ", t->tm_hour, t->tm_min);
+		::printf("%02u:%02u:%02u ", t->tm_hour, t->tm_min, t->tm_sec);
 		//printf("%02u:%02u ", g_localTime.tm_hour, g_localTime.tm_min);
 	}
 public:

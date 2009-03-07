@@ -32,7 +32,7 @@ protected:
 	std::string _conf_fn;
 	ConfigFile* _config;
 	TcpListenSocket<RealmSocket>* _socket;
-	TcpListenSocket<RealmSocket>* _inter_socket;
+	TcpListenSocket<RealmSocketInter>* _inter_socket;
 };
 }
 

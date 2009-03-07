@@ -1,4 +1,4 @@
-INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../util
+INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../util -I$(srcdir)/../log
 
 noinst_LIBRARIES = libpacket.a
 

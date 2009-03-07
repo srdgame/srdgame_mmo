@@ -108,7 +108,7 @@ bool RealmServer::start_inter_listen()
 	LogDebug("RealmServer", "Try to inter listen on: %s %d", addr.c_str(), port);
 	if (_inter_socket)
 		delete _inter_socket;
-	_inter_socket = new TcpListenSocket<RealmSocket>(addr.c_str(), port);
+	_inter_socket = new TcpListenSocket<RealmSocketInter>(addr.c_str(), port);
 	if (_inter_socket->is_open())
 	{
 		LogSuccess("RealmServer", "Register listening on port: %d", port);
