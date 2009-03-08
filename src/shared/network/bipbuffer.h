@@ -15,7 +15,7 @@
 #include "bufferbase.h"
 
 // Define debug
-//#define _BIP_DEBUG_
+// #define _BIP_DEBUG_
 
 #ifdef _BIP_DEBUG_
 #include "log.h"
@@ -35,17 +35,25 @@ public:
 	inline BipBuffer(size_t buf_size = SYS_PAGE_SIZE) : BufferBase(), buf(NULL), len(buf_size), ixa(0), sza(0), ixb(0), szb(0), ixr(0), szr(0)
 	{
 		// 分配页面整数倍的内存
-		len = len + ((SYS_PAGE_SIZE) / SYS_PAGE_SIZE ) * SYS_PAGE_SIZE;
-		buf = new char(buf_size);
+		len = ((len + SYS_PAGE_SIZE - 1) / SYS_PAGE_SIZE ) * SYS_PAGE_SIZE;
+		buf = new char[buf_size];
+#ifdef _BIP_DEBUG_
+		LogDebug("BipBuffer", "Buffer SIZE IS: %d", len);
+#endif
 		// 如果分配失败则设置为空
 		if (buf == NULL)
+		{
+#ifdef _BIP_DEBUG_
+			LogError("BipBuffer", "Could not allocate buffer for size : %d", len);
+#endif
 			len = 0;
+		}
 	}
 	inline ~BipBuffer()
 	{
 		// 释放内存
 		if (buf)
-			delete buf;
+			delete[] buf;
 	}
 
 	inline void clear()
@@ -144,7 +152,7 @@ public:
 		{
 			//两个区域都没有数据
 			ixa = ixr;
-			sza = szr;
+			sza = size;
 			ixr = szr = 0;
 #ifdef _BIP_DEBUG_
 			LogDebug("BipBuffer", "ixa : %d\t sza : %d", ixa, sza);

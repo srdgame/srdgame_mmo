@@ -1,30 +1,30 @@
 #include "packetparser.h"
 #include <cstring>
 
-#define PACKET_DEBUG
+#undef PACKET_DEBUG
 
 #include "log.h"
 
 using namespace srdgame;
 
-static int g_header_len = sizeof(int) + sizeof(int) + sizeof(int);
+static int g_header_len = sizeof(long) + sizeof(long) + sizeof(long);
 static int g_void_ptr_len = sizeof(void*);
 
-void Packet::free()
+void PacketParser::free(Packet& p)
 {
-	int param_len = len - g_header_len;
+	int param_len = p.len - g_header_len;
 	if (param_len <= 0)
 		return;
 	if (param_len > g_void_ptr_len)
 	{
-		delete[] param.Data;
+		delete[] p.param.Data;
 	}
 	return;
 }
 
-int Packet::get_ex_len()
+int PacketParser::get_ex_len(Packet& p)
 {
-	return len - g_header_len;
+	return p.len - g_header_len;
 }
 
 size_t PacketParser::from_inter(Packet& dest, const char* src, size_t size)
@@ -50,9 +50,11 @@ size_t PacketParser::from_inter(Packet& dest, const char* src, size_t size)
 #endif
 		return 0;
 	}
-	
+#ifdef PACKET_DEBUG
+	LogDebug("PacketParser", "param_len is : %d", param_len);
+#endif
 	// invalid stream.
-	if (param_len < 0)
+	if (param_len < g_void_ptr_len)
 	{
 
 		LogError("PacketParser", "Invalide stream found");
@@ -86,12 +88,20 @@ size_t PacketParser::to_inter(char* dest, const Packet& src)
 	// invalid packet.
 	if (src.len < g_header_len)
 		return 0;
-
+#ifdef PACKET_DEBUG
+	LogDebug("PacketParser", "Packet:\t opcode: %d\t len: %d", src.op, src.len);
+	LogDebug("PacketParser", "g_header_len is %d", g_header_len);
+	LogDebug("PacketParser", "g_void_ptr_len is %d", g_void_ptr_len);
+	LogDebug("PacketParser", "sizeof(PacketParam) is %d", sizeof(PacketParam));
+#endif
 	// copy the header.
 	::memcpy(dest, (char*)&src, g_header_len);
 	
 	// param
 	int param_len = src.len - g_header_len;
+#ifdef PACKET_DEBUG
+	LogDebug("PacketParser", "Packet param len is %d", param_len);
+#endif
 	if (param_len > g_void_ptr_len)
 	{
 		::memcpy(dest + g_header_len, (char*)src.param.Data, param_len);

@@ -7,20 +7,29 @@
 #include <vector>
 #include "typedefs.h"
 #include "loginmgr.h"
+#include "loginsocketr.h"
 
 using namespace srdgame;
 
-LoginServer::LoginServer(const std::string& conf_fn) : _conf_fn(conf_fn), _config(NULL), _socket(NULL), _inter_socket(NULL)
+LoginServer::LoginServer(const std::string& conf_fn) : _conf_fn(conf_fn), _config(NULL), _socket(NULL), _inter_socket(NULL), _realm_socket(NULL)
 {
 //	LogDebug("LoginServer", "Create the server with connfigure file:%s", conf_fn.c_str());
 }
 
 LoginServer::~LoginServer()
 {
+	//LogDebug("LoginServer", "Destructor of LoginServer");
 	if (_config)
 	{
+	//	LogDebug("LoginServer", "Deleting config");
 		delete _config;
+		_config = NULL;
+	//	LogDebug("LoginServer", "Deleted config");
 	}
+	//std::string input;
+	//std::cin >> input;
+	//LogDebug("LoginServer", "Stoping sockets");
+	stop_listen();
 }
 
 void LoginServer::run()
@@ -44,6 +53,11 @@ void LoginServer::run()
 	{
 		LogError("LoginServer", "Could not start the register listen");
 	}
+	if (!this->connect_realm())
+	{
+		LogError("LoginServer", "Could not connect to realm server");
+	}
+	LogNotice(NULL, "-------------------------------------------------");
 	while(!wait_command())
 	{
 		LogNotice(NULL, "-----------------------");
@@ -71,7 +85,7 @@ bool LoginServer::load_conf()
 bool LoginServer::start_listen()
 {
 	int port = _config->get_value<int>("PORT");
-	if (port == 0)
+	if (port <= 0)
 	{
 		LogWarning("LoginServer", "Invalid listen port found, change it to: %d", 7001);
 		port = 7001;
@@ -97,7 +111,7 @@ bool LoginServer::start_listen()
 bool LoginServer::start_inter_listen()
 {
 	int port = _config->get_value<int>("INTER_PORT");
-	if (port == 0)
+	if (port <= 0)
 	{
 		port = 7101;
 		LogWarning("LoginServer", "Inavlid inter port has found, change it to: %d", port);
@@ -120,10 +134,74 @@ bool LoginServer::start_inter_listen()
 	return false;
 }
 
+bool LoginServer::connect_realm()
+{
+	int has_realm = _config->get_value<int>("ENABLE_REALM");
+	if (has_realm == 0)
+	{
+		// There is no realm server.
+		return true;
+	}
+	int port = _config->get_value<int>("REALM_PORT");
+	if (0 >= port)
+	{
+		port = 6101;
+		LogWarning("LoginServer", "Invalid realm server port has found, adjust to: %d", port);
+	}
+	std::string addr = _config->get_value<std::string>("REALM_ADDRESS");
+	if (addr.empty())
+	{
+		addr = "127.0.0.1";
+		LogWarning("LoginServer", "Can not found realm server address, use default: %s", addr.c_str());
+	}
+	LogDebug("LoginServer", "Try to connect to realm server : %s %d", addr.c_str(), port);
+	if (_realm_socket)
+	{
+		_realm_socket->close();
+		delete _realm_socket;
+	}
+	_realm_socket = new LoginInterSocketR();
+	if (!_realm_socket->connect(addr, port))
+	{
+		delete _realm_socket;
+		_realm_socket = NULL;
+		LogDebug("LoginServer", "Could not connect to realm server, please start realm server first or correct your configuration file");
+		return false;
+	}
+	
+	Packet p;
+	p.op = I_NOTIFY;
+	p.len = sizeof(Packet);
+	LogDebug("LoginServer", "sizeof(Packet) is %d", sizeof(Packet));
+	p.param.Long = 0;
+	_realm_socket->send_packet(&p);
+	_realm_socket->send_packet(&p);
+	
+	return true;
+}
+
 bool LoginServer::stop_listen()
 {
-	_socket->close();
-	_inter_socket->close();
+	LogDebug("LoginServer", "Stoping listening");
+	if (_socket)
+	{
+		//_socket->close();
+		delete _socket;
+		_socket = NULL;
+	}
+	if (_inter_socket)
+	{
+		//_inter_socket->close();
+		delete _inter_socket;
+		_inter_socket = NULL;
+	}
+	if (_realm_socket)
+	{
+		//_realm_socket->close();
+		delete _realm_socket;
+		_realm_socket = NULL;
+	}
+	LogDebug("LoginServer", "Sockets has been closed");
 }
 
 bool LoginServer::wait_command()

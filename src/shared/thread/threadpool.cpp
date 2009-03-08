@@ -47,7 +47,10 @@ void ThreadPool::shutdown()
 		handle->lock.lock();
 		handle->reuse = false;
 		handle->lock.unlock();
-		handle->task->shutdown();
+		if (handle->task)
+		{
+			handle->task->shutdown();
+		}
 	}
 	// set the reuse to false, and active the thread, then it will be deleted.
 	this->kill_idle_thread((unsigned int)_idle_set.size());

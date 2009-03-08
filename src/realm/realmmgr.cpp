@@ -25,6 +25,7 @@ void RealmMgr::enum_login_servers(std::vector<LoginSrvInfo>& info)
 }
 void RealmMgr::add_login_server(RealmSocket* s)
 {
+	LogDebug("RealmServer", "One login server is coming, id: %d", s->get_fd());
 	AutoLock lock(_server_lock);
 	RealmSocket* org = _servers[s->get_fd()];
 	if (org && org->is_connected())
@@ -37,6 +38,7 @@ void RealmMgr::add_login_server(RealmSocket* s)
 }
 void RealmMgr::remove_login_server(RealmSocket* s)
 {
+	LogDebug("RealmServer", "One login server is lost");
 	AutoLock lock(_server_lock);
 	s->close();
 	_servers.erase(s->get_fd());
@@ -51,6 +53,7 @@ void RealmMgr::update_login_server(RealmSocket* s, LoginSrvInfo& info)
 
 void RealmMgr::update_login_server_name(RealmSocket* s, std::string name)
 {
+	LogDebug("RealmServer", "Login server (id:%d) name changed to : %s", s->get_fd(), name.c_str());
 	AutoLock lock(_server_lock);
 	_servers_info[s].name = name;
 }

@@ -15,7 +15,7 @@ struct Packet;
 class RealmWorker : public ThreadBase
 {
 public:
-	RealmWorker();
+	RealmWorker(RealmSocket* socket);
 	virtual ~RealmWorker();
 public:
 	// methods from ThreadBase

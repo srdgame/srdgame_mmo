@@ -9,6 +9,7 @@
 
 namespace srdgame
 {
+class LoginInterSocketR;
 class ConfigFile;
 class LoginServer
 {
@@ -24,6 +25,7 @@ protected:
 	bool init_env();
 	bool start_listen();
 	bool start_inter_listen();
+	bool connect_realm();
 	bool stop_listen();
 
 	// return true to quit.
@@ -34,6 +36,7 @@ protected:
 	ConfigFile* _config;
 	TcpListenSocket<LoginSocket>* _socket;
 	TcpListenSocket<LoginInterSocketW>* _inter_socket;
+	LoginInterSocketR* _realm_socket;
 };
 }
 

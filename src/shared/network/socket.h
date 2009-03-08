@@ -61,7 +61,7 @@ protected:
 	friend class SocketWorker;
 	virtual void read_callback(size_t size) = 0;
 	virtual void write_callback() = 0;
-	virtual void post_event(int epoll_fd, unsigned int event) = 0;
+	virtual void post_event(unsigned int event) = 0;
 };
 }
 

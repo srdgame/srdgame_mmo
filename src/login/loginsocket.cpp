@@ -32,7 +32,7 @@ void LoginSocket::on_rev()
 		LogSuccess("LoginServer", "Comming Data: %s", new_data);
 		delete[] new_data;*/
 		size_t index = 0;
-		while (true)
+		while (size > index)
 		{
 			Packet p;
 			size_t used = PacketParser::get_singleton().from_ex(p, data + index, size - index);
@@ -48,6 +48,7 @@ void LoginSocket::on_rev()
 			LogDebug("LoginSocket", "One packet received");
 			index += used;
 			_packets.push(p);
+			start_worker();
 		}
 		buf->free(index);
 
@@ -70,5 +71,14 @@ void LoginSocket::on_connect()
 
 void LoginSocket::on_close()
 {
+}
+
+void LoginSocket::on_handle(Packet* packet)
+{
+	switch (packet->op)
+	{
+		default:
+			break;
+	}
 }
 

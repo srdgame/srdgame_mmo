@@ -63,6 +63,7 @@ bool TcpSocket::accept(sockaddr_in* addr, SOCKET fd)
 
 bool TcpSocket::close()
 {
+	//LogDebug("SOCKET", "Closing socket");
 	_connected = false;
 
 	// remove from mgr
@@ -83,9 +84,12 @@ bool TcpSocket::is_connectted()
 
 bool TcpSocket::send(const char* data, size_t size)
 {
+	LogDebug("SOCKET", "Sending data : %s", data);
+	LogDebug("SOCKET", "Data size: %d", size);
 	size_t r_size = 0;
 	while (size != 0)
 	{
+		LogDebug("SOCKET", "Sending................");
 		_send_buf_lock.lock();
 		char* buf = _send_buf.reserve(size, r_size);
 		memcpy(buf, data, r_size);
@@ -93,6 +97,7 @@ bool TcpSocket::send(const char* data, size_t size)
 		_send_buf_lock.unlock();
 		size -= r_size;
 		data += r_size;
+        	post_event(EPOLLOUT);
 	}
 	return true;
 }
@@ -173,12 +178,13 @@ void TcpSocket::read_callback(size_t size)
 	}    
 	else if(bytes > 0)
 	{
+		/*
 		// for debug:
 		char* new_buf = new char[bytes+1];
 		::memset(new_buf, 0, bytes + 1);
 		::memcpy(new_buf, buf, bytes);
 		LogDebug("SOCKET", "Data received, data is : %s", new_buf);
-		delete[] new_buf;
+		delete[] new_buf;*/
 		_rev_buf.commit(bytes);
 		on_rev();
 	}
@@ -188,31 +194,33 @@ void TcpSocket::read_callback(size_t size)
 }
 void TcpSocket::write_callback()
 {
+	// LogDebug("SOCKET", "Really sending data");
 	_send_buf_lock.lock();
 	int send_size = 0;
 	size_t size = 0;
 	char* buf = NULL;
 
-	while (true)
+	buf = _send_buf.get_data(size);
+	if (buf && size)
 	{
-		buf = _send_buf.get_data(size);
-		if (buf && size)
+		//LogDebug("SOCKET", "Really send size: %d data: %s", size, buf);
+		send_size = ::send(_fd, buf, size, 0);
+		//LogDebug("SOCKET", "Really sended size: %d", send_size);
+		if (send_size < 0)
 		{
-			send_size += ::send(_fd, buf, size, 0);
+			_send_buf.free(0);
+			LogDebug("SOCKET", "Can not send out data, close socket");
+			close();
 		}
 		else
 		{
-			break;
+			_send_buf.free(send_size);
 		}
 	}
-	_send_buf_lock.unlock();
-	if (send_size < 0)
-	{
-		close();
-	}
+	_send_buf_lock.unlock();	
 }
 
-void TcpSocket::post_event(int epoll_fd, unsigned int event)
+void TcpSocket::post_event(unsigned int event)
 {
 	struct epoll_event ev;
 	memset(&ev, 0, sizeof(epoll_event));
@@ -220,7 +228,7 @@ void TcpSocket::post_event(int epoll_fd, unsigned int event)
 	ev.events = event | EPOLLET;			/* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
 
 	// post actual event
-	if(epoll_ctl(epoll_fd, EPOLL_CTL_MOD, ev.data.fd, &ev))
+	if(epoll_ctl(SocketMgr::get_singleton().get_epoll_fd(), EPOLL_CTL_MOD, ev.data.fd, &ev))
 	{
 	//	Log.Warning("epoll", "Could not post event on fd %u", m_fd);
 	}

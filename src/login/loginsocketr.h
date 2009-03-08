@@ -15,6 +15,7 @@ struct Packet;
 class LoginInterSocketR : public LoginSocketBase
 {
 	friend class LoginWorker;
+	friend class LoginServer;
 public:
 	LoginInterSocketR();
 	virtual ~LoginInterSocketR();
@@ -25,7 +26,7 @@ public:
 
 public:
 	// Worker will call this to response one packet.
-	virtual bool on_handle(Packet* packet);
+	virtual void on_handle(Packet* packet);
 protected:
 };
 

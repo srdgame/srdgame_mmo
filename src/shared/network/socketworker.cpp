@@ -63,7 +63,7 @@ bool SocketWorker::run()
 				/* changing to written state? */
 				if(ptr->get_rev_buf() && ptr->is_connected())
 				{
-					ptr->post_event(mgr->_epoll_fd, EPOLLOUT);
+					ptr->post_event(EPOLLOUT);
 				}
 			}
 			else if(_events[i].events & EPOLLOUT)
@@ -76,7 +76,7 @@ bool SocketWorker::run()
 				else
 				{
 					/* change back to a read event */
-					ptr->post_event(mgr->_epoll_fd, EPOLLIN);
+					ptr->post_event(EPOLLIN);
 				}
 			}
 		}       

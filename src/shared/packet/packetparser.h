@@ -26,6 +26,9 @@ public:
 	// return as to_inter.
 	size_t to_ex(char* dest, const Packet& src);
 
+public:
+	static void free(Packet& p);
+	static int get_ex_len(Packet& p);
 private:
 	from_stream_func _ex_from_func;
 	to_stream_func _ex_to_func;

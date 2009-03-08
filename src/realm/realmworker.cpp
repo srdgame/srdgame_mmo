@@ -6,7 +6,7 @@
 #include "log.h"
 using namespace srdgame;
 
-RealmWorker::RealmWorker() : ThreadBase(), _running(false), _socket(NULL)
+RealmWorker::RealmWorker(RealmSocket* socket) : ThreadBase(), _running(true), _socket(socket)
 {
 }
 RealmWorker::~RealmWorker()
@@ -33,7 +33,10 @@ bool RealmWorker::run()
 	if (!_socket->_packets.try_pop(p) || !_running)
 	{
 		// no data 
+		LogDebug("RealmServer", "RealmWorker finished his job");
+		_socket->_worker_lock.lock();
 		_socket->_worker = NULL;
+		_socket->_worker_lock.unlock();
 		return true;
 	}
 
@@ -62,16 +65,18 @@ void RealmWorker::handle(Packet* packet)
 	//
 	if (!_socket)
 	{
-		packet->free();
+		PacketParser::free(*packet);
 		return;
 	}
 	switch (packet->op)
 	{
 		case I_PING:
+			LogDebug("RealmServer", "I_PING");
 			packet->param.Int++;
 			this->send(packet);
 			break;
 		case I_OFFLINE:
+			LogDebug("RealmServer", "I_OFFLINE");
 			if (_socket->_inter)
 			{
 				RealmMgr::get_singleton().remove_login_server(_socket);
@@ -82,6 +87,7 @@ void RealmWorker::handle(Packet* packet)
 			}
 			break;
 		case I_NOTIFY:
+			LogDebug("RealmServer", "I_NOTIFY");
 			if (_socket->_inter)
 			{
 				RealmMgr::get_singleton().add_login_server(_socket);
@@ -105,9 +111,10 @@ void RealmWorker::handle(Packet* packet)
 			// TODO: Ask for info?
 			break;
 		case IC_NAME:
+			LogDebug("RealmServer", "IC_NAME");
 			if (_socket->_inter)
 			{
-				int size = packet->get_ex_len();
+				int size = PacketParser::get_ex_len(*packet);
 				if (size > 0)
 				{
 					char* sz = new char[size + 1];
@@ -119,6 +126,7 @@ void RealmWorker::handle(Packet* packet)
 			break;
 		case IC_STATUS:
 		case IC_POST_STATUS:
+			LogDebug("RealmServer", "IC_STATUS || IC_POST_STATUS");
 			if (_socket->_inter)
 			{
 				LoginSrvStatus status = (LoginSrvStatus)packet->param.Long;
@@ -127,11 +135,13 @@ void RealmWorker::handle(Packet* packet)
 			}
 			break;
 		case IC_INFO:
+			LogDebug("RealmServer", "IC_INFO");
 			if (_socket->_inter)
 			{
-				int size = packet->get_ex_len();
+				int size = PacketParser::get_ex_len(*packet);
 				if (size > 0)
-				{
+				;
+{
 					char* sz = new char[size + 1];
 					::memset(sz, 0, size + 1);
 					::memcpy(sz, packet->param.Data, size);
@@ -143,7 +153,7 @@ void RealmWorker::handle(Packet* packet)
 			break;
 	}
 	
-	packet->free(); // Free the space that we have done.
+	PacketParser::free(*packet); // Free the space that we have done.
 }
 
 bool RealmWorker::send(Packet* packet)

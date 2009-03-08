@@ -40,12 +40,11 @@ union PacketParam
 // TODO: should I consider about size of int?  So far let me just simply assume it is 32.
 struct Packet
 {
-	int len; // the length of whole packet.
-	int id; // the packet id/index ?
-	int op; // opcode of this packet.
+	long len; // the length of whole packet.
+	long id; // the packet id/index ?
+	long op; // opcode of this packet.
 	PacketParam param; // the param point or the value of param (if it just one int or less than int.
-	void free();
-	int get_ex_len();
+
 };
 
 }

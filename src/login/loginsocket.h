@@ -24,7 +24,7 @@ public:
 
 public:
 	// Worker will call this to response one packet.
-	virtual bool on_handle(Packet* packet);
+	virtual void on_handle(Packet* packet);
 protected:
 };
 }

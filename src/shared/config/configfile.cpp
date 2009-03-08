@@ -33,7 +33,9 @@ ConfigFile::ConfigFile() : _loaded (false)
 
 ConfigFile::~ConfigFile()
 {
+	//LogDebug("ConfigFile", "Destructor of ConfigureFile");
 	_loaded = false;
+	//LogDebug("ConfigFile", "Destrutor completed");
 }
 
 
@@ -99,5 +101,6 @@ int ConfigFile::load_file(std::string& fn)
 //		std::cout << key << "=" << val << "@" <<std::endl;
 		_attrs.insert(make_pair< string, string>(key, val));
 	}
+	file.close();
 	return 0;
 }

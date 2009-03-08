@@ -2,6 +2,7 @@
 #include "log.h"
 #include "packetparser.h"
 #include "realmworker.h"
+#include "threadpool.h"
 
 using namespace srdgame;
 
@@ -22,6 +23,7 @@ RealmSocket::~RealmSocket()
 
 void RealmSocket::on_rev()
 {
+	LogDebug("RealmSocket", "on_rev has been called");
 	lock_rev_buf();
 	BufferBase* buf = get_rev_buf();
 	size_t size;
@@ -34,7 +36,9 @@ void RealmSocket::on_rev()
 		LogSuccess("RealmServer", "Comming Data: %s", new_data);
 		delete[] new_data;*/
 		size_t index = 0;
-		while (true)
+
+		// Try to process all the packets
+		while (size > index)
 		{
 			Packet p;
 			size_t used = 0;
@@ -57,7 +61,16 @@ void RealmSocket::on_rev()
 			}
 			LogDebug("RealmSocket", "One packet received");
 			index += used;
+			LogDebug("RealmSocket", "Index : %d\t Size: %d", index, size);
 			_packets.push(p);
+			if (!_worker)
+			{
+				LogDebug("RealmSocket", "Starting worker thread....");
+				_worker_lock.lock();
+				_worker = new RealmWorker(this);
+				ThreadPool::get_singleton().execute(_worker);
+				_worker_lock.unlock();
+			}
 		}
 		buf->free(index);
 

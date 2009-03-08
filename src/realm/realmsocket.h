@@ -23,6 +23,7 @@ public:
 protected:
 	bool _inter;
 	FastQueue<Packet> _packets; //FastQueue is thread safe, we no long need to have mutex for it.
+	Mutex _worker_lock;
 	RealmWorker* _worker; // we do not need free this worker, the pool will do for us. to Make sure this will be clear before worker get closed.
 };
 

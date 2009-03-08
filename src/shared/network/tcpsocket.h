@@ -87,7 +87,7 @@ protected:
 protected:
 	virtual void read_callback(size_t size);
 	virtual void write_callback();
-	virtual void post_event(int epoll_fd, unsigned int event);
+	virtual void post_event(unsigned int event);
 
 protected:
 	BipBuffer _rev_buf;

@@ -34,6 +34,8 @@ public:
 	void show_info();
 
 	void start_worker();
+
+	int get_epoll_fd() {return _epoll_fd;}
 protected:	
 	size_t _count;
 	

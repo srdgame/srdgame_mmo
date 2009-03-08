@@ -2,6 +2,7 @@
 #include "log.h"
 #include "packetparser.h"
 #include "loginworker.h"
+#include "typedefs.h"
 
 using namespace srdgame;
 
@@ -29,7 +30,7 @@ void LoginInterSocketR::on_rev()
 		LogSuccess("LoginServer", "Comming Data: %s", new_data);
 		delete[] new_data;*/
 		size_t index = 0;
-		while (true)
+		while (size > index)
 		{
 			Packet p;
 			size_t used = PacketParser::get_singleton().from_inter(p, data + index, size - index);
@@ -45,6 +46,7 @@ void LoginInterSocketR::on_rev()
 			LogDebug("LoginInterSocketR", "One packet received");
 			index += used;
 			_packets.push(p);
+			start_worker();
 		}
 		buf->free(index);
 
@@ -67,5 +69,64 @@ void LoginInterSocketR::on_connect()
 
 void LoginInterSocketR::on_close()
 {
+	LogDebug("LoginServer", "Connection with realm server has been dropdown");
 }
 
+void LoginInterSocketR::on_handle(Packet* packet)
+{
+	switch (packet->op)
+	{
+		case I_PING:
+			// Just ping. Both side command.  Normally server will ping client per 5 seconds?
+			packet->param.Int++;
+			this->send_packet(packet);
+			break;
+		case I_OFFLINE:
+			// Say goodbye, both side command.
+			// TODO: What should we do when realm is going to offline.
+			break;
+		case I_NOTIFY: // Notify others we are going online. Both side action and its param is the client type: Login = 1, world = 2, Realm = 0,
+			// TODO: What should we do when realm is going to be online?
+			break;
+		case IS_GET_NAME: // Ask for name of client.
+			{
+				Packet p;
+				p.op = IC_NAME;
+				p.len = sizeof(Packet);
+				p.param.Long = 0;
+				send_packet(&p);
+			}
+			break;
+		case IC_NAME:// send back the name in one string
+			break;
+		case IS_GET_STATUS:
+			{
+				Packet p;
+				p.op = IC_STATUS;
+				p.len = sizeof(Packet);
+				p.param.Long = LS_READY;
+				send_packet(&p);
+			}
+			break;
+		case IC_STATUS: // 
+			break;
+		case IC_POST_STATUS:
+			break;// Post the status to server
+
+		case IS_GET_INFO:
+			// ask for more detail info, the reply structure is to be defined.
+			{
+				Packet p;
+				p.op = IC_INFO;
+				p.len = sizeof(Packet);
+				p.param.Long = 0;
+				send_packet(&p);
+			}
+			break;
+		case IC_INFO:
+			break;
+		default:
+			LogWarning("LoginServer", "Unknow packet is received from Realm Server, the opcode is : %d", packet->op);
+			break;
+	}
+}
