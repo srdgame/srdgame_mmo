@@ -84,8 +84,8 @@ bool TcpSocket::is_connectted()
 
 bool TcpSocket::send(const char* data, size_t size)
 {
-	LogDebug("SOCKET", "Sending data : %s", data);
-	LogDebug("SOCKET", "Data size: %d", size);
+	//LogDebug("SOCKET", "Sending data : %s", data);
+	//LogDebug("SOCKET", "Data size: %d", size);
 	size_t r_size = 0;
 	while (size != 0)
 	{
@@ -166,7 +166,7 @@ void TcpSocket::read_callback(size_t size)
 
 	int bytes = recv(_fd, buf, spare, 0);
 
-	LogDebug("SOCKET", "Data received, size is : %d", bytes);
+	//LogDebug("SOCKET", "Data received, size is : %d", bytes);
 
 
 	if(bytes <= 0)

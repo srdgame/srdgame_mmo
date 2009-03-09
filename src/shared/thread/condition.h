@@ -36,10 +36,9 @@ public:
 	{
 		pthread_cond_broadcast(&_cond);
 	}
-	inline bool wait()
+	inline void wait()
 	{
 		pthread_cond_wait(&_cond, &_mutex._mutex);
-		return true;
 	}
 	inline bool wait(time_t sec)
 	{

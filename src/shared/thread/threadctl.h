@@ -14,18 +14,20 @@
 
 #include <pthread.h>
 
-#ifndef HAVE_DARWIN
-#include <semaphore.h>
-
 #include <cassert>
 
 #define ASSERT(x) assert(x)
 
 #include "log.h"
 
+#define HAVE_DARWIN
+
+#ifndef HAVE_DARWIN
+#include <semaphore.h>
+
+
 namespace srdgame
 {
-unsigned int generate_thread_id();
 
 class ThreadCtl
 {
@@ -80,9 +82,64 @@ private:
 
 namespace srdgame
 {
-unsigned int GenerateThreadId();
+/*
 class ThreadCtl
 {
+	unsigned int generate_thread_id()
+	{
+		return ++_s_thread_id_count;
+	}
+
+	volatile static unsigned int _s_thread_id_count;
+public:
+	ThreadCtl() : _id(0)
+	{
+	}
+	
+	~ThreadCtl()
+	{
+		pthread_mutex_destroy(&_mutex);
+		pthread_cond_destroy(&_cond);
+	}
+
+	void setup(pthread_t thread)
+	{
+		LogDebug("ThreadCtl", "Setup with thread id: %d", thread);
+		_thread = thread;
+		pthread_mutex_init(&_mutex, NULL);
+		pthread_cond_init(&_cond, NULL);
+		_id = generate_thread_id();
+	}
+
+	void suspend()
+	{
+		pthread_cond_wait(&_cond, &_mutex);
+	}
+	void resume()
+	{
+		pthread_cond_signal(&_cond);
+	}
+	void join()
+	{
+		pthread_join(_thread, NULL);
+	}
+	unsigned int get_id() { return _id; }
+
+private:
+	pthread_cond_t _cond;
+	pthread_mutex_t _mutex;
+	unsigned int _id;
+	pthread_t _thread;
+};*/
+
+class ThreadCtl
+{
+	unsigned int generate_thread_id()
+	{
+		return ++_s_thread_id_count;
+	}
+
+	volatile static unsigned int _s_thread_id_count;
 public:
 	ThreadCtl() : _cond(_mutex), _id(0)
 	{
@@ -92,10 +149,11 @@ public:
 	{
 	}
 
-	void bind(pthread_t thread)
+	void setup(pthread_t thread)
 	{
+		LogDebug("ThreadCtl", "Setup with thread id: %d", thread);
 		_thread = thread;
-		_id = GenerateThreadId();
+		_id = generate_thread_id();
 	}
 
 	void suspend()
@@ -113,8 +171,8 @@ public:
 	unsigned int get_id() { return _id; }
 
 private:
-	Condition _cond;
 	Mutex _mutex;
+	Condition _cond;
 	unsigned int _id;
 	pthread_t _thread;
 };

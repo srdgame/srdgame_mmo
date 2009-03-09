@@ -19,15 +19,21 @@ RealmWorker::~RealmWorker()
 
 bool RealmWorker::run()
 {
+	LogDebug("RealmServer", "RealmWorker:run()");
 	
 	// return true to delete this object.
 	// return false run() will be called again.
 	// process the data until empty.
 	if (!_socket || !_running)
+	{
+		LogDebug("RealmServer", "No socket or is closing, QUIT!!!");
 		return true;
-
+	}
 	if (_socket->_worker != this)
+	{
+		LogDebug("RealmServer", "The worker is me, I have to QUIT!!!");
 		return true;
+	}
 
 	Packet p;
 	if (!_socket->_packets.try_pop(p) || !_running)
@@ -37,6 +43,7 @@ bool RealmWorker::run()
 		_socket->_worker_lock.lock();
 		_socket->_worker = NULL;
 		_socket->_worker_lock.unlock();
+		LogDebug("RealmServer", "RealmWorker killed the _worker");
 		return true;
 	}
 

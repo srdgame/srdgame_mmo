@@ -16,6 +16,15 @@
 #include "condition.h"
 #include "mutex.h"
 
+//#define FQ_DEBUG_
+
+#ifdef FQ_DEBUG_
+#include "log.h"
+#define _LogDebug_ LogDebug
+#else
+#define _LogDebug_ //
+#endif
+
 namespace srdgame
 {
 
@@ -60,6 +69,7 @@ public:
 			_cond.signal();
 			_size = 1;
 		}
+		_LogDebug_("FastQueue", "One item has been added, now size is: %d", _size);
 		_cond.unlock();
 	}
 	bool try_pop(T& val)
@@ -67,6 +77,7 @@ public:
 		_cond.lock();
 		if (0 == _size || _first == NULL)
 		{
+			_LogDebug_("FastQueue", "There is not item anymore, size is : %d, first is : % d", _size, _first);
 			_cond.unlock();
 			return false;
 		}
@@ -74,12 +85,13 @@ public:
 		delete _first;
 		if (--_size)
 		{
-			_first = _last = NULL;
+			_first = _first->next;
 		}
 		else
 		{
-			_first = _first->next;
+			_first = _last = NULL;
 		}
+		_LogDebug_("FastQueue", "One item has been taken out, now size is %d", _size);
 		_cond.unlock();
 		return true;
 	}

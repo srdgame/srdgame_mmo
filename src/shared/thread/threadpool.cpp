@@ -4,6 +4,12 @@
 
 using namespace srdgame;
 
+#ifdef THREAD_POOL_DEBUG
+#define _LogDebug_ LogDebug
+#else
+#define _LogDebug_ //
+#endif
+
 ThreadPool::ThreadPool() : _inited(false)
 {
 }
@@ -13,7 +19,7 @@ ThreadPool::~ThreadPool()
 }
 void ThreadPool::init(unsigned int cap)
 {
-	LogDebug("ThreadPool", "Init the pool as capicity: %d", cap);
+	_LogDebug_("ThreadPool", "Init the pool as capicity: %d", cap);
 	AutoLock lock(_lock);
 	if (_inited)
 		return;
@@ -21,26 +27,27 @@ void ThreadPool::init(unsigned int cap)
 	ThreadHandle* handle = NULL;
 	while (cap != 0)
 	{
-		LogDebug("Threadpool", "Create one more thread");
+		_LogDebug_("Threadpool", "Create one more thread");
 		handle = create_thread(NULL);
 		_active_set.insert(handle);
 		--cap;
 	}
 	_inited = true;
-	LogDebug("ThreadPool", "Init has completed");
+	_LogDebug_("ThreadPool", "Init has completed");
 }
 
 void ThreadPool::shutdown()
 {
-	LogDebug("ThreadPool", "Shutdown all the threads");
+	LogNotice("ThreadPool", "Shutdown all the threads");
 	_lock.lock();
 	if (!_inited)
 	{
 		_lock.unlock();
 		return;
 	}
+	
 	// send close message to thread.
-	LogDebug("ThreadPool", "Sending closing signal to ative threads: %d", _active_set.size());
+	_LogDebug_("ThreadPool", "Sending closing signal to ative threads: %d", _active_set.size());
 	for (ThreadSet::iterator ptr = _active_set.begin(); ptr != _active_set.end(); ++ptr)
 	{
 		ThreadHandle* handle = *ptr;
@@ -67,8 +74,9 @@ void ThreadPool::shutdown()
 			break;
 		}
 		_lock.unlock();
+		//Sleep(1000);
 	}
-	LogDebug("ThreadPool", "Completed shutdown all the threads");
+	LogSuccess("ThreadPool", "Completed shutdown all the threads");
 }
 
 /*
@@ -79,26 +87,27 @@ void ThreadPool::close_thread(ThreadHandle*)
 */
 void ThreadPool::execute(ThreadBase* task)
 {
-//	LogDebug("ThreadPool", "Execute task....");
+	_LogDebug_("ThreadPool", "Execute task....");
+//	LogDebug("", "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 	ThreadHandle* handle = NULL;
 	_lock.lock();
 	if (!_idle_set.empty())
 	{
-		//LogDebug("ThreadPool", "Reuse thread....");
 		handle = *_idle_set.begin();
 		_idle_set.erase(_idle_set.begin());
 
 		handle->task = task;
+		_LogDebug_("ThreadPool", "Reuse thread handle: %d", handle);
 		handle->controller.resume();
 	}
 	else
 	{
-		LogDebug("ThreadPool", "No more free thread, creating...");
+		_LogDebug_("ThreadPool", "No more free thread, creating...");
 		handle = create_thread(task);
 	}
 	_active_set.insert(handle);
 	_lock.unlock();
-//	LogDebug("ThreadPool", "Task has been put it run queue");
+	_LogDebug_("ThreadPool", "Task has been put it run queue");
 }
 
 void ThreadPool::print_state()
@@ -110,22 +119,22 @@ void ThreadPool::adjust()
 }
 bool ThreadPool::on_thread_run(ThreadHandle* thread)
 {
-//	LogDebug("ThreadPool", "run thread handle : %d", thread);
+	_LogDebug_("ThreadPool", "run thread handle : %d", thread);
 	AutoLock(thread->lock);
 	if (thread->task)
 	{
-	//	LogDebug("ThreadPoll", "run thread's task: %d", thread->task);
+		_LogDebug_("ThreadPoll", "run thread's task: %d", thread->task);
 		return thread->task->run();
 	}
 	else
 	{
-	//	LogDebug("ThreadPool", "No task to run");
+		_LogDebug_("ThreadPool", "No task to run");
 		return true;
 	}
 }
 bool ThreadPool::on_thread_finish(ThreadHandle* thread)
 {
-	//LogDebug("ThreadPool", "finishing thread handle %d", thread);
+	_LogDebug_("ThreadPool", "finishing thread handle %d", thread);
 
 	bool need_delete = false;
 
@@ -147,7 +156,7 @@ bool ThreadPool::on_thread_finish(ThreadHandle* thread)
 	_idle_set.insert(thread);
 	_lock.unlock();
 
-//	LogDebug("ThreadPool", "finished thread handle %d", thread);
+	_LogDebug_("ThreadPool", "finished thread handle %d", thread);
 
 	return need_delete;
 }
@@ -159,17 +168,19 @@ ThreadPool::ThreadHandle* ThreadPool::create_thread(ThreadBase* task)
 	
 	handle->lock.lock();
 	handle->task = task;
+	handle->reuse = true;
 	::pthread_create(&thread, NULL, &ThreadPool::thread_proc, (void*)handle);
-	//LogDebug("ThreadPool", "Create threading....");
+	_LogDebug_("ThreadPool", "Create threading....");
 	handle->controller.setup(thread);
 	handle->lock.unlock();
-	//LogDebug("ThreadPool", "Create thread completed");
+	_LogDebug_("ThreadPool", "Create thread completed");
 	return handle;
 }
 void ThreadPool::remove_thread(ThreadHandle* thread)
 {
 	_lock.lock();
 	_idle_set.erase(thread);
+	_LogDebug_("ThreadPool", "Threading is quit!!!!! Handle: %d", thread);
 	_lock.unlock();
 }
 

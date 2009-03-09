@@ -3,6 +3,7 @@
 #include "loginsocketbase.h"
 #include "packetparser.h"
 #include "threadpool.h"
+#include "autolock.h"
 
 using namespace srdgame;
 
@@ -46,11 +47,11 @@ bool LoginSocketBase::send_packet(Packet* packet)
 
 void LoginSocketBase::start_worker()
 {
-	LogDebug("LoginServer", "Starting worker thread");
+	AutoLock lock(_worker_lock);
 	if (_worker)
 		return;
-	_worker_lock.lock();
+
+	LogDebug("LoginServer", "Starting worker thread");
 	_worker = new LoginWorker(this);
 	ThreadPool::get_singleton().execute(_worker);
-	_worker_lock.unlock();
 }

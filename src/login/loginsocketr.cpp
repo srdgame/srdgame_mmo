@@ -18,7 +18,7 @@ LoginInterSocketR::~LoginInterSocketR()
 
 void LoginInterSocketR::on_rev()
 {
-	lock_rev_buf();
+	//lock_rev_buf();
 	BufferBase* buf = get_rev_buf();
 	size_t size;
 	char* data = buf->get_data(size);
@@ -56,7 +56,7 @@ void LoginInterSocketR::on_rev()
 	{
 		buf->free(size);
 	}
-	unlock_rev_buf();
+	//unlock_rev_buf();
 }
 
 void LoginInterSocketR::on_send()

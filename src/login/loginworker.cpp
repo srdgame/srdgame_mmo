@@ -19,6 +19,7 @@ LoginWorker::~LoginWorker()
 
 bool LoginWorker::run()
 {
+	LogDebug("LoginServer", "LoginWorker::run()!!!!!!!!!!!!!!!!!!!!!!!");
 	
 	// return true to delete this object.
 	// return false run() will be called again.

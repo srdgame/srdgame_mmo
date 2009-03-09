@@ -175,7 +175,7 @@ bool LoginServer::connect_realm()
 	LogDebug("LoginServer", "sizeof(Packet) is %d", sizeof(Packet));
 	p.param.Long = 0;
 	_realm_socket->send_packet(&p);
-	_realm_socket->send_packet(&p);
+	//_realm_socket->send_packet(&p);
 	
 	return true;
 }
