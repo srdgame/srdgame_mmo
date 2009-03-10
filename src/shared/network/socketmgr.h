@@ -4,6 +4,7 @@
 #include "singleton.h"
 #include "socketdefs.h"
 #include "mutex.h"
+#include "autolock.h"
 
 namespace srdgame
 {
@@ -12,6 +13,8 @@ namespace srdgame
                                     // see anyone wanting to have more than 65536 concurrent connections.
 
 #define SOCKET_LISTEN_HOLDER_SIZE 32 // should be much more than you need.
+
+#define SOCKET_MGR_NO_NEED_LOCK // No need to have lock here, since all the sockets are started by the worker and will delete and used by the worker only... So lock is useless.  
 
 class Socket;
 class ListenSocket;
@@ -22,20 +25,38 @@ public:
 	SocketMgr();
 	~SocketMgr();
 public:
+	// Add socket to be here to be managed.
 	void add(Socket* s);
 	void add(ListenSocket* s);
+
+	// Remove the socket from here.
 	void remove(Socket* s);
+
+	// Get socket count, do't include listen sockets.
 	inline size_t count()
 	{
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+		AutoLock l
+}ock(_lock);
+#endif
 		return _count;
 	}
+
+	//  Close all the sockets.
 	void close_all();
 
 	void show_info();
 
+	// Should call this to start the worker thread, or all the sockets are not working.
 	void start_worker();
 
-	int get_epoll_fd() {return _epoll_fd;}
+	int get_epoll_fd() 
+	{
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+		AutoLock lock(_lock);
+#endif
+		return _epoll_fd;
+	}
 protected:	
 	size_t _count;
 	
@@ -45,8 +66,9 @@ protected:
 	ListenSocket * _listen_fds[SOCKET_LISTEN_HOLDER_SIZE];
 
 	SOCKET _max_fd;
-
-	static Mutex _lock;
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+	Mutex _lock;
+#endif
 };
 //SocketMgr& pMgr = SocketMgr::get_singleton();
 }

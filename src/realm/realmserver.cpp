@@ -122,8 +122,10 @@ bool RealmServer::start_inter_listen()
 
 bool RealmServer::stop_listen()
 {
-	_socket->close();
-	_inter_socket->close();
+	if (_socket)
+		_socket->close();
+	if (_inter_socket)
+		_inter_socket->close();
 }
 
 bool RealmServer::wait_command()

@@ -16,4 +16,6 @@ rm missing
 rm stamp-h1
 rm autoscan.log
 rm configure
-
+rm .anjuta -rf
+rm .tm_project2.cache
+rm TODO.tasks

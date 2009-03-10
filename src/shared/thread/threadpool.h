@@ -28,28 +28,28 @@ class ThreadPool : public Singleton<ThreadPool>
 protected:
 	struct ThreadHandle
 	{
-		ThreadHandle() : task(NULL), reuse(true)
-		{
-		}
 		ThreadCtl controller;
-		ThreadBase* task;
-		bool reuse;
-		Mutex lock;
+		ThreadBase* task; // WHen you create such obect, please set this one to NULL if there is no task to run. or CRASH!!!
+		bool reuse; // Please use true to keep this thread for all coming task, unless you are sure you need't this thread anymore.
+		Mutex lock; // Please lock this before change anything of this struct, except controller?
 	};
 public:
 	ThreadPool();
 	~ThreadPool();
+
+	// Init the thread pool with capacity.
 	void init(unsigned int cap = 10);
+	// Shutdown the thread pool and all the threads..
 	void shutdown();
 	
-	//ThreadHandle* start_thread(ThreadBase* task);
-	//void close_thread(ThreadHandle* thread);
-
+	// Execute one task
 	void execute(ThreadBase* task);
 
+	// For debug
 	void print_state();
 
 protected:
+	// Used to adjust the pool
 	class PoolAdjust : public ThreadBase
 	{
 		virtual bool run();
@@ -63,14 +63,17 @@ protected:
 
 	// When one thread want to run its task, return true will delete the thread or hold it for next run
 	bool on_thread_run(ThreadHandle* thread);
+
 	// When one thread finishes his job.
 	bool on_thread_finish(ThreadHandle* thread);
+
 	// Create one new thread to execut task.
 	ThreadHandle* create_thread(ThreadBase* task);
 
 	// call this to remove one thread that will not be used later.
 	void remove_thread(ThreadHandle* thread);
 
+	// Free idle threads
 	void kill_idle_thread(unsigned int count);
 
 	// static function
@@ -78,9 +81,17 @@ protected:
 
 protected:
 	typedef std::set<ThreadHandle*> ThreadSet;
+
+	// The set contains all the active threads information.
 	ThreadSet _active_set;
+
+	// The set contains all the idle threads' information.
 	ThreadSet _idle_set;
+
+	// Pool has been initialized or not.
 	bool _inited;
+
+	// Lock for pool attributes.
 	Mutex _lock;
 };
 }

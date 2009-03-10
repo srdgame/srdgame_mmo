@@ -184,24 +184,25 @@ bool LoginServer::connect_realm()
 
 bool LoginServer::stop_listen()
 {
+	
 	LogDebug("LoginServer", "Stoping listening");
 	if (_socket)
 	{
-		//_socket->close();
-		delete _socket;
-		_socket = NULL;
+		_socket->close();
+		//delete _socket;
+		//_socket = NULL;
 	}
 	if (_inter_socket)
 	{
-		//_inter_socket->close();
-		delete _inter_socket;
-		_inter_socket = NULL;
+		_inter_socket->close();
+		//delete _inter_socket;
+		//_inter_socket = NULL;
 	}
 	if (_realm_socket)
 	{
-		//_realm_socket->close();
-		delete _realm_socket;
-		_realm_socket = NULL;
+		_realm_socket->close();
+		//delete _realm_socket;
+		//_realm_socket = NULL;
 	}
 	LogDebug("LoginServer", "Sockets has been closed");
 }

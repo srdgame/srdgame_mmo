@@ -17,6 +17,8 @@ TcpSocket::TcpSocket(size_t rev_buf_size, size_t send_buf_size)
 
 TcpSocket::~TcpSocket()
 {
+	if (_connected)
+		close();
 }
 
 bool TcpSocket::connect(const std::string& addr, int port)

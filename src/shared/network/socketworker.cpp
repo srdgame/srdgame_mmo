@@ -35,6 +35,8 @@ bool SocketWorker::run()
 				continue;
 			}
 			
+			// Lock the mgr.  Why lock it here will make it does not work?
+			//AutoLock lock(mgr->_lock);
 			ptr = mgr->_fds[_events[i].data.fd];
 			
 			if(ptr == NULL)

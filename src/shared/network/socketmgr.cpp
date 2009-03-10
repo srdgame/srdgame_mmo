@@ -9,25 +9,46 @@
 
 using namespace srdgame;
 
-Mutex SocketMgr::_lock;
+//Mutex SocketMgr::_lock;
 
 SocketMgr::SocketMgr() : _count(0), _epoll_fd(0), _max_fd(0)
 {
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+	// Lock the data, and create epoll and initialize the array.
 	_lock.lock();
+#endif
 	_epoll_fd = epoll_create(SOCKET_HOLDER_SIZE);
 	if (-1 == _epoll_fd)
 	{
 		// Output debug info.
 		LogError("SOCKET", "Could not create epoll fd");
+
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+		_lock.unlock();
+#endif
+
 		exit(-1);
 	}
+	// Set to clean.
 	memset(_fds, 0, SOCKET_HOLDER_SIZE);
+
+#ifndef SOCKET_MGR_NO_NEED_LOCK
 	_lock.unlock();
+#endif
 }
 
 SocketMgr::~SocketMgr()
 {
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+	_lock.lock();
+#endif	
+	// Close the epoll.
 	close(_epoll_fd);
+	// Do not call close all, or you will see it is hard to close it... And seems we do not need to close them
+	//close_all();
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+	_lock.unlock();
+#endif
 }
 
 void SocketMgr::add(Socket* s)
@@ -37,19 +58,30 @@ void SocketMgr::add(Socket* s)
 		s->close();
 		return;
 	}
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+	// Lock the data
+	_lock.lock();
+#endif
+
+	// I am not sure whether the _fds is enough for us or not. It is better to use std::map.
+	// TODO:
 	if (_fds[s->get_fd()] != NULL)
 	{
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+		_lock.unlock();
+#endif
 		// the connection is existing.
 		LogWarning("SOCKET", "The connection is existing about fd: %d", s->get_fd());
 		s->close();
 		return;
 	}
+
+	// get the max file d...?
 	if (_max_fd < s->get_fd())
 	{
 		_max_fd = s->get_fd();
 	}
-
-	_lock.lock();
+	// Save the value.
 	_fds[s->get_fd()] = s; 
 	struct epoll_event ev;
     	memset(&ev, 0, sizeof(epoll_event));
@@ -64,11 +96,17 @@ void SocketMgr::add(Socket* s)
 	}
 	// set the _count.
 	++_count;
+#ifndef SOCKET_MGR_NO_NEED_LOCK
 	_lock.unlock();
+#endif
 }
 void SocketMgr::add(ListenSocket* s)
 {
 	LogDebug("SOCKET", "Adding listening socket : %d", s->get_fd());
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+	_lock.lock();
+#endif
+
 	ASSERT(_listen_fds[s->get_fd()] == 0);
 	_listen_fds[s->get_fd()] = s;
 	
@@ -82,15 +120,22 @@ void SocketMgr::add(ListenSocket* s)
 	{
 		LogError("SOCKET", "Could not add to epoll event set on fd: %u", event.data.fd);
 	}
+#ifndef SOCKET_MGR_NO_NEED_LOCK
+	_lock.unlock();
+#endif
 }
 void SocketMgr::remove(Socket* s)
 {
+#ifndef SOCKET_MGR_NO_NEED_LOCK	
 	_lock.lock();
+#endif
 	if (_fds[s->get_fd()] != s)
 	{
 		// TODO: output debug
 		LogWarning("SOCKET", "Could not remove socket on fd: %u", s->get_fd()); 
+#ifndef SOCKET_MGR_NO_NEED_LOCK
 		_lock.unlock();
+#endif
 		return;
 	}
 
@@ -109,11 +154,15 @@ void SocketMgr::remove(Socket* s)
 	
     	_fds[s->get_fd()] = 0;
 	--_count;
+#ifndef SOCKET_MGR_NO_NEED_LOCK	
 	_lock.unlock();
+#endif
 }
 void SocketMgr::close_all()
 {
+#ifndef SOCKET_MGR_NO_NEED_LOCK	
 	_lock.lock();
+#endif
 	for (size_t i = 0; i < SOCKET_HOLDER_SIZE; ++i)
 	{
 		if (_fds[i] != NULL)
@@ -121,7 +170,9 @@ void SocketMgr::close_all()
 			_fds[i]->close();
 		}
 	}
+#ifndef SOCKET_MGR_NO_NEED_LOCK	
 	_lock.unlock();
+#endif
 }
 void SocketMgr::show_info()
 {
