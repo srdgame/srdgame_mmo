@@ -33,12 +33,22 @@ public:
 	void add_client(LoginSocketBase* s);
 	void remove_client(LoginSocketBase* s);
 
+	// login server attributes.
+	void set_name(std::string name);
+	std::string get_name();
+	void set_info(std::string info);
+	std::string get_info();
+
 protected:
 	std::map<SOCKET, LoginSocketBase*> _servers;
 	std::map<LoginSocketBase*, LoginSrvInfo> _servers_info;
 	std::map<SOCKET, LoginSocketBase*> _clients;
 	Mutex _server_lock;
 	Mutex _client_lock;
+
+	Mutex _lock;
+	std::string _name;
+	std::string _info;
 };
 
 }

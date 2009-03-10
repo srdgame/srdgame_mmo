@@ -85,3 +85,25 @@ void LoginMgr::remove_client(LoginSocketBase* s)
 	s->close();
 	_clients.erase(s->get_fd());
 }
+
+void LoginMgr::set_name(std::string name)
+{
+	AutoLock lock(_lock);
+	this->_name = name;
+}
+std::string LoginMgr::get_name()
+{
+	AutoLock lock(_lock);
+	return this->_name;
+}
+
+void LoginMgr::set_info(std::string info)
+{
+	AutoLock lock(_lock);
+	this->_info = info;
+}
+std::string LoginMgr::get_info()
+{	
+	AutoLock lock(_lock);
+	return this->_info;
+}

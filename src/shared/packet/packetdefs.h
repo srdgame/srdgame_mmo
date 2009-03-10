@@ -27,7 +27,7 @@ enum InterOpcode
 
 union PacketParam
 {
-	char* Data;
+	const char* Data;
 	int Int;
 	long Long;
 	float Float;

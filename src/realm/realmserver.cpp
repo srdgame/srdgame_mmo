@@ -134,6 +134,13 @@ bool RealmServer::wait_command()
 	{
 		return true;
 	}
+	else if (str == "help")
+	{
+		LogNotice("RealmServer", "Avaliable commands:");
+		LogSuccess("RealmServer", "quit --- stop and quit this server");
+		LogSuccess("RealmServer", "list --- list all the login servers");
+		LogSuccess("RealmServer", "help --- list all the avaliable commands");
+	}
 	else if (str == "list")
 	{
 		std::vector<LoginSrvInfo> info;

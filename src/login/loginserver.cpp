@@ -67,6 +67,8 @@ bool LoginServer::init_env()
 {
 	ThreadPool::get_singleton().init(10);
 	SocketMgr::get_singleton().start_worker();
+	LoginMgr::get_singleton().set_name(_config->get_value<std::string>("NAME"));
+	LoginMgr::get_singleton().set_info(_config->get_value<std::string>("INFO"));
 	return true;
 }
 
@@ -210,6 +212,11 @@ bool LoginServer::wait_command()
 	std::cin >> str;
 	if (str == "quit")
 	{
+		Packet of;
+		of.op = I_OFFLINE;
+		of.len = sizeof(Packet);
+		of.param.Long = 0;
+		_realm_socket->send_packet(&of);
 		return true;
 	}
 	else if (str == "list")

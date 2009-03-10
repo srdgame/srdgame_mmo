@@ -3,6 +3,7 @@
 #include "packetparser.h"
 #include "loginworker.h"
 #include "typedefs.h"
+#include "loginmgr.h"
 
 using namespace srdgame;
 
@@ -90,10 +91,11 @@ void LoginInterSocketR::on_handle(Packet* packet)
 			break;
 		case IS_GET_NAME: // Ask for name of client.
 			{
+				string name = LoginMgr::get_singleton().get_name();
 				Packet p;
 				p.op = IC_NAME;
-				p.len = sizeof(Packet);
-				p.param.Long = 0;
+				p.len = sizeof(Packet) + name.size();
+				p.param.Data = name.c_str();
 				send_packet(&p);
 			}
 			break;
@@ -116,10 +118,11 @@ void LoginInterSocketR::on_handle(Packet* packet)
 		case IS_GET_INFO:
 			// ask for more detail info, the reply structure is to be defined.
 			{
+				string name = LoginMgr::get_singleton().get_info();
 				Packet p;
 				p.op = IC_INFO;
-				p.len = sizeof(Packet);
-				p.param.Long = 0;
+				p.len = sizeof(Packet) + name.size();
+				p.param.Data = name.c_str();
 				send_packet(&p);
 			}
 			break;
