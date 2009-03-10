@@ -4,6 +4,8 @@
 
 using namespace srdgame;
 
+//#define THREAD_POOL_DEBUG
+
 #ifdef THREAD_POOL_DEBUG
 #define _LogDebug_ LogDebug
 #else
@@ -192,6 +194,7 @@ bool ThreadPool::on_thread_finish(ThreadHandle* thread)
 		thread->task->on_close();
 
 		// Delete the task object here, so other modules do not need take care about the allocated task object by themself
+		_LogDebug_("ThreadPool", "Deleting one task object");
 		delete thread->task;
 
 		// Set to NULL.
@@ -293,6 +296,7 @@ void * ThreadPool::thread_proc(void* param)
 			}
 		}
 	}
+	_LogDebug_("ThreadPool", "Deleting one Handle******");
 	// Delete the handle;
 	delete handle;
 	pthread_exit(0);

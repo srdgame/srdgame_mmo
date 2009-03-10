@@ -128,6 +128,7 @@ void RealmWorker::handle(Packet* packet)
 					::memset(sz, 0, size + 1);
 					::memcpy(sz, packet->param.Data, size);
 					RealmMgr::get_singleton().update_login_server_name(_socket, std::string(sz));
+					delete[] sz;
 				}
 			}
 			break;
@@ -147,12 +148,12 @@ void RealmWorker::handle(Packet* packet)
 			{
 				int size = PacketParser::get_ex_len(*packet);
 				if (size > 0)
-				;
-{
+				{
 					char* sz = new char[size + 1];
 					::memset(sz, 0, size + 1);
 					::memcpy(sz, packet->param.Data, size);
 					RealmMgr::get_singleton().update_login_server_info(_socket, std::string(sz));
+					delete[] sz;
 				}
 			}
 			break;

@@ -31,6 +31,7 @@ SocketMgr::SocketMgr() : _count(0), _epoll_fd(0), _max_fd(0)
 	}
 	// Set to clean.
 	memset(_fds, 0, SOCKET_HOLDER_SIZE);
+	memset(_listen_fds, 0, SOCKET_LISTEN_HOLDER_SIZE);
 
 #ifndef SOCKET_MGR_NO_NEED_LOCK
 	_lock.unlock();
