@@ -10,7 +10,7 @@
 
 using namespace srdgame;
 
-//#define _SOCKET_DEBUG_
+#define _SOCKET_DEBUG_
 
 #ifdef _SOCKET_DEBUG_
 #define _LogDebug_ LogDebug

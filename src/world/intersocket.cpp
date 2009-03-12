@@ -1,25 +1,25 @@
-#include "loginsocketr.h"
+#include "intersocket.h"
 #include "log.h"
 #include "packetparser.h"
-#include "loginworker.h"
+#include "worldworker.h"
 #include "typedefs.h"
-#include "loginmgr.h"
-#include "loginserver.h"
+#include "worldmgr.h"
+#include "worldserver.h"
 
 using namespace srdgame;
 
-LoginInterSocketR::LoginInterSocketR(LoginServer* server)
-	: LoginSocketBase()
+InterSocket::InterSocket(WorldServer* server)
+	: WorldSocketBase()
 	  , _server(server)
 {
 }
 
-LoginInterSocketR::~LoginInterSocketR()
+InterSocket::~InterSocket()
 {
-	LogDebug("LoginServer", "Destructor of LoginInterSocketR (realm connection)");
+	LogDebug("WorldServer", "Destructor of InterSocket (login connection)");
 }
 
-void LoginInterSocketR::on_rev()
+void InterSocket::on_rev()
 {
 	//lock_rev_buf();
 	BufferBase* buf = get_rev_buf();
@@ -30,7 +30,7 @@ void LoginInterSocketR::on_rev()
 		/*char* new_data = new char[size + 1];
 		::memset(new_data, 0, size+1);
 		::memcpy(new_data, data, size);
-		LogSuccess("LoginServer", "Comming Data: %s", new_data);
+		LogSuccess("WorldServer", "Comming Data: %s", new_data);
 		delete[] new_data;*/
 		size_t index = 0;
 		while (size > index)
@@ -46,7 +46,7 @@ void LoginInterSocketR::on_rev()
 				}
 				break;
 			}
-			LogDebug("LoginInterSocketR", "One packet received from realm server");
+			LogDebug("InterSocket", "One packet received");
 			index += used;
 			_packets.push(p);
 			start_worker();
@@ -62,21 +62,21 @@ void LoginInterSocketR::on_rev()
 	//unlock_rev_buf();
 }
 
-void LoginInterSocketR::on_send()
+void InterSocket::on_send()
 {
 }
 
-void LoginInterSocketR::on_connect()
+void InterSocket::on_connect()
 {
 }
 
-void LoginInterSocketR::on_close()
+void InterSocket::on_close()
 {
-	LogDebug("LoginServer", "Connection with realm server has been dropdown");
-	_server->lost_realm();
+	LogDebug("WorldServer", "Connection with login server has been dropdown");
+	_server->lost_login();
 }
 
-void LoginInterSocketR::on_handle(Packet* packet)
+void InterSocket::on_handle(Packet* packet)
 {
 	switch (packet->op)
 	{
@@ -87,14 +87,14 @@ void LoginInterSocketR::on_handle(Packet* packet)
 			break;
 		case I_OFFLINE:
 			// Say goodbye, both side command.
-			// TODO: What should we do when realm is going to offline.
+			// TODO: What should we do when login is going to offline.
 			break;
-		case I_NOTIFY: // Notify others we are going online. Both side action and its param is the client type: Login = 1, World = 2, Realm = 0,
-			// TODO: What should we do when realm is going to be online?
+		case I_NOTIFY: // Notify others we are going online. Both side action and its param is the client type: World = 1, Login = 2, Realm = 0,
+			// TODO: What should we do when login is going to be online?
 			break;
 		case IS_GET_NAME: // Ask for name of client.
 			{
-				string name = LoginMgr::get_singleton().get_name();
+				string name = WorldMgr::get_singleton().get_name();
 				Packet p;
 				p.op = IC_NAME;
 				p.len = sizeof(Packet) + name.size();
@@ -121,7 +121,7 @@ void LoginInterSocketR::on_handle(Packet* packet)
 		case IS_GET_INFO:
 			// ask for more detail info, the reply structure is to be defined.
 			{
-				string name = LoginMgr::get_singleton().get_info();
+				string name = WorldMgr::get_singleton().get_info();
 				Packet p;
 				p.op = IC_INFO;
 				p.len = sizeof(Packet) + name.size();
@@ -131,8 +131,19 @@ void LoginInterSocketR::on_handle(Packet* packet)
 			break;
 		case IC_INFO:
 			break;
+		case IS_GET_TYPE:
+			{
+				Packet p;
+				p.op = IC_TYPE;
+				p.len = sizeof(Packet);
+				p.param.Long = WT_TESTING;
+				send_packet(&p);
+			}
+			break;
+		case IC_TYPE:
+			break;
 		default:
-			LogWarning("LoginServer", "Unknow packet is received from Realm Server, the opcode is : %d", packet->op);
+			LogWarning("WorldServer", "Unknow packet is received from Login Server, the opcode is : %d", packet->op);
 			break;
 	}
 }

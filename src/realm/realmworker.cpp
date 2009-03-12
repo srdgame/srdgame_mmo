@@ -99,6 +99,12 @@ void RealmWorker::handle(Packet* packet)
 			LogDebug("RealmServer", "I_NOTIFY");
 			if (_socket->_inter)
 			{
+				if (packet->param.Long != 1)
+				{
+					LogError("RealmServer", "Not a login server are trying to connect us!!!");
+					_socket->close();
+					break;
+				}
 				RealmMgr::get_singleton().add_login_server(_socket);
 				// send ask name and info status packets.
 				Packet p;

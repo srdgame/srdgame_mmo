@@ -10,7 +10,7 @@ enum InterOpcode
 {
 	I_PING = 0, // Just ping. Both side command.  Normally server will ping client per 5 seconds?
 	I_OFFLINE = 1, // Say goodbye, both side command.
-	I_NOTIFY = 2, // Notify others we are going online. Both side action and its param is the client type: Login = 1, world = 2, Realm = 0,
+	I_NOTIFY = 2, // Notify others we are going online. Both side action and its param is the client type: Login = 1, World = 2, Realm = 0,
 	
 	IS_GET_NAME = 31, // Ask for name of client.
 	IC_NAME = 32, // send back the name in one string
@@ -21,7 +21,9 @@ enum InterOpcode
 
 	IS_GET_INFO = 50, // ask for more detail info, the reply structure is to be defined.
 	IC_INFO = 51, //
-	
+
+	IS_GET_TYPE = 60, // ask for server type,
+	IC_TYPE = 61,
 	// More
 };
 

@@ -175,7 +175,7 @@ bool LoginServer::connect_realm()
 	p.op = I_NOTIFY;
 	p.len = sizeof(Packet);
 	LogDebug("LoginServer", "sizeof(Packet) is %d", sizeof(Packet));
-	p.param.Long = 0;
+	p.param.Long = 1;
 	_realm_socket->send_packet(&p);
 	//_realm_socket->send_packet(&p);
 	
@@ -200,7 +200,7 @@ bool LoginServer::wait_command()
 	}
 	else if (str == "list")
 	{
-		std::vector<LoginSrvInfo> info;
+		std::vector<WorldSrvInfo> info;
 		LoginMgr::get_singleton().enum_world_servers(info);
 		size_t i = 0;
 		if (0 == info.size())
@@ -211,6 +211,22 @@ bool LoginServer::wait_command()
 		{
 			LogSuccess("LoginServer", "World Server : %d", i);
 			LogSuccess("LoginServer", "Name: %s\t Info: %s", info[i].name.c_str(), info[i].info.c_str());
+			switch (info[i].type)
+			{
+				case WT_NORMAL:
+					LogSuccess("LoginServer", "Type: Normal Server");
+					break;
+				case WT_PVP:
+					LogSuccess("LoginServer", "Type: PVP Server");
+					break;
+				case WT_TESTING:
+					LogSuccess("LoginServer", "Type: Testing Server");
+					break;
+				default:
+					LogWarning("LoginServer", "Type: Unknown");
+					break;
+			}
+
 			switch (info[i].status)
 			{
 				case WS_OFFLINE:
@@ -229,6 +245,7 @@ bool LoginServer::wait_command()
 					LogSuccess("LoginServer", "Status: Unknown");
 					break;
 			}
+		
 		}
 	}
 	else

@@ -20,15 +20,16 @@ public:
 	LoginMgr();
 	virtual ~LoginMgr();
 
-	void enum_world_servers(std::vector<LoginSrvInfo>& info);
+	void enum_world_servers(std::vector<WorldSrvInfo>& info);
 
 	void add_world_server(LoginSocketBase* s);
 	void remove_world_server(LoginSocketBase* s);
 
-	void update_world_server(LoginSocketBase* s, LoginSrvInfo& info);
+	void update_world_server(LoginSocketBase* s, WorldSrvInfo& info);
 	void update_world_server_name(LoginSocketBase* s, std::string name);
 	void update_world_server_info(LoginSocketBase* s, std::string info);
-	void update_world_server_status(LoginSocketBase* s, LoginSrvStatus status);
+	void update_world_server_status(LoginSocketBase* s, WorldSrvStatus status);
+	void update_world_server_type(LoginSocketBase* s, WorldSrvType type);
 
 	void add_client(LoginSocketBase* s);
 	void remove_client(LoginSocketBase* s);
@@ -41,7 +42,7 @@ public:
 
 protected:
 	std::map<SOCKET, LoginSocketBase*> _servers;
-	std::map<LoginSocketBase*, LoginSrvInfo> _servers_info;
+	std::map<LoginSocketBase*, WorldSrvInfo> _servers_info;
 	std::map<SOCKET, LoginSocketBase*> _clients;
 	Mutex _server_lock;
 	Mutex _client_lock;

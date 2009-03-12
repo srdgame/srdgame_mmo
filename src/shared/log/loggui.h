@@ -135,6 +135,7 @@ public:
 		}
 		vprintf(format, ap);
 		putchar('\n');
+		Color(TNORMAL);
 		_lock.unlock();
 	}
 

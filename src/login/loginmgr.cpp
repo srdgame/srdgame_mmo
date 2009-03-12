@@ -14,10 +14,10 @@ LoginMgr::LoginMgr()
 LoginMgr::~LoginMgr()
 {
 }
-void LoginMgr::enum_world_servers(std::vector<LoginSrvInfo>& info)
+void LoginMgr::enum_world_servers(std::vector<WorldSrvInfo>& info)
 {
 	AutoLock lock(_server_lock);
-	std::map<LoginSocketBase*, LoginSrvInfo>::iterator ptr = _servers_info.begin();
+	std::map<LoginSocketBase*, WorldSrvInfo>::iterator ptr = _servers_info.begin();
 	for (; ptr != _servers_info.end(); ++ptr)
 	{
 		info.push_back(ptr->second);
@@ -43,7 +43,7 @@ void LoginMgr::remove_world_server(LoginSocketBase* s)
 	_servers_info.erase(s);
 }
 
-void LoginMgr::update_world_server(LoginSocketBase* s, LoginSrvInfo& info)
+void LoginMgr::update_world_server(LoginSocketBase* s, WorldSrvInfo& info)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s] = info;
@@ -61,12 +61,16 @@ void LoginMgr::update_world_server_info(LoginSocketBase* s, std::string info)
 	_servers_info[s].info = info;
 }
 
-void LoginMgr::update_world_server_status(LoginSocketBase* s, LoginSrvStatus status)
+void LoginMgr::update_world_server_status(LoginSocketBase* s, WorldSrvStatus status)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].status = status;
 }
-
+void LoginMgr::update_world_server_type(LoginSocketBase* s, WorldSrvType type)
+{
+	AutoLock lock(_server_lock);
+	_servers_info[s].type = type;
+}
 void LoginMgr::add_client(LoginSocketBase* s)
 {
 	AutoLock lock(_client_lock);

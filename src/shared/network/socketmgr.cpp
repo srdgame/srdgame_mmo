@@ -132,6 +132,10 @@ void SocketMgr::remove(Socket* s)
 		//LogWarning("SOCKET", "Could not remove fd %u from epoll set", s->get_fd());
 
 	}
+	else
+	{
+		LogSuccess("SOCKET", "Removed fd %u from epoll set", s->get_fd());
+	}
 	
     	_fds[s->get_fd()] = NULL;
 	--_count;

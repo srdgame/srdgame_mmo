@@ -1,10 +1,12 @@
-#include "loginworker.h"
-#include "loginsocketbase.h"
-#include "loginmgr.h"
+#include "worldworker.h"
+#include "worldsocketbase.h"
+#include "worldmgr.h"
 #include "packetparser.h"
 
 #include "log.h"
 using namespace srdgame;
+
+//#define _DEBUG_WORKER_
 
 #ifdef _DEBUG_WORKER_
 #define _LogDebug_ LogDebug
@@ -12,10 +14,10 @@ using namespace srdgame;
 #define _LogDebug_ //
 #endif
 
-LoginWorker::LoginWorker(LoginSocketBase* socket) : ThreadBase(), _running(true), _socket(socket)
+WorldWorker::WorldWorker(WorldSocketBase* socket) : ThreadBase(), _running(true), _socket(socket)
 {
 }
-LoginWorker::~LoginWorker()
+WorldWorker::~WorldWorker()
 {
 	if (is_running())
 	{
@@ -23,16 +25,16 @@ LoginWorker::~LoginWorker()
 	}
 }
 
-bool LoginWorker::run()
+bool WorldWorker::run()
 {
-	_LogDebug_("LoginServer", "LoginWorker::run()!!!!!!!!!!!!!!!!!!!!!!!");
+	_LogDebug_("WorldServer", "WorldWorker::run()!!!!!!!!!!!!!!!!!!!!!!!");
 	
 	// return true to delete this object.
 	// return false run() will be called again.
 	// process the data until empty.
 	if (!_socket || !_running)
 	{
-		_LogDebug_("LoginServer", "Quiting Login Worker thread");
+		_LogDebug_("WorldServer", "Quiting World Worker thread");
 		_socket->_worker_lock.lock();
 		_socket->_worker = NULL;
 		_socket->_worker_lock.unlock();
@@ -45,7 +47,7 @@ bool LoginWorker::run()
 	Packet p;
 	if (!_socket->_packets.try_pop(p) || !_running)
 	{
-		_LogDebug_("LoginServer", "Login Worker finished its job!!!");
+		_LogDebug_("WorldServer", "World Worker finished its job!!!");
 		// no data, we will quit this.
 		_socket->_worker_lock.lock();
 		_socket->_worker = NULL;
@@ -58,20 +60,20 @@ bool LoginWorker::run()
 	return false;
 }
 
-void LoginWorker::shutdown()
+void WorldWorker::shutdown()
 {
 	_running =false;
 }
-void LoginWorker::on_close()
+void WorldWorker::on_close()
 {
 }
 
-bool LoginWorker::is_running()
+bool WorldWorker::is_running()
 {
 	return _running;
 }
 
-void LoginWorker::handle(Packet* packet)
+void WorldWorker::handle(Packet* packet)
 {
 	_socket->on_handle(packet);
 	PacketParser::free(*packet); // Free the space that we have done.
