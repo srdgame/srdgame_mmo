@@ -1,5 +1,6 @@
 #include "packetparser.h"
 #include <cstring>
+#include <dlfcn.h>
 
 #undef PACKET_DEBUG
 
@@ -28,6 +29,13 @@ int PacketParser::get_ex_len(Packet& p)
 	return p.len - g_header_len - g_void_ptr_len;
 }
 
+PacketParser::~PacketParser()
+{
+	if (_lib != NULL)
+	{
+		dlclose(_lib);
+	}
+}
 size_t PacketParser::from_inter(Packet& dest, const char* src, size_t size)
 {
 	// Check whether the data is really big to convert.
@@ -114,17 +122,57 @@ size_t PacketParser::to_inter(char* dest, const Packet& src)
 	return src.len;
 }
 
-bool PacketParser::init_ex(char* ex_name)
+bool PacketParser::init_ex(const char* ex_name)
 {
-	return false;
+	if (_lib != NULL)
+	{
+		dlclose(_lib);
+	}
+	_lib = dlopen(ex_name, RTLD_LAZY);
+	if (_lib == NULL)
+	{
+		LogError("PacketParser", "Could not load protocol lib : %s  The error is : %s", dlerror());
+		return false;
+	}
+	_ex_from_func = (from_stream_func)dlsym(_lib, "from_stream");
+	char* error = dlerror();
+	if (NULL != error)
+	{
+		LogError("PacketParser", "Could not find from_stream, error is : %s", error);
+		dlclose(_lib);
+		_lib = NULL;
+		return false;
+	}
+	_ex_to_func = (to_stream_func)dlsym(_lib, "to_stream");
+	error = dlerror();
+	if (NULL != error)
+	{
+		LogError("PacketParser", "Could not find to_stream, error is : %s", error);
+		dlclose(_lib);
+		_lib = NULL;
+		return false;
+	}
+	LogSuccess("PacketParser", "Load external protocol parser successfully!!!");
+	Packet p;
+	char* ch = NULL;
+	if (0 == from_ex(p, ch, 0) && 0 == to_ex(ch, p))
+	{
+		LogSuccess("PacketParser", "Checking OK");
+	}
+	else
+	{
+		LogError("PacketParser", "Checking Failed");
+		return false;
+	}
+	return true;
 }
 
 size_t PacketParser::from_ex(Packet& dest, const char* src, size_t size)
 {
-	return 0;
+	return (*_ex_from_func)(&dest, src, size);
 }
 
-size_t PacketParser::to_ex(char* src, const Packet& dest)
+size_t PacketParser::to_ex(char* dest, const Packet& src)
 {
-	return 0;
+	return (*_ex_to_func)(dest, &src);
 }

@@ -8,18 +8,19 @@
 
 namespace srdgame
 {
-typedef size_t (*from_stream_func)(Packet& dest, const char* src);
-typedef size_t (*to_stream_func)(char* dest, const Packet& src);
+typedef size_t (*from_stream_func)(Packet* dest, const char* src, size_t size);
+typedef size_t (*to_stream_func)(char* dest, const Packet* src);
 
 class PacketParser : public Singleton < PacketParser >
 {
 public:
+	~PacketParser();
 	// return converted bytes count.
 	size_t from_inter(Packet& dest, const char* src, size_t size);
 	// to_inter will return the dest stream length.
 	size_t to_inter(char* dest, const Packet& src);
 
-	bool init_ex(char* ex_name); // later we will use plugins to do the parser...
+	bool init_ex(const char* ex_name); // later we will use plugins to do the parser...
 
 	// return same as from_inter
 	size_t from_ex(Packet& dest, const char* src, size_t size);
@@ -32,6 +33,7 @@ public:
 private:
 	from_stream_func _ex_from_func;
 	to_stream_func _ex_to_func;
+	void* _lib;
 };
 }
 

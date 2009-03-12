@@ -8,6 +8,7 @@
 #include "typedefs.h"
 #include "loginmgr.h"
 #include "loginsocketr.h"
+#include "packetparser.h"
 
 using namespace srdgame;
 
@@ -43,6 +44,12 @@ void LoginServer::run()
 		return;
 	}
 	LogDebug("LoginServer", "Load configuration file completed");
+	if (!this->init_packet_parser())
+	{
+		LogError("WorldServer", "Could not load protocol so file");
+		return;
+	}
+
 	if (!this->init_env())
 	{
 		LogError("LoginServer", "QUIT@: Env is not ready");
@@ -78,7 +85,10 @@ bool LoginServer::init_env()
 	LoginMgr::get_singleton().set_info(_config->get_value<std::string>("INFO"));
 	return true;
 }
-
+bool LoginServer::init_packet_parser()
+{
+	return PacketParser::get_singleton().init_ex(_config->get_value<std::string>("EX_PROTOCOL_LIB").c_str());
+}
 bool LoginServer::load_conf()
 {
 	if (_conf_fn.empty())

@@ -8,6 +8,7 @@
 #include "typedefs.h"
 #include "worldmgr.h"
 #include "intersocket.h"
+#include "packetparser.h"
 
 using namespace srdgame;
 
@@ -41,6 +42,11 @@ void WorldServer::run()
 		return;
 	}
 	LogDebug("WorldServer", "Load configuration file completed");
+	if (!this->init_packet_parser())
+	{
+		LogError("WorldServer", "Could not load protocol so file");
+		return;
+	}
 	if (!this->init_env())
 	{
 		LogError("WorldServer", "QUIT@: Env is not ready");
@@ -63,6 +69,10 @@ void WorldServer::run()
 void WorldServer::lost_login()
 {
 	_login_socket = NULL;
+}
+bool WorldServer::init_packet_parser()
+{
+	return PacketParser::get_singleton().init_ex(_config->get_value<std::string>("EX_PROTOCOL_LIB").c_str());
 }
 bool WorldServer::init_env()
 {

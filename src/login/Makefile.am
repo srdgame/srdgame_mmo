@@ -19,5 +19,5 @@ srdgame_loginserver_SOURCES  = loginserver.h \
 			       loginmgr.cpp \
 			       main.cpp
 
-srdgame_loginserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lpthread
+srdgame_loginserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lpthread -ldl
 srdgame_loginserver_LDFLAGS = -L$(srcdir)/../shared/log -L$(srcdir)/../shared/network -L$(srcdir)/../shared/thread -L$(srcdir)/../shared/config -L$(srcdir)/../shared/packet

@@ -13,5 +13,5 @@ srdgame_realmserver_SOURCES  = realmserver.h \
 			       realmmgr.cpp \
 			       main.cpp
 
-srdgame_realmserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lpthread
+srdgame_realmserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lpthread -ldl
 srdgame_realmserver_LDFLAGS = -L$(srcdir)/../shared/log -L$(srcdir)/../shared/network -L$(srcdir)/../shared/thread -L$(srcdir)/../shared/config -L$(srcdir)/../shared/packet

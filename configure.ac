@@ -33,13 +33,16 @@ AC_FUNC_REALLOC
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([gethostbyname inet_ntoa memset socket])
+
 AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 
 AC_CONFIG_FILES([Makefile
                  plan/Makefile
                  src/Makefile
                  src/login/Makefile
                  src/realm/Makefile
+		 src/sample/Makefile
                  src/script/Makefile
                  src/shared/Makefile
                  src/shared/config/Makefile

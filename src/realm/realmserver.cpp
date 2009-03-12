@@ -7,6 +7,7 @@
 #include <vector>
 #include "typedefs.h"
 #include "realmmgr.h"
+#include "packetparser.h"
 
 using namespace srdgame;
 
@@ -41,6 +42,12 @@ void RealmServer::run()
 		return;
 	}
 	LogDebug("RealmServer", "Load configuration file completed");
+	if (!this->init_packet_parser())
+	{
+		LogError("WorldServer", "Could not load protocol so file");
+		return;
+	}
+
 	if (!this->init_env())
 	{
 		LogError("RealmServer", "QUIT@: Env is not ready");
@@ -65,7 +72,10 @@ bool RealmServer::init_env()
 	SocketMgr::get_singleton().start_worker();
 	return true;
 }
-
+bool RealmServer::init_packet_parser()
+{
+	return PacketParser::get_singleton().init_ex(_config->get_value<std::string>("EX_PROTOCOL_LIB").c_str());
+}
 bool RealmServer::load_conf()
 {
 	if (_conf_fn.empty())

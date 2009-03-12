@@ -1,6 +1,8 @@
 #ifndef PACKET_DEFS_H_
 #define PACKET_DEFS_H_
 
+#include <cstddef>
+
 //#include "packetparser.h"
 
 namespace srdgame

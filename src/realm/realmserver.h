@@ -20,6 +20,7 @@ public:
 
 protected:
 	bool load_conf();
+	bool init_packet_parser();
 	bool init_env();
 	bool start_listen();
 	bool start_inter_listen();
