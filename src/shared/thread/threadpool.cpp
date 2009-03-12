@@ -151,6 +151,15 @@ void ThreadPool::print_state()
 
 void ThreadPool::adjust()
 {
+	// Adjusting.
+	unsigned int need_free = 0;
+	_lock.lock();
+	if (_idle_set.size() > _active_set.size())
+	{
+		need_free = _idle_set.size() - _active_set.size();
+		kill_idle_thread(need_free);
+	}
+	_lock.unlock();
 }
 // Return true to let pool to handle the thread: reuse or delete.
 bool ThreadPool::on_thread_run(ThreadHandle* thread)
@@ -308,14 +317,21 @@ void * ThreadPool::thread_proc(void* param)
 
 bool ThreadPool::PoolAdjust::run()
 {
+	if (!_running)
+	{
+		return true; // quit.
+	}
+	ThreadPool::get_singleton().adjust();
+	return false;
 }
 void ThreadPool::PoolAdjust::on_close()
 {
 }
 void ThreadPool::PoolAdjust::shutdown()
 {
+	_running = false;
 }
 bool ThreadPool::PoolAdjust::is_running()
 {
-	return true;
+	return _running;
 }

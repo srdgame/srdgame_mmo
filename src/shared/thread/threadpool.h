@@ -52,10 +52,13 @@ protected:
 	// Used to adjust the pool
 	class PoolAdjust : public ThreadBase
 	{
+		PoolAdjust() {_running = true;}
+	public:
 		virtual bool run();
 		virtual void on_close();
 		virtual void shutdown();
 		virtual bool is_running();
+		bool _running;
 	};
 
 	// Adjust pool, expecially the threads which are free.
