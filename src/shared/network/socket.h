@@ -22,15 +22,15 @@ class Socket
 {
 public:
 	// Create socket to connect to other pc,
-	Socket();
-	// 
-	virtual ~Socket();
+	virtual ~Socket(){};
 
 	// method?
 	virtual bool accept(sockaddr_in* addr, SOCKET fd) = 0;
 	virtual bool connect(const std::string& addr, int port) = 0;
 	// close/disconnect
 	virtual bool close() = 0;
+	// Delete the object
+	virtual void _delete() = 0;
 	// whether the connection still there.
 	virtual bool is_connected() = 0;
 	// send data out.

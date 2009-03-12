@@ -4,17 +4,19 @@
 #include "loginworker.h"
 #include "typedefs.h"
 #include "loginmgr.h"
+#include "loginserver.h"
 
 using namespace srdgame;
 
-LoginInterSocketR::LoginInterSocketR()
+LoginInterSocketR::LoginInterSocketR(LoginServer* server)
 	: LoginSocketBase()
+	  , _server(server)
 {
 }
 
 LoginInterSocketR::~LoginInterSocketR()
 {
-
+	LogDebug("LoginServer", "Destructor of LoginInterSocketR (realm connection)");
 }
 
 void LoginInterSocketR::on_rev()
@@ -71,6 +73,7 @@ void LoginInterSocketR::on_connect()
 void LoginInterSocketR::on_close()
 {
 	LogDebug("LoginServer", "Connection with realm server has been dropdown");
+	_server->lost_realm();
 }
 
 void LoginInterSocketR::on_handle(Packet* packet)

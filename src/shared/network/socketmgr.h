@@ -5,19 +5,22 @@
 #include "socketdefs.h"
 #include "mutex.h"
 #include "autolock.h"
+//#include "smartptr.h"
+
+//using namespace idllib;
 
 namespace srdgame
 {
-#define SOCKET_HOLDER_SIZE 30000    // You don't want this number to be too big, otherwise you're gonna be eating
+#define SOCKET_HOLDER_SIZE 65536    // You don't want this number to be too big, otherwise you're gonna be eating
                                     // memory. 65536 = 256KB, so thats no big issue for now, and I really can't
                                     // see anyone wanting to have more than 65536 concurrent connections.
 
-#define SOCKET_LISTEN_HOLDER_SIZE 32 // should be much more than you need.
 
-#define SOCKET_MGR_NO_NEED_LOCK // No need to have lock here, since all the sockets are started by the worker and will delete and used by the worker only... So lock is useless.  
+// No need to have lock to this class, since all the sockets are started by the worker and will delete and used by the worker only... So lock is useless.  
 
 class Socket;
 class ListenSocket;
+class SocketWorker;
 class SocketMgr : public Singleton<SocketMgr>
 {
 	friend class SocketWorker;
@@ -35,10 +38,6 @@ public:
 	// Get socket count, do't include listen sockets.
 	inline size_t count()
 	{
-#ifndef SOCKET_MGR_NO_NEED_LOCK
-		AutoLock l
-}ock(_lock);
-#endif
 		return _count;
 	}
 
@@ -52,9 +51,6 @@ public:
 
 	int get_epoll_fd() 
 	{
-#ifndef SOCKET_MGR_NO_NEED_LOCK
-		AutoLock lock(_lock);
-#endif
 		return _epoll_fd;
 	}
 protected:	
@@ -63,12 +59,11 @@ protected:
     	int _epoll_fd;
 
     	Socket * _fds[SOCKET_HOLDER_SIZE];
-	ListenSocket * _listen_fds[SOCKET_LISTEN_HOLDER_SIZE];
+	ListenSocket * _listen_fds[SOCKET_HOLDER_SIZE];
+	//SmartPtr<Socket> _fds[SOCKET_HOLDER_SIZE];
+	//SmartPtr<ListenSocket> _listen_fds[SOCKET_HOLDER_SIZE];
 
 	SOCKET _max_fd;
-#ifndef SOCKET_MGR_NO_NEED_LOCK
-	Mutex _lock;
-#endif
 };
 //SocketMgr& pMgr = SocketMgr::get_singleton();
 }

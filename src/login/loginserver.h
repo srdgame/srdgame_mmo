@@ -20,13 +20,14 @@ public:
 	// methods
 	void run();
 
+	void lost_realm();
+
 protected:
 	bool load_conf();
 	bool init_env();
 	bool start_listen();
 	bool start_inter_listen();
 	bool connect_realm();
-	bool stop_listen();
 
 	// return true to quit.
 	bool wait_command();
@@ -34,9 +35,13 @@ protected:
 protected:
 	std::string _conf_fn;
 	ConfigFile* _config;
-	TcpListenSocket<LoginSocket>* _socket;
-	TcpListenSocket<LoginInterSocketW>* _inter_socket;
+	TcpListenSocket< LoginSocket > * _socket;
+	TcpListenSocket< LoginInterSocketW > * _inter_socket;
 	LoginInterSocketR* _realm_socket;
+
+	//SmartPtr< TcpListenSocket< LoginSocket > > _socket;
+	//SmartPtr< TcpListenSocket< LoginInterSocketW > > _inter_socket;
+//	SmartPtr< LoginInterSocketR > _realm_socket;
 };
 }
 

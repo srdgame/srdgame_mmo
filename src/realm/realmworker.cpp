@@ -8,10 +8,12 @@ using namespace srdgame;
 
 RealmWorker::RealmWorker(RealmSocket* socket) : ThreadBase(), _running(true), _socket(socket)
 {
+	LogDebug("RealmServer", "Construtor of RealmWorker");
 }
 RealmWorker::~RealmWorker()
 {
-	if (is_running())
+	LogDebug("RealmServer", "Destructor of RealmWorker");
+	//if (is_running())
 	{
 		shutdown();
 	}

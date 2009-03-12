@@ -9,7 +9,7 @@ namespace srdgame
 {
 class LoginWorker;
 struct Packet;
-
+class LoginServer;
 
 // Handle the communication with world server.
 class LoginInterSocketR : public LoginSocketBase
@@ -17,7 +17,7 @@ class LoginInterSocketR : public LoginSocketBase
 	friend class LoginWorker;
 	friend class LoginServer;
 public:
-	LoginInterSocketR();
+	LoginInterSocketR(LoginServer* server);
 	virtual ~LoginInterSocketR();
 	virtual void on_rev();
 	virtual void on_send();
@@ -28,6 +28,7 @@ public:
 	// Worker will call this to response one packet.
 	virtual void on_handle(Packet* packet);
 protected:
+	LoginServer* _server;
 };
 
 

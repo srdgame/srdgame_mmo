@@ -36,6 +36,8 @@ public:
 	virtual bool accept(sockaddr_in* addr, SOCKET fd);
 	// close/disconnect
 	virtual bool close();
+	// Delete this object
+	virtual void _delete();
 	// whether the connection still there.
 	inline virtual bool is_connected()
 	{

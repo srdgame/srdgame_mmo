@@ -2,10 +2,10 @@
 #define TCP_LISTEN_SOCKET_H_
 
 #include "listensocket.h"
-#include "tcpsocket.h"
 #include "socketmgr.h"
 #include "socketfun.h"
 #include "log.h"
+#include <cassert>
 
 namespace srdgame
 {
@@ -62,7 +62,8 @@ public:
 	}
 	virtual ~TcpListenSocket()
 	{
-		this->close();
+		LogDebug("SOCKET", "Destrutor of TcpListenSOcket");
+		assert(_open);
 	}
 	virtual void close()
 	{	
@@ -76,13 +77,18 @@ public:
 public:
 	virtual void on_accept()
 	{
-		_temp_fd = accept(_fd, (sockaddr*)&_temp_addr, (socklen_t*)&_addr_size);
-		if (_temp_fd == -1)
+		// There might be more than one connection comming?
+		while (true)
 		{
-			return;
+			_temp_fd = accept(_fd, (sockaddr*)&_temp_addr, (socklen_t*)&_addr_size);
+			if (_temp_fd == -1)
+			{
+				return;
+			}
+			T* _temp_socket = new T();
+			LogDebug("SOCKET", "Creating the socket: %d", _temp_socket);
+			_temp_socket->accept(&_temp_addr, _temp_fd);
 		}
-		TcpSocket* _temp_socket = new T();
-		_temp_socket->accept(&_temp_addr, _temp_fd);
 	}
 	inline virtual SOCKET get_fd() { return _fd; }
 

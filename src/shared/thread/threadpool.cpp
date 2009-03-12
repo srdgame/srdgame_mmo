@@ -1,6 +1,7 @@
 #include "threadpool.h"
 #include "autolock.h"
 #include "log.h"
+#include <sys/unistd.h>
 
 using namespace srdgame;
 
@@ -90,7 +91,7 @@ void ThreadPool::shutdown()
 			break;
 		}
 		_lock.unlock();
-		//Sleep(1000);
+		//sleep(1000);
 	}
 	LogSuccess("ThreadPool", "Completed shutdown all the threads");
 }
@@ -299,7 +300,10 @@ void * ThreadPool::thread_proc(void* param)
 	_LogDebug_("ThreadPool", "Deleting one Handle******");
 	// Delete the handle;
 	delete handle;
-	pthread_exit(0);
+
+	// Why use pthread_exit(0), valgrind will found mem-leak?
+	//pthread_exit(0);
+	return 0;
 }
 
 bool ThreadPool::PoolAdjust::run()

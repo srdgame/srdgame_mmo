@@ -17,10 +17,20 @@ RealmServer::RealmServer(const std::string& conf_fn) : _conf_fn(conf_fn), _confi
 
 RealmServer::~RealmServer()
 {
+	LogDebug("RealmServer", "Deleting RealmServer");
 	if (_config)
 	{
 		delete _config;
 	}
+	if (_socket)
+	{
+		delete _socket;
+	}
+	if (_inter_socket)
+	{
+		delete _inter_socket;
+	}
+
 }
 
 void RealmServer::run()
@@ -120,13 +130,7 @@ bool RealmServer::start_inter_listen()
 	return false;
 }
 
-bool RealmServer::stop_listen()
-{
-	if (_socket)
-		_socket->close();
-	if (_inter_socket)
-		_inter_socket->close();
-}
+
 
 bool RealmServer::wait_command()
 {
@@ -134,6 +138,7 @@ bool RealmServer::wait_command()
 	std::cin >> str;
 	if (str == "quit")
 	{
+		ThreadPool::get_singleton().shutdown();
 		return true;
 	}
 	else if (str == "help")

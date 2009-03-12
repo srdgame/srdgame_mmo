@@ -5,7 +5,6 @@ noinst_LIBRARIES = libnetwork.a
 libnetwork_a_SOURCES = network.h\
 		       bipbuffer.h \
 		       socket.h \
-		       socket.cpp \
 		       socketdefs.h \
 		       tcpsocket.h \
 		       socketworker.h \

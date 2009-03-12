@@ -29,7 +29,10 @@ LoginServer::~LoginServer()
 	//std::string input;
 	//std::cin >> input;
 	//LogDebug("LoginServer", "Stoping sockets");
-	stop_listen();
+	if (_socket)
+		delete _socket;
+	if (_inter_socket)
+		delete _inter_socket;
 }
 
 void LoginServer::run()
@@ -62,6 +65,10 @@ void LoginServer::run()
 	{
 		LogNotice(NULL, "-----------------------");
 	}
+}
+void LoginServer::lost_realm()
+{
+	_realm_socket = NULL;
 }
 bool LoginServer::init_env()
 {
@@ -100,8 +107,6 @@ bool LoginServer::start_listen()
 	}
 
 	LogDebug("LoginServer", "Try to listen on: %s %d", addr.c_str(), port);
-	if (_socket)
-		delete _socket;
 	_socket = new TcpListenSocket<LoginSocket>(addr.c_str(), port);
 	if (_socket->is_open())
 	{
@@ -125,8 +130,6 @@ bool LoginServer::start_inter_listen()
 		LogWarning("LoginServer", "Invalid inter address has found");
 	}
 	LogDebug("LoginServer", "Try to inter listen on: %s %d", addr.c_str(), port);
-	if (_inter_socket)
-		delete _inter_socket;
 	_inter_socket = new TcpListenSocket<LoginInterSocketW>(addr.c_str(), port);
 	if (_inter_socket->is_open())
 	{
@@ -160,13 +163,10 @@ bool LoginServer::connect_realm()
 	if (_realm_socket)
 	{
 		_realm_socket->close();
-		delete _realm_socket;
 	}
-	_realm_socket = new LoginInterSocketR();
+	_realm_socket = new LoginInterSocketR(this);
 	if (!_realm_socket->connect(addr, port))
 	{
-		delete _realm_socket;
-		_realm_socket = NULL;
 		LogDebug("LoginServer", "Could not connect to realm server, please start realm server first or correct your configuration file");
 		return false;
 	}
@@ -182,30 +182,6 @@ bool LoginServer::connect_realm()
 	return true;
 }
 
-bool LoginServer::stop_listen()
-{
-	
-	LogDebug("LoginServer", "Stoping listening");
-	if (_socket)
-	{
-		_socket->close();
-		//delete _socket;
-		//_socket = NULL;
-	}
-	if (_inter_socket)
-	{
-		_inter_socket->close();
-		//delete _inter_socket;
-		//_inter_socket = NULL;
-	}
-	if (_realm_socket)
-	{
-		_realm_socket->close();
-		//delete _realm_socket;
-		//_realm_socket = NULL;
-	}
-	LogDebug("LoginServer", "Sockets has been closed");
-}
 
 bool LoginServer::wait_command()
 {
@@ -217,7 +193,9 @@ bool LoginServer::wait_command()
 		of.op = I_OFFLINE;
 		of.len = sizeof(Packet);
 		of.param.Long = 0;
-		_realm_socket->send_packet(&of);
+		if (_realm_socket && _realm_socket->is_connected())
+			_realm_socket->send_packet(&of);
+		ThreadPool::get_singleton().shutdown();
 		return true;
 	}
 	else if (str == "list")

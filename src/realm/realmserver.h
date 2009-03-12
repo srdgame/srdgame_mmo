@@ -23,7 +23,6 @@ protected:
 	bool init_env();
 	bool start_listen();
 	bool start_inter_listen();
-	bool stop_listen();
 
 	// return true to quit.
 	bool wait_command();
@@ -31,8 +30,11 @@ protected:
 protected:
 	std::string _conf_fn;
 	ConfigFile* _config;
-	TcpListenSocket<RealmSocket>* _socket;
-	TcpListenSocket<RealmSocketInter>* _inter_socket;
+	TcpListenSocket< RealmSocket > * _socket;
+	TcpListenSocket< RealmSocketInter > * _inter_socket;
+
+	//SmartPtr< TcpListenSocket< RealmSocket > > _socket;
+	//SmartPtr< TcpListenSocket< RealmSocketInter > > _inter_socket;
 };
 }
 

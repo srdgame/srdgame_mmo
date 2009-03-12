@@ -5,9 +5,18 @@
 #include "socketmgr.h"
 #include "socketfun.h"
 #include <string>
+#include <errno.h>
 #include "log.h"
 
 using namespace srdgame;
+
+//#define _SOCKET_DEBUG_
+
+#ifdef _SOCKET_DEBUG_
+#define _LogDebug_ LogDebug
+#else
+#define _LogDebug_ //
+#endif
 
 TcpSocket::TcpSocket(size_t rev_buf_size, size_t send_buf_size)
 	: Socket(), _rev_buf(rev_buf_size), _send_buf(send_buf_size), _fd(0), _connected(false)
@@ -17,8 +26,7 @@ TcpSocket::TcpSocket(size_t rev_buf_size, size_t send_buf_size)
 
 TcpSocket::~TcpSocket()
 {
-	if (_connected)
-		close();
+	_LogDebug_("SOCKET", "Destructor of TcpSOcket!!!!");
 }
 
 bool TcpSocket::connect(const std::string& addr, int port)
@@ -65,18 +73,21 @@ bool TcpSocket::accept(sockaddr_in* addr, SOCKET fd)
 
 bool TcpSocket::close()
 {
-	//LogDebug("SOCKET", "Closing socket");
+	//_LogDebug_("SOCKET", "Closing socket");
 	_connected = false;
 
-	// remove from mgr
-	//SocketMgr::get_instance()->remove(this);
-	SocketMgr::get_singleton().remove(this);
-
+	
 	SocketFunc::close_socket(_fd);
 
 	// Call virtual ondisconnect
 	on_close();
+
+	SocketMgr::get_singleton().remove(this);
 	return true;
+}
+void TcpSocket::_delete()
+{
+	delete this;
 }
 /*
 bool TcpSocket::is_connectted()
@@ -86,12 +97,12 @@ bool TcpSocket::is_connectted()
 
 bool TcpSocket::send(const char* data, size_t size)
 {
-	//LogDebug("SOCKET", "Sending data : %s", data);
-	//LogDebug("SOCKET", "Data size: %d", size);
+	//_LogDebug_("SOCKET", "Sending data : %s", data);
+	//_LogDebug_("SOCKET", "Data size: %d", size);
 	size_t r_size = 0;
 	while (size != 0)
 	{
-		LogDebug("SOCKET", "Sending................");
+		_LogDebug_("SOCKET", "Sending................");
 		_send_buf_lock.lock();
 		char* buf = _send_buf.reserve(size, r_size);
 		memcpy(buf, data, r_size);
@@ -159,79 +170,127 @@ void TcpSocket::_on_connect()
 void TcpSocket::read_callback(size_t size)
 {
 	// We have to lock here.
-	_rev_buf_lock.lock();
-	size_t spare = _rev_buf.spare_size();
-	char* buf = _rev_buf.reserve(spare, spare);
+	AutoLock lock(_rev_buf_lock);
 
-	if (buf == NULL || spare == 0)
-		return;
-
-	int bytes = recv(_fd, buf, spare, 0);
-
-	//LogDebug("SOCKET", "Data received, size is : %d", bytes);
-
-
-	if(bytes <= 0)
+	_LogDebug_("SOCKET", "Start to process data"); 
+	while (true)
 	{
-		_rev_buf.commit(0);
-		_rev_buf_lock.unlock();
-		close();
-		return;
-	}    
-	else if(bytes > 0)
-	{
-		/*
-		// for debug:
-		char* new_buf = new char[bytes+1];
-		::memset(new_buf, 0, bytes + 1);
-		::memcpy(new_buf, buf, bytes);
-		LogDebug("SOCKET", "Data received, data is : %s", new_buf);
-		delete[] new_buf;*/
-		_rev_buf.commit(bytes);
-		on_rev();
+		// see how many free do we have.
+		size_t spare = _rev_buf.spare_size();
+		char* buf = _rev_buf.reserve(spare, spare);
+
+		if (buf == NULL || spare == 0)
+		{
+			// Wait for next post.
+			_LogDebug_("SOCKET", "No spare buffer, wait for next post");
+			post_event(EPOLLIN);
+			return;
+		};
+
+		int bytes = recv(_fd, buf, spare, 0);
+
+		_LogDebug_("SOCKET", "Data received, size is : %d", bytes);
+
+		if(bytes == 0)
+		{
+			_rev_buf.commit(0);
+			_LogDebug_("SOCKET", "Connection has been closed by peer");
+			close();
+			return;
+		}
+		else if (bytes < 0)
+		{
+			// No data avliable
+			if (errno == EAGAIN)
+			{
+				_LogDebug_("SOCKET", "No more data avaiable");
+				break;
+			}
+			else
+			{
+				LogError("SOCKET", "Error!!!!!!!!!!!!!!!!!!!!!");
+
+				return; // TODO: what should we do here?
+			}
+		}
+		else if(bytes > 0)
+		{
+			/*
+			// for debug:
+			char* new_buf = new char[bytes+1];
+			::memset(new_buf, 0, bytes + 1);
+			::memcpy(new_buf, buf, bytes);
+			_LogDebug_("SOCKET", "Data received, data is : %s", new_buf);
+			delete[] new_buf;*/
+			_rev_buf.commit(bytes);
+			if (bytes < spare)
+			{
+				_LogDebug_("SOCKET", "Commit bytes : %d", bytes);
+				break;
+			}
+			_LogDebug_("SOCKET", "Continue to receive data");
+		}
 	}
 
-	_rev_buf_lock.unlock();
-
+	_LogDebug_("SOCKET", "Call on_rev()..............");	
+	on_rev();
+	_LogDebug_("SOCKET", "Completed calling on_rev()");
 }
 void TcpSocket::write_callback()
 {
-	// LogDebug("SOCKET", "Really sending data");
-	_send_buf_lock.lock();
-	int send_size = 0;
-	size_t size = 0;
-	char* buf = NULL;
+	AutoLock lock(_send_buf_lock);
+	// TODO: Call on send here?
+	on_send();
 
-	buf = _send_buf.get_data(size);
-	if (buf && size)
+	while (true)
 	{
-		//LogDebug("SOCKET", "Really send size: %d data: %s", size, buf);
-		send_size = ::send(_fd, buf, size, 0);
-		//LogDebug("SOCKET", "Really sended size: %d", send_size);
-		if (send_size < 0)
+		//_LogDebug_("SOCKET", "Really sending data");
+		int send_size = 0;
+		size_t size = 0;
+		char* buf = NULL;
+	
+		buf = _send_buf.get_data(size);
+		if (buf && size)
 		{
-			_send_buf.free(0);
-			LogDebug("SOCKET", "Can not send out data, close socket");
-			close();
-		}
-		else
-		{
-			_send_buf.free(send_size);
+			_LogDebug_("SOCKET", "Really send size: %d data: %s", size, buf);
+			send_size = ::send(_fd, buf, size, 0);
+			//_LogDebug_("SOCKET", "Really sended size: %d", send_size);
+			if (send_size < 0)
+			{
+				if (errno == EAGAIN)
+				{
+					post_event(EPOLLOUT);
+					_send_buf.free(0);
+					_LogDebug_("SOCKET", "Socket buffer is full, waiting for client to receive it");
+				}
+				else
+				{
+					_send_buf.free(0);
+					_LogDebug_("SOCKET", "Can not send out data, close socket");
+					close();
+				}
+				return;
+			}
+			else
+			{
+				_send_buf.free(send_size);
+				if (send_size == size)
+					break;
+			}
 		}
 	}
-	_send_buf_lock.unlock();	
 }
-
 void TcpSocket::post_event(unsigned int event)
 {
 	struct epoll_event ev;
 	memset(&ev, 0, sizeof(epoll_event));
 	ev.data.fd = _fd;
-	ev.events = event | EPOLLET;			/* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
+	ev.events = event | EPOLLERR | EPOLLHUP;
+	ev.events = ev.events | EPOLLET;			/* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
 
 	// post actual event
 	if(epoll_ctl(SocketMgr::get_singleton().get_epoll_fd(), EPOLL_CTL_MOD, ev.data.fd, &ev))
 	{
-	//	Log.Warning("epoll", "Could not post event on fd %u", m_fd);
+		LogWarning("SOCKET", "Could not post event on fd %u", _fd);
 	}
 }

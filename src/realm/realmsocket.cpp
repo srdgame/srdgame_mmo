@@ -11,14 +11,18 @@ RealmSocket::RealmSocket(bool inter)
 	  , _inter(inter)
 	  , _worker(NULL)
 {
+	LogDebug("RealmSErver", "Constructor of RealmSocket");
 }
 
 RealmSocket::~RealmSocket()
 {
+	LogDebug("RealmServer", "Destructor of RealmSocket");
+	_worker_lock.lock();
 	if (_worker && _worker->is_running())
 	{
 		_worker->shutdown();
 	}
+	_worker_lock.unlock();
 }
 
 void RealmSocket::on_rev()

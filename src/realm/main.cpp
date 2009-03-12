@@ -10,7 +10,9 @@ int main(int argc, char** argv)
 	{
 		filename = std::string(argv[1]);
 	}
-	LogSuccess("LoginSrv", "Starting....................");
+	LogSuccess("RealmServer", "Starting....................");
 	RealmServer s(filename);
 	s.run();
+	LogDebug("RealmServer", "Closed!!!!!!!!!!!!!!!!!!");
+	return 0;
 }
