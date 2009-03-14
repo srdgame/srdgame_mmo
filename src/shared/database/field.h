@@ -9,20 +9,35 @@ namespace srdgame
 class Field
 {
 public:
-	template<class T>
-	inline void set(const T& val)
+	inline void setup(char* val)
 	{
-		_val = conversion_cast<std::string, T>(val);
+		_val = val;
 	}
 
 	template<class T>
-	inline T get()
-	{
-		return conversion_cast<T, std::string>(_val);
-	}
+	T get();
+
 private:
-	std::string _val;
+	char* _val;
 };
+template<class T>
+T Field::get()
+{
+	return conversion_cast<T, char*>(_val);
+}
+
+template< >
+bool Field::get()
+{
+	return conversion_cast<int, char*>(_val) > 0;
+}
+
+template<>
+std::string Field::get()
+{
+	return std::string(_val);
+}
+
 }
 
 #endif

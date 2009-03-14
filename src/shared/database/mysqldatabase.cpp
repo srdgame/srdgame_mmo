@@ -11,19 +11,40 @@ using namespace srdgame;
 #endif
 #define DB_NAME "MySQL-Database"
 
+MySQLQueryResult::MySQLQueryResult(MYSQL_RES* result, size_t field_size, size_t row_size)
+	: QueryResult(field_size, row_size)
+	  , _result(result)
+{
+}
+
+MySQLQueryResult::~MySQLQueryResult()
+{
+	mysql_free_result(_result);
+}
+
 bool MySQLQueryResult::next()
 {
+	MYSQL_ROW row = mysql_fetch_row(_result);
+	if (row)
+	{
+		for (unsigned long i = 0; i < _field_size; ++i)
+		{
+			_cur[i].setup(row[i]);
+		}
+		return true;
+	}
+	return false;
 }
 
 MySQLDatabase::~MySQLDatabase()
 {
-	for (size_t i = 0; i < _connections.size(); ++i)
+	for (size_t i = 0; i < _conns.size(); ++i)
 	{
-		MySQLConn* con = (MySQLConn*)_connections[i];
-		mysql_close(con->MySql);
-		delete con;
+		MySQLConn* conn = (MySQLConn*)_conns[i];
+		mysql_close(conn->_mysql);
+		delete conn;
 	}
-	_connections.clear();
+	_conns.clear();
 }
 
 bool MySQLDatabase::open(const DatabaseInfo& info)
@@ -31,35 +52,35 @@ bool MySQLDatabase::open(const DatabaseInfo& info)
 	_info = info;
 	LogNotice(DB_NAME, "Connecting to '%s' : '%d', database: '%s' username: '%s' password:*******", 
 			_info._host_ip.c_str(), _info._host_port, _info._database.c_str(), _info._username.c_str());
-	size_t con_size = 0;
-	MYSQL* con;
-	MYSQL* real_con;
-	for (; con_size < MYSQL_CONNECTION_COUNT; ++con_size)
+	size_t conn_size = 0;
+	MYSQL* conn;
+	MYSQL* real_conn;
+	for (; conn_size < MYSQL_CONNECTION_COUNT; ++conn_size)
 	{
-		con = mysql_init(NULL);
-		if (!con)
+		conn = mysql_init(NULL);
+		if (!conn)
 			continue;
-		if (mysql_options(con, MYSQL_SET_CHARSET_NAME, "utf8"))
+		if (mysql_options(conn, MYSQL_SET_CHARSET_NAME, "utf8"))
 		{
 			LogError(DB_NAME, "Could not set character set to be utf8");
 		}
 
-		if (mysql_options(con, MYSQL_OPT_RECONNECT, "true"))
+		if (mysql_options(conn, MYSQL_OPT_RECONNECT, "true"))
 		{
 			LogError(DB_NAME, "MYSQL_OPT_RECONNECT could not be set, connection drops may occur but will be counteracted.");
 		}
 
-		real_con = mysql_real_connect( con, _info._host_ip.c_str(), _info._username.c_str(), _info._password.c_str(), _info._database.c_str(), _info._host_port, NULL, 0 );
-		if (real_con == NULL )
+		real_conn = mysql_real_connect( conn, _info._host_ip.c_str(), _info._username.c_str(), _info._password.c_str(), _info._database.c_str(), _info._host_port, NULL, 0 );
+		if (real_conn == NULL )
 		{
-			LogError("MySQLDatabase", "Conn failed due to: `%s`", mysql_error( con ) );
-			mysql_close(con);
+			LogError("MySQLDatabase", "Conn failed due to: `%s`", mysql_error( conn ) );
+			mysql_close(conn);
 			return false;
 		}
 
-		MySQLConn* new_con = new MySQLConn;
-		new_con->MySql = real_con;
-		_connections.push_back(new_con);
+		MySQLConn* new_conn = new MySQLConn;
+		new_conn->_mysql = real_conn;
+		_conns.push_back(new_conn);
 	}
 }
 
@@ -67,10 +88,29 @@ void MySQLDatabase::close()
 {
 }
 
-QueryResult* MySQLDatabase::query(const char* sql, ...)
+bool MySQLDatabase::send_query(DBConn* conn, const char* sql)
 {
 }
-bool MySQLDatabase::execute(const char* sql, ...)
+QueryResult* MySQLDatabase::get_result(DBConn* conn)
 {
-	return true;
+	MySQLConn* conn_ = static_cast<MySQLConn*>(conn);
+	MYSQL_RES* res_ = mysql_store_result(conn_->_mysql);
+	if (!res_)
+		return NULL;
+
+	unsigned long rows = mysql_affected_rows(conn_->_mysql);
+	unsigned long fields = mysql_field_count(conn_->_mysql);
+
+	MySQLQueryResult* res = NULL;
+
+	if (rows && fields)
+	{
+		res = new MySQLQueryResult(res_, fields, rows);
+		res->next();
+	}
+	else
+	{
+		mysql_free_result(res_);
+	}
+	return res;
 }

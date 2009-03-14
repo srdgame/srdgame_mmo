@@ -1,14 +1,13 @@
 #ifndef DATABASE_CONNECTION_H_
 #define DATABASE_CONNECTION_H_
 
+#include "mutex.h"
+
 namespace srdgame
 {
-class DBConn
+struct DBConn
 {
-public:
-	DBConn();
-	virtual ~DBConn();
-
+	Mutex _lock; 
 };
 };
 

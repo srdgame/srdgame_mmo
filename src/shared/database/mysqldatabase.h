@@ -12,21 +12,22 @@
 
 namespace srdgame
 {
-class MySQLConn : public DBConn
+struct MySQLConn : public DBConn
 {
 public:
-	MYSQL* MySql;
+	MYSQL* _mysql;
 };
 class MySQLQueryResult : public QueryResult
 {
 	friend class MySQLDatabase;
 protected:
-	MySQLQueryResult() : QueryResult(0, 0){}
+	MySQLQueryResult(MYSQL_RES* result, size_t field_size, size_t row_size);
+	~MySQLQueryResult();
 public:
 	bool next();
 	
 protected:
-
+	MYSQL_RES* _result;
 };
 class MySQLDatabase : public Database
 {
@@ -34,10 +35,10 @@ class MySQLDatabase : public Database
 	virtual ~MySQLDatabase();
 public:
 	bool open(const DatabaseInfo& info);
-	void close() = 0;
-
-	QueryResult* query(const char* sql, ...);
-	bool execute(const char* sql, ...);
+	void close();
+protected:
+	bool send_query(DBConn* conn, const char* sql);
+	QueryResult* get_result(DBConn* conn);
 private:
 };
 };

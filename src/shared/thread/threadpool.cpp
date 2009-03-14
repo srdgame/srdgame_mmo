@@ -91,7 +91,7 @@ void ThreadPool::shutdown()
 			break;
 		}
 		_lock.unlock();
-		//sleep(1000);
+		sleep(1);
 	}
 	LogSuccess("ThreadPool", "Completed shutdown all the threads");
 }
