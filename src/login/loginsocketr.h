@@ -19,7 +19,7 @@ class LoginInterSocketR : public LoginSocketBase
 public:
 	LoginInterSocketR(LoginServer* server);
 	virtual ~LoginInterSocketR();
-	virtual void on_rev();
+	//virtual void on_rev();
 	virtual void on_send();
 	virtual void on_connect();
 	virtual void on_close();

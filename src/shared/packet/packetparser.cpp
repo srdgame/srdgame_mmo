@@ -23,7 +23,7 @@ void PacketParser::free(Packet& p)
 	return;
 }
 
-int PacketParser::get_ex_len(Packet& p)
+int PacketParser::get_ex_len(const Packet& p)
 {
 	//LogDebug("PacketParser", "p.len = %d, g_header_len = %d, so get_ex_len = %d", p.len, g_header_len, p.len - g_header_len);
 	return p.len - g_header_len - g_void_ptr_len;

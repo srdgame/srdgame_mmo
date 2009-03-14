@@ -4,8 +4,7 @@ noinst_LIBRARIES = liblog.a
 
 liblog_a_SOURCES = log.h \
 		   log.cpp \
-		   loggui.h
-		   loggui.cpp\
-		   logfile.h
+		   loggui.h \
+		   logfile.h \
 		   logfile.cpp
 

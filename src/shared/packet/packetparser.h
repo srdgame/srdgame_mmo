@@ -29,7 +29,7 @@ public:
 
 public:
 	static void free(Packet& p);
-	static int get_ex_len(Packet& p);
+	static int get_ex_len(const Packet& p);
 private:
 	from_stream_func _ex_from_func;
 	to_stream_func _ex_to_func;

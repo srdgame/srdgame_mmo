@@ -2,6 +2,7 @@
 #define LOG_FILE_H_
 
 #include "mutex.h"
+#include "fastqueue.h"
 #include "threadbase.h"
 #include <fstream>
 #include <queue>
@@ -34,11 +35,10 @@ public:
 		return _running;
 	}
 protected:
+	std::string _fn;
 	std::fstream _file;
-	Mutex _file_lock;
 
-	std::queue<std::string> _logs;
-	Mutex _logs_lock;
+	FastQueue<std::string> _logs;
 
 	bool _running;
 };

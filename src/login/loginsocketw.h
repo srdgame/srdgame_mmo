@@ -18,7 +18,7 @@ class LoginInterSocketW : public LoginSocketBase
 public:
 	LoginInterSocketW();
 	virtual ~LoginInterSocketW();
-	virtual void on_rev();
+	//virtual void on_rev();
 	virtual void on_send();
 	virtual void on_connect();
 	virtual void on_close();
