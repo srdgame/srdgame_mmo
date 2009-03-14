@@ -1,5 +1,12 @@
-Finish the shared libraries:
+Finished the shared libraries:
 1) Thread
 2) Socket
 3) Log
+4) Database
+5) Packet parser load the so file only
+
+
+Planned:
+1) The world server framework
+2) Consider about the script framework.
 
