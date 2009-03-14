@@ -20,6 +20,7 @@ public:
 	virtual ~LoginSocketBase();
 
 protected:
+	virtual void on_rev();
 	// Worker will call this to response one packet.
 	virtual void on_handle(Packet* packet) = 0;
 	virtual bool send_packet(Packet* packet);

@@ -23,7 +23,7 @@ protected:
 
 	// Helper functions
 	char to_char(int i);
-	int from_char(char c);
+	int to_int(char c);
 
 	void dump_to_file(std::fstream& file, const char* source, const char* data, size_t len);
 private:

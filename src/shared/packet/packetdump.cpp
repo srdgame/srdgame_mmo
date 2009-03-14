@@ -65,6 +65,15 @@ void PacketDump::dump(const char* source, const Packet& data)
 	dump_to_file(_file_p, source, buf, size);
 }
 
+char PacketDump::to_char(int i)
+{
+	return (i <= 9) ? '0' + i : 'A' + (i - 10);
+}
+int PacketDump::to_int(char c)
+{
+	return (c > '9') ? c - 'A' + 10 : c - '0';
+}
+
 void PacketDump::dump_to_file(fstream& file, const char* source, const char* data, size_t len)
 {
 	const int char_offset = 16*3 + 2;

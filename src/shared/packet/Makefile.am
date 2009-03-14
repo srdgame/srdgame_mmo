@@ -6,6 +6,7 @@ libpacket_a_SOURCES = packetdefs.h \
 		      packetparser.h \
 		      packetparser.cpp \
 		      packetdump.h \
-		      packetdump.cpp
+		      packetdump.cpp \
+		      opcode.h
 
 

@@ -2,6 +2,7 @@
 #include "log.h"
 #include "packetparser.h"
 #include "loginworker.h"
+#include "opcode.h"
 
 using namespace srdgame;
 

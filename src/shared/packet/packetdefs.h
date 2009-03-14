@@ -37,6 +37,7 @@ union PacketParam
 	float Float;
 	short Short;
 	bool Bool;
+	char Char;
 };
 
 #define MAX_PACKET_LEN 1024 // we do believen this should be long enough for any packet...
