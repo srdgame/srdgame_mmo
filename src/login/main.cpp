@@ -1,20 +1,18 @@
 #include "log.h"
-#include "realmserver.h"
+#include "loginserver.h"
 #include "config.h"
-#include <string>
-//#include <mcheck.h>
 
 using namespace srdgame;
 int main(int argc, char** argv)
 {
-	//mtrace();
-	std::string filename = "realm.conf";
+	std::string filename = "login.conf";
 	if (argc == 2)
 	{
 		filename = std::string(argv[1]);
 	}
-	LogSuccess("RealmServer", "Starting....................");
-	RealmServer s(filename);
+	LogSuccess("LoginServer", "Starting....................");
+	LoginServer s(filename);
 	s.run();
-//	muntrace();
+	LogDebug("LoginServer", "Closed!!!!!!!!!!!!!!!!!!");
+	return 0;
 }
