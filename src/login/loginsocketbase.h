@@ -29,6 +29,9 @@ protected:
 	FastQueue<Packet> _packets; //FastQueue is thread safe, we no long need to have mutex for it.
 	LoginWorker* _worker; // we do not need free this worker, the pool will do for us. to Make sure this will be clear before worker get closed.
 	Mutex _worker_lock;
+	bool _inter;
+	bool _dump_in;
+	bool _dump_out;
 };
 }
 

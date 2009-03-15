@@ -1,10 +1,16 @@
 AUTOMAKE_OPTION=foreign
 
-INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../shared/packet
+INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../shared/packet -I$(srcdir)/../shared/util -I$(srcdir)/../shared/crypto
 
 lib_LTLIBRARIES = libsample.la
 
 libsample_la_SOURCES = defs.h \
-		   main.cpp
+					   login.h \
+					   login.cpp \
+					   strlib.h \
+					   strlib.cpp \
+					   crypto.h \
+					   crypto.cpp \
+					   main.cpp
 
 

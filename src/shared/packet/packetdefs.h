@@ -2,6 +2,7 @@
 #define PACKET_DEFS_H_
 
 #include <cstddef>
+#include "metadefs.h"
 
 //#include "packetparser.h"
 
@@ -53,5 +54,18 @@ struct Packet
 };
 
 }
+
+#define PCHAR(buf, pos) (buf + (pos))
+
+#define PUINT8(buf, pos) (*(uint8*)PCHAR(buf, pos))
+#define PUINT16(buf, pos) (*(uint16*)PCHAR(buf, pos))
+#define PUINT32(buf, pos) (*(uint32*)PCHAR(buf, pos))
+#define PUINT64(buf, pos) (*(uint64*)PCHAR(buf, pos))
+
+#define PINT8(buf, pos) (*(int8*)PCHAR(buf, pos))
+#define PINT16(buf, pos) (*(int16*)PCHAR(buf, pos))
+#define PINT32(buf, pos) (*(int32*)PCHAR(buf, pos))
+#define PINT64(buf, pos) (*(int64*)PCHAR(buf, pos))
+
 
 #endif

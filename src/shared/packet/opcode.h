@@ -11,74 +11,48 @@ namespace opcode
  * Only the one I have comment for you that you could not provide less data.
  *
  */
-struct InitData
+enum LoginResultFlag
 {
-	long _flag;
-}
-struct InitResult
-{
-	long _flag;
-}
-struct LoginData
-{
-	char _username[128];
-	char _password[128]; // Not enough?
-	char _other[128];
-};
-struct LoginResult
-{
-	long _flag; // 0 = OK, 1 = Refect, 2 = Incorrect PWD, 3 = Block list, 4 = Not latest client, 5 = Account Expired, 6 = Banned, 7 = Server too busy, 8 = Account Limitition, 9 = Self Lock, 10 = Not permitted Group, 11 = Account erased, 12 = Hacking... 13 = Unknow for sure :-)
-	char _info[256]; // more detial info
-};
-struct LogoutData
-{
-	long _flag;
-	char _other[256]; // 
-};
-struct LogoutResult
-{
-	long _flag; //
-	char _info[256];
+// 0 = OK, 1 = Refect, 2 = Incorrect PWD, 3 = Block list, 4 = Not latest client, 5 = Account Expired, 6 = Banned, 7 = Server too busy, 8 = Account Limitition, 9 = Self Lock, 10 = Not permitted Group, 11 = Account erased, 12 = Hacking... 13 = Unknow for sure :-)
+	LRF_OK = 0,
+	LRF_RECT = 1,
+	LRF_PASSWORD = 2,
+	LRF_BLOCKED = 3,
+	LRF_OUTDATA = 4,
+	LRF_EXPIRED = 5,
+	LRF_BANNED = 6,
+	LRF_OVERLOAD = 7,
+	LRF_ACC_LIMIT = 8,
+	LRF_SELF_LOCK = 9,
+	LRF_NO_PERMITTED = 10,
+	LRF_ACC_ERASED = 11,
+	LRF_R_U_HACKING = 12,
+	LRF_UNKNOW_13 = 13,
 };
 
-struct ServerList
+// The param.Data are following below instruction if you have more than one sub param:
+// This string include more than one item.  and they are sperated as below
+// @sub param's index, L16 @ subparam's len, L16 @ sub param's context L(2) @ another param's index, L16
+//
+// Normally, you should put the smaller index before the maxer one.
+//
+// Below is the suggested sub params for specified opcode.
+//
+//
+enum LoginParam
 {
-	long _type;
-	char _other[256];
-};
-struct ServerInfo
-{
-	long _type;
-	long _id;
-	long _ip;
-	long _port;
-	char _name[128];
-	char _info[128];
-	char _other[256]; // This is must be 256 size.
-};
-struct ServerListResult
-{
-	long _count;
-	struct ServerInfo _list[];
-	char _other[256];
+	LP_NAME = 0,
+	LP_PASS = 1,
+	LP_CRYPTO_TYPE = 3,
+	// Define for yourself.
+	ROLP_CLIENT_TYPE = 20,
+	ROLP_VERSION = 21,
 };
 
-struct EnterServerResult
-{
-	long _flag;
-	char _other[256];
-};
 
-struct CryptoKeyData
-{
-	char _key[256];
-	char _other[256];
-}
-struct CryptoKeyResult
-{
-	char _key[256];
-	char _other[256];
-}
+// OR  OR  OR  OR
+// Save your own struct and for your prefer.
+
 
 enum ExOpcode
 {
@@ -93,20 +67,20 @@ enum ExOpcode
 	ES_VERSION = 6, // TODO:
 
 	// For login
-	EC_LOGIN = 10, // with LoginData.
-	ES_LOGIN = 11, // with LoginResult.
-	EC_LOGOUT = 12, // LogoutData.
-	ES_LOGOUT = 13, // refer LogoutResult
+	EC_LOGIN = 10,
+	ES_LOGIN = 11,
+	EC_LOGOUT = 12,
+	ES_LOGOUT = 13,
 	EC_GET_LS_INFO = 14,
 	ES_GET_LS_INFO = 15,
-	EC_ADMIN_LOGIN = 10, // with LoginData.
-	ES_ADMIN_LOGIN = 11, // with LoingResult.
+	EC_ADMIN_LOGIN = 18, 
+	ES_ADMIN_LOGIN = 19, 
 
 	// For server list not only for login.
-	EC_SERVER_LIST = 20, // with ServerListData
-	ES_SERVER_LIST = 21, // with ServerListResult.
-	EC_ENTER_SERVER = 22, // with enter server with server id only.
-	ES_ENTER_SERVER = 23, // with EnterResult.
+	EC_SERVER_LIST = 20, 
+	ES_SERVER_LIST = 21, 
+	EC_ENTER_SERVER = 22,
+	ES_ENTER_SERVER = 23,
 
 	EC_CRYPTO_KEY = 40, // for key..
 	ES_CRYPTO_KEY = 41, // 

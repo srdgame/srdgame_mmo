@@ -4,12 +4,20 @@
 #include "packetparser.h"
 #include "threadpool.h"
 #include "autolock.h"
+#include "packetdump.h"
 
 using namespace srdgame;
 
 #define SOCKET_DEBUG
+#undef _LogDebug_
 
-LoginSocketBase::LoginSocketBase() : _worker(NULL)
+#ifdef SOCKET_DEBUG
+#define _LogDebug_ LogDebug
+#else
+#define _LogDebug_ //
+#endif
+
+LoginSocketBase::LoginSocketBase() : _worker(NULL), _dump_in(false), _dump_out(false), _inter(true)
 {
 }
 LoginSocketBase::~LoginSocketBase()
@@ -24,24 +32,41 @@ LoginSocketBase::~LoginSocketBase()
 
 bool LoginSocketBase::send_packet(Packet* packet)
 {
-#ifdef SOCKET_DEBUG
-	LogDebug("LoginServer", "Starting to send packet, opcode: %d", packet->op);
-#endif
+	_LogDebug_("LoginServer", "Starting to send packet, opcode: %d", packet->op);
+
 	// TODO: To refine this send, the buffer allocation is useless here, we could use send_buf here.
 	char sz[MAX_PACKET_LEN];
 	::memset(sz, 0, MAX_PACKET_LEN);
-	size_t size = PacketParser::get_singleton().to_inter(sz, *packet);
+	size_t size = 0;
+	
+	if (_inter)
+	{
+		size = PacketParser::get_singleton().to_inter(sz, *packet);
+	}
+	else
+	{
+		size = PacketParser::get_singleton().to_ex(sz, *packet);
+	}
 
-#ifdef SOCKET_DEBUG
-	LogDebug("LoginServer", "Packet length is : %d", size);
-#endif
+	if (size && _dump_out)
+	{
+		PacketDump::get_singleton().dump("PACKET OUT", sz, size);
+		PacketDump::get_singleton().dump("PACKET OUT", *packet);
+	}
+
+	_LogDebug_("LoginServer", "Packet length is : %d", size);
+	
 	if (size && is_connected())
 	{
 		return this->send(sz, size);
 	}
-#ifdef SOCKET_DEBUG
+
+	// We allow parser ingore this packet.
+	if (size == 0)
+		return true;
+
 	LogError("LoginServer", "Socket is't been connected");
-#endif
+	
 	return false;
 }
 void LoginSocketBase::on_rev()
@@ -60,7 +85,8 @@ void LoginSocketBase::on_rev()
 		while (size > index)
 		{
 			Packet p;
-			size_t used = PacketParser::get_singleton().from_inter(p, data + index, size - index);
+			size_t used = _inter ? PacketParser::get_singleton().from_inter(p, data + index, size - index)
+				: PacketParser::get_singleton().from_ex(p, data + index, size - index);
 			if (!used)
 			{
 				if (size - index >= MAX_PACKET_LEN)
@@ -68,13 +94,27 @@ void LoginSocketBase::on_rev()
 					// we should quit here.close connection.
 					this->close();
 				}
+				if (_dump_in)
+				{
+					PacketDump::get_singleton().dump("UNCOMPLETE PACKET", data + index, size - index);
+					PacketDump::get_singleton().dump("UNKNOWN PACKET", p);
+				}
+				LogDebug("LoginSocket", "Breaking!!! size is : %d   index is : %d", size, index);
 				break;
 			}
-			LogDebug("LoginInterSocketW", "One packet received from world server");
+			LogDebug("LoginSocket", "One packet received from world server");
+			// For dump 
+			if (_dump_in)
+			{
+				PacketDump::get_singleton().dump("PACKET", data + index, used);
+				PacketDump::get_singleton().dump("PACKET", p);
+			}
+
 			index += used;
 			_packets.push(p);
 			start_worker();
 		}
+		
 		buf->free(index);
 
 		// Ask for worker.

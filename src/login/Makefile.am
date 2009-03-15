@@ -1,4 +1,4 @@
-INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir)/../shared/log -I$(srcdir)/../shared/network -I$(srcdir)/../shared/thread -I$(srcdir)/../shared/util -I$(srcdir) -I$(srcdir)/../shared/config -I$(srcdir)/../shared/packet
+INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir)/../shared/log -I$(srcdir)/../shared/network -I$(srcdir)/../shared/thread -I$(srcdir)/../shared/util -I$(srcdir) -I$(srcdir)/../shared/config -I$(srcdir)/../shared/packet -I$(srcdir)/../sample
 
 
 noinst_PROGRAMS = srdgame-loginserver
@@ -17,6 +17,8 @@ srdgame_loginserver_SOURCES  = loginserver.h \
 			       loginworker.cpp \
 			       loginmgr.h \
 			       loginmgr.cpp \
+				   loginauth.h \
+				   loginauth.cpp \
 			       main.cpp
 
 srdgame_loginserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lpthread -ldl

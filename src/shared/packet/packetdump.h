@@ -2,7 +2,9 @@
 #include "singleton.h"
 #include "mutex.h"
 
-#include <fstream>
+#include <ctype.h>
+#include <cstdlib>
+#include <cstdio>
 
 namespace srdgame
 {
@@ -25,12 +27,12 @@ protected:
 	char to_char(int i);
 	int to_int(char c);
 
-	void dump_to_file(std::fstream& file, const char* source, const char* data, size_t len);
+	void dump_to_file(FILE* file, const char* source, const char* data, size_t len);
 private:
 	bool _inited;
 	Mutex _file_s_lock;
-	std::fstream _file_s;
+	FILE* _file_s;
 	Mutex _file_p_lock;
-	std::fstream _file_p;
+	FILE* _file_p;
 };
 }

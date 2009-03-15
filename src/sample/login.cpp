@@ -1,6 +1,23 @@
 #include "login.h"
 #include "strlib.h"
-
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include "ro_defs.h"
+//--------------------------------------------
+// Test to know if an IP come from LAN or WAN.
+//--------------------------------------------
+int lan_subnetcheck(uint32 ip)
+{
+	/*
+	int i;
+	ARR_FIND( 0, subnet_count, i, (subnet[i].char_ip & subnet[i].mask) == (ip & subnet[i].mask) );
+	return ( i < subnet_count ) ? subnet[i].char_ip : 0;*/
+	return 0;
+}
+uint16 ntows(uint16 netshort)
+{
+	return ((netshort & 0xFF) << 8) | ((netshort & 0xFF00) >> 8);
+}
 size_t to_refuse_connect(char* buf)
 {
 	memset(buf, 0, 23);
@@ -8,6 +25,8 @@ size_t to_refuse_connect(char* buf)
 	PINT8(buf, 2) = 3; // 3 = Rejected from server.
 	return 23;
 }
+#define CONVIP(ip) ((ip)>>24)&0xFF,((ip)>>16)&0xFF,((ip)>>8)&0xFF,((ip)>>0)&0xFF
+
 size_t from_userinfo(Packet* dest, const char* src, size_t size, uint16 opcode)
 {
 	size_t res = 0;
@@ -40,20 +59,25 @@ size_t from_userinfo(Packet* dest, const char* src, size_t size, uint16 opcode)
 	if (opcode == 0x027c && size < 60){
 		return 0;
 	}else{
-		res = 60
+		res = 60;
 	}
-	char* buf = new char[128 + 128];
+	char* buf = new char[sizeof(LoginInfo)];// enough.
+	memset(buf, 0, sizeof(LoginInfo));
+
 	dest->op = EC_LOGIN;
-	dest->len = sizeof(Packet) + 128 + 128;
+	dest->len = sizeof(Packet) + sizeof(LoginInfo);
 	dest->param.Data = buf;
 
-	memset(buf, 0, 128 + 128);
 
-	uint32 version;
-	char* name = buf;
-	char* pass = buf + 128;
+	LoginInfo info;
+
+	uint32& version = info.version;
+	char* name = info.name;
+	memset(name, 0, 24);
+	char *pass = info.pass;
+	memset(pass, 0, 32);
 	unsigned char hash[16];
-	uint8 client_type = 0;
+	uint8& client_type = info.client_type;
 
 	bool is_raw_pass = (opcode == 0x0064 || opcode == 0x0277 || opcode == 0x02b0);
 
@@ -67,16 +91,50 @@ size_t from_userinfo(Packet* dest, const char* src, size_t size, uint16 opcode)
 	else
 	{
 		memcpy(hash, PCHAR(src, 30), 16);
-		client_type = PUNIT8(src, 46);
+		client_type = PUINT8(src, 46);
 	}
 	if (!is_raw_pass)
 	{
-		bin2hex(pass, hash, 16);
+		bin2hex(pass, hash, 16); // pass to 32 bytes?
 	}
+
+	memcpy(buf, (char*)(&info), sizeof(LoginInfo));	
+/*
+	size_t len = 0;
+	// Save name
+	PUINT16(buf, len) = (uint16)LP_NAME;		len += 2;
+	PUINT16(buf, len) = 24;						len += 2;
+	memcpy(PCHAR(buf, len), name, 24);			len +=24;
+
+	// Save password.
+	PUINT16(buf, len) = (uint16)LP_PASS;		len += 2;
+	PUINT16(buf, len) = 32;						len += 2;
+	memcpy(PCHAR(buf, len), pass, 32);			len += 32;
+
+	// Save crypto type
+	PUINT16(buf, len) = (uint16)LP_CRYPTO_TYPE; len += 2;
+	PUINT16(buf, len) = 1;						len += 2;
+	PUINT8(buf, len) = is_raw_pass ? 0x00 : 0x03; // Try both auth with 0x03
+	len += 1;
+
+	// save client type.
+	PUINT16(buf, len) = (uint16)ROLP_CLIENT_TYPE;	len += 2;
+	PUINT16(buf, len) = 1;							len += 2;
+	PUINT8(buf, len) = client_type;					len += 1;
+
+	// save version.
+	PUINT16(buf, len) = (uint16)ROLP_VERSION;	len += 2;
+	PUINT16(buf, len) = 4;						len += 2;
+	PUINT32(buf, len) = version;				len += 4;
+
+	dest->len += len;
+
+	*/
+
 	return res;
 }
 
-size_t to_auth_result(char* buf, Packet* packet)
+size_t to_auth_result(char* buf, const Packet* packet)
 {
 	size_t res = 0;
 	if (packet->param.Long)
@@ -100,27 +158,27 @@ size_t to_auth_result(char* buf, Packet* packet)
 	}
 	else
 	{
-		// Do not need to send data?
+		// Do not need to send data?  Yes, we need to send the server list.
 		return 0;
 	}
 
 }
 
-size_t to_server_list_result(char* buf, Packet* packet)
+size_t to_server_list_result(char* buf, const Packet* packet)
 {
-	long count = (*(long*)packet->param.Data);
+	ServerListHeader* header = (ServerListHeader*)packet->param.Data;
+	uint16 count = header->server_count;
 	size_t res = 47 + 32 * count;
 	memset(buf, 0, res);
 
 	PUINT16(buf, 0) = 0x69; // opcode.
 	PUINT16(buf, 2) = res; // length :-)
 
-	char* other = packet->param.Data + sizeof(long) + count * sizeof(ServerInfo);
-	uint32 id1 = PUINT32(other, 4);
-	uint32 id2 = PUINT32(other, 8);
-	uint32 account = PUINT32(other, 0);
-	uint8 sex = PUINT8(other, 12);
-	uint32 ip = PUINT32(other, 16);
+	uint32 id1 = header->id1;
+	uint32 id2 = header->id2;
+	uint32 account = header->account;
+	uint8 sex = header->sex;
+	uint32 ip = header->ip;
 
 	PUINT32(buf, 4) = id1;
 	PUINT32(buf, 8) = account;
@@ -130,30 +188,33 @@ size_t to_server_list_result(char* buf, Packet* packet)
 	PUINT16(buf, 44) = 0; // unknown
 	PUINT8(buf, 46) = sex_str2num(sex);
 
-	for (i = 0, n = 0; i < count; ++i)
+	int i = 0;
+	for (; i < count; ++i)
 	{
-		ServerInfo* info = (ServerInfo*)(packet->param.Data + sizeof(long) + sizeof(ServerInfo) * i);
+		ServerInfo* info = (ServerInfo*)(packet->param.Data + sizeof(ServerListHeader) + sizeof(ServerInfo) * i);
 		uint32 subnet_char_ip = lan_subnetcheck(ip);
-		PUINT32(buf, 47 + n * 32) = htonl((subnet_char_ip) ? subnet_char_ip : info->_ip);
-		PUINT16(buf, 47 + n * 32 + 4) = ntows(htons((uint16)info->_port));
+		PUINT32(buf, 47 + i * 32) = htonl((subnet_char_ip) ? subnet_char_ip : info->ip);
+		printf("IP of Server : %d.%d.%d.%d.\n", CONVIP(info->ip));
 
-		memcpy(PCHAR(buf, 47 + n * 32 + 6), info->_name, 20);
-		PUINT16(buf, 47 + n * 32 + 26) = PUINT16(info->_other, 0); // users
-		PUINT16(buf, 47 + n * 32 + 28) = PUINT16(info->_other, 2); // maintenance
-		PUINT16(buf, 47 + n * 32 + 28) = PUINT16(info->_other, 4); // new_
-		n++;
+		PUINT16(buf, 47 + i * 32 + 4) = ntows(htons(info->port));
+
+		memcpy(PCHAR(buf, 47 + i * 32 + 6), info->name, 20);
+		PUINT16(buf, 47 + i * 32 + 26) = info->users;// users
+		PUINT16(buf, 47 + i * 32 + 28) = info->maintenance; // maintenance
+		PUINT16(buf, 47 + i * 32 + 30) = info->new_; // new_
 	}
 	return res;
 }
 
-size_t to_crypto_key(char* buf, Packet* packet)
+size_t to_crypto_key(char* buf, const Packet* packet)
 {
-	size_t md5keylen = 12; // take the less one.
+	RO_MD5Key* key = (RO_MD5Key*)(packet->param.Data);
+	size_t md5keylen = 16; // take the less one.
 	size_t res = 4 + 12;
 	
 	PUINT16(buf, 0) = 0x01dc; // opcode.
 	PUINT16(buf, 2) = res;
-	memcpy(PCHAR(buf, 4), packet->_key, md5keylen);
+	memcpy(PCHAR(buf, 4), key->key, md5keylen);
 
 	return res;
 }
@@ -163,15 +224,16 @@ size_t from_get_loginserver_info(Packet* dest, const char* src, size_t size)
 	size_t res = 2;
 	dest->op = EC_GET_LS_INFO;
 	dest->len = sizeof(Packet);
-	dest->param.Lang = 0;
+	dest->param.Long = 0;
 
 }
 
-size_t to_get_loginserver_info(char* buf, Packet* packet)
+size_t to_get_loginserver_info(char* buf, const Packet* packet)
 {
+	LoginServerInfo * info = (LoginServerInfo*)packet->param.Data;
 	size_t res = 10;
 	PUINT16(buf, 0) = 0x7531;
-	memcpy(PCHAR(buf, 2), "01000000", 8);
+	memcpy(PCHAR(buf, 2), info->info, 8);
 	return res;
 }
 
@@ -180,34 +242,36 @@ size_t from_admin_login(Packet* dest, const char* src,  size_t size)
 	if (size < 2)
 		return 0;
 
-	int passwd_enc = (int)PUINT16(src, 2);
+	AdminLoginInfo info;
+	memset(info.pass, 0, 32);
+
+	info.crypto_type  = (int)PUINT16(src, 2);
 	const char* pass = PCHAR(src, 4);
 
-	if (passwd_enc == 0)
+	if (info.crypto_type == 0)
 	{
 		if (size < 28)
 			return 0;
-		char* buf = new char[24];
-		dest.param.Data = buf;
-		memcpy(buf, pass, 24);
+		memcpy(info.pass, pass, 24);
 	}
 	else
 	{
 		if (size < 20)
 			return 0;
-		char* buf = new char[16];
-		memcpy(buf, pass, 16);
+		memcpy(info.pass, pass, 16);
 	}
-	size_t res = (passwd_enc == 0) ? 28 : 20;
+	size_t res = (info.crypto_type == 0) ? 28 : 20;
 	dest->op = EC_ADMIN_LOGIN;
-	dest->len = sizeof(Packet) + res - 4;
-	reeturn res;
+	dest->len = sizeof(Packet) + sizeof(AdminLoginInfo);
+	char * buf = new char[sizeof(AdminLoginInfo)];
+	memcpy(buf, (char*)&info, sizeof(AdminLoginInfo));
+	return res;
 }
 
-size_t to_admin_login_result(char* buf, Packet* packet)
+size_t to_admin_login_result(char* buf, const Packet* packet)
 {
 	size_t res = 3;
 	PUINT16(buf, 0) = 0x7919;
-	PUINT8(buf, 2) = PUINT64(packet->param.Data) == 0 ? 0, : 1;
+	PUINT8(buf, 2) = PUINT64(packet->param.Data, 0) == 0 ? 0 : 1;
 	return res;
 }

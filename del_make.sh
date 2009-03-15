@@ -21,6 +21,4 @@ rm .tm_project2.cache
 rm TODO.tasks
 rm libtool
 rm ltmain.sh
-rm ./src/login/libsample.so
-rm ./src/world/libsample.so
-rm ./src/realm/libsample.so
+

@@ -1,7 +1,10 @@
-#include "typedefs.h"
 #include "defs.h"
 #include <iostream>
 #include <cstring>
+#include "login.h"
+
+using namespace srdgame;
+using namespace srdgame::opcode;
 
 size_t from_stream(Packet* dest, const char* src, size_t size)
 {
@@ -31,10 +34,10 @@ size_t from_stream(Packet* dest, const char* src, size_t size)
 		case 0x02b0:
 		case 0x01dd:
 		case 0x01fa:
-		case 0x027c:
+		case 0x027c: //login with username password.
 			res = from_userinfo(dest, src, size, opcode);
 			break;
-		case 0x01db: //
+		case 0x01db: // get md5 key.
 		case 0x791a: // for md5 key.
 			if (size >= 2)
 			{
@@ -42,21 +45,21 @@ size_t from_stream(Packet* dest, const char* src, size_t size)
 				dest->op = EC_CRYPTO_KEY;
 			}
 			break;
-		case 0x7530:
+		case 0x7530: // get loginserver's info
 			if (size >= 2)
 			{
 				res = from_get_loginserver_info(dest, src, size);
 			}
 		case 0x7918:
 			// Admin login?
-			rest = from_admin_login(dest, src, size);
+			res = from_admin_login(dest, src, size);
 			break;
 		default:
 			break;
 
 	}
 	std::cout << "In from_stream function!!!!" << std::endl;
-	return 0;
+	return res;
 }
 size_t to_stream(char* dest, const Packet* src)
 {
@@ -64,10 +67,11 @@ size_t to_stream(char* dest, const Packet* src)
 	switch (src->op)
 	{
 		case ES_INIT:
-			if (!src->Bool)
+			if (!src->param.Bool)
 			{
-				res = to_refuse_connect(char* dest);
+				res = to_refuse_connect(dest);
 			}
+			break;
 		case ES_LOGIN:
 			res = to_auth_result(dest, src);
 			break;
@@ -79,11 +83,15 @@ size_t to_stream(char* dest, const Packet* src)
 			break;
 		case ES_ADMIN_LOGIN:
 			res = to_admin_login_result(dest, src);
+			break;
+		case ES_SERVER_LIST:
+			res = to_server_list_result(dest, src);
+			break;
 		default:
 			break;
 	}
 	std::cout << "In to_stream function!!!!" << std::endl;
-	return 0;
+	return res;
 }
 
 
