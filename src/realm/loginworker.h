@@ -3,20 +3,20 @@
 // But how to make sure only spawn one?  Using RealManager???
 //
 
-#ifndef REALM_WORKER_H_
-#define REALM_WORKER_H_
+#ifndef LOGIN_WORKER_H_
+#define LOGIN_WORKER_H_
 
 #include "threadbase.h"
 
 namespace srdgame
 {
-class RealmSocket;
+class LoginSocketBase;
 struct Packet;
-class RealmWorker : public ThreadBase
+class LoginWorker : public ThreadBase
 {
 public:
-	RealmWorker(RealmSocket* socket);
-	virtual ~RealmWorker();
+	LoginWorker(LoginSocketBase* socket);
+	virtual ~LoginWorker();
 public:
 	// methods from ThreadBase
 	//
@@ -35,7 +35,7 @@ protected:
 
 protected:
 	bool _running;
-	RealmSocket* _socket;
+	LoginSocketBase* _socket;
 };
 }
 
