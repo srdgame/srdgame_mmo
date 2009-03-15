@@ -21,20 +21,20 @@ LoginAuth::~LoginAuth()
 void LoginAuth::handle_login(LoginSocket* socket, const Packet* packet)
 {
 	LoginInfo* login_info = (LoginInfo*)packet->param.Data;
-	long login_ok = 0;
+	long login_failed = 0;
 	if (strcmp(login_info->name, "aaaaa.ss") || strcmp(login_info->pass, "aaaaa.f"))
 	{
-		login_ok = 1;
+		//login_failed = 1;
 	}
 	
 	// Fake for now. TODO:
 	Packet p;
 	p.op = ES_LOGIN;
 	p.len = sizeof(Packet);
-	p.param.Long = login_ok;
+	p.param.Long = login_failed;
 	socket->send_packet(&p);
 
-	if (!login_ok)
+	if (login_failed)
 		return;
 
 	// Send server list.
@@ -48,7 +48,7 @@ void LoginAuth::handle_login(LoginSocket* socket, const Packet* packet)
 
 	ServerInfo info; // fake one TODO:
 	info.ip = str2ip("192.168.0.100");
-	info.port = 8002;
+	info.port = 7002;
 	char  name[20] = "TEST";
 	memset(info.name, 0, 20);
 	memcpy(info.name, name, strlen(name));

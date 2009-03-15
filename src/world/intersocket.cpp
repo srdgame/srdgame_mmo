@@ -16,7 +16,7 @@ InterSocket::InterSocket(WorldServer* server)
 
 InterSocket::~InterSocket()
 {
-	LogDebug("WorldServer", "Destructor of InterSocket (login connection)");
+	LogDebug("WorldServer", "Destructor of InterSocket (realm connection)");
 }
 
 void InterSocket::on_rev()
@@ -72,8 +72,8 @@ void InterSocket::on_connect()
 
 void InterSocket::on_close()
 {
-	LogDebug("WorldServer", "Connection with login server has been dropdown");
-	_server->lost_login();
+	LogDebug("WorldServer", "Connection with realm server has been dropdown");
+	_server->lost_realm();
 }
 
 void InterSocket::on_handle(Packet* packet)
@@ -87,10 +87,10 @@ void InterSocket::on_handle(Packet* packet)
 			break;
 		case I_OFFLINE:
 			// Say goodbye, both side command.
-			// TODO: What should we do when login is going to offline.
+			// TODO: What should we do when realm is going to offline.
 			break;
 		case I_NOTIFY: // Notify others we are going online. Both side action and its param is the client type: World = 1, Login = 2, Realm = 0,
-			// TODO: What should we do when login is going to be online?
+			// TODO: What should we do when realm is going to be online?
 			break;
 		case IS_GET_NAME: // Ask for name of client.
 			{

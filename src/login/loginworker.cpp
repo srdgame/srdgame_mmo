@@ -73,14 +73,4 @@ void LoginWorker::handle(Packet* packet)
 	PacketParser::free(*packet); // Free the space that we have done.
 }
 
-bool LoginWorker::send(Packet* packet)
-{
-	char sz[MAX_PACKET_LEN];
-	::memset(sz, 0, MAX_PACKET_LEN);
-	size_t size = PacketParser::get_singleton().to_inter(sz, *packet);
-	if (size && _socket && _socket->is_connected())
-	{
-		return _socket->send(sz, size);
-	}
-	return false;
-}
+

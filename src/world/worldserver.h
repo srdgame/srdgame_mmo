@@ -19,7 +19,7 @@ public:
 	// methods
 	void run();
 
-	void lost_login();
+	void lost_realm();
 
 protected:
 	bool load_conf();
@@ -27,7 +27,7 @@ protected:
 	bool init_env();
 	bool start_listen();
 	bool start_inter_listen();
-	bool connect_login();
+	bool connect_realm();
 
 	// return true to quit.
 	bool wait_command();
@@ -36,11 +36,11 @@ protected:
 	std::string _conf_fn;
 	ConfigFile* _config;
 	TcpListenSocket< WorldSocket > * _socket;
-	InterSocket* _login_socket;
+	InterSocket* _realm_socket;
 
 	//SmartPtr< TcpListenSocket< WorldSocket > > _socket;
 	//SmartPtr< TcpListenSocket< WorldInterSocketW > > _inter_socket;
-//	SmartPtr< WorldInterSocketR > _login_socket;
+//	SmartPtr< WorldInterSocketR > _realm_socket;
 };
 }
 

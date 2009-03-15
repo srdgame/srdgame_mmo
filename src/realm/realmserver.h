@@ -20,7 +20,7 @@ public:
 	// methods
 	void run();
 
-	void lost_realm();
+	void lost_login();
 
 protected:
 	bool load_conf();

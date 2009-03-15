@@ -16,7 +16,7 @@ RealmInterSocketL::RealmInterSocketL(RealmServer* server)
 
 RealmInterSocketL::~RealmInterSocketL()
 {
-	LogDebug("RealmServer", "Destructor of RealmInterSocketL (realm connection)");
+	LogDebug("RealmServer", "Destructor of RealmInterSocketL (login connection)");
 }
 
 void RealmInterSocketL::on_send()
@@ -29,8 +29,8 @@ void RealmInterSocketL::on_connect()
 
 void RealmInterSocketL::on_close()
 {
-	LogDebug("RealmServer", "Connection with realm server has been dropdown");
-	_server->lost_realm();
+	LogDebug("RealmServer", "Connection with login server has been dropdown");
+	_server->lost_login();
 }
 
 void RealmInterSocketL::on_handle(Packet* packet)
@@ -44,10 +44,10 @@ void RealmInterSocketL::on_handle(Packet* packet)
 			break;
 		case I_OFFLINE:
 			// Say goodbye, both side command.
-			// TODO: What should we do when realm is going to offline.
+			// TODO: What should we do when login is going to offline.
 			break;
 		case I_NOTIFY: // Notify others we are going online. Both side action and its param is the client type: Realm = 1, World = 2, Realm = 0,
-			// TODO: What should we do when realm is going to be online?
+			// TODO: What should we do when login is going to be online?
 			break;
 		case IS_GET_NAME: // Ask for name of client.
 			{

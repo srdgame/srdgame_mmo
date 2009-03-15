@@ -31,7 +31,6 @@ public:
 
 protected:
 	void handle(Packet* packet);
-	bool send(Packet* packet);
 
 protected:
 	bool _running;

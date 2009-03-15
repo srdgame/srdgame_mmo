@@ -73,7 +73,7 @@ void RealmServer::run()
 		LogNotice(NULL, "-----------------------");
 	}
 }
-void RealmServer::lost_realm()
+void RealmServer::lost_login()
 {
 	_login_socket = NULL;
 }
@@ -157,19 +157,19 @@ bool RealmServer::connect_login()
 		// There is no realm server.
 		return true;
 	}
-	int port = _config->get_value<int>("REALM_PORT");
+	int port = _config->get_value<int>("LOGIN_PORT");
 	if (0 >= port)
 	{
 		port = 6101;
-		LogWarning("RealmServer", "Invalid realm server port has found, adjust to: %d", port);
+		LogWarning("RealmServer", "Invalid login server port has found, adjust to: %d", port);
 	}
-	std::string addr = _config->get_value<std::string>("REALM_ADDRESS");
+	std::string addr = _config->get_value<std::string>("LOGIN_ADDRESS");
 	if (addr.empty())
 	{
 		addr = "127.0.0.1";
-		LogWarning("RealmServer", "Can not found realm server address, use default: %s", addr.c_str());
+		LogWarning("RealmServer", "Can not found login server address, use default: %s", addr.c_str());
 	}
-	LogDebug("RealmServer", "Try to connect to realm server : %s %d", addr.c_str(), port);
+	LogDebug("RealmServer", "Try to connect to login server : %s %d", addr.c_str(), port);
 	if (_login_socket)
 	{
 		_login_socket->close();
@@ -177,7 +177,7 @@ bool RealmServer::connect_login()
 	_login_socket = new RealmInterSocketL(this);
 	if (!_login_socket->connect(addr, port))
 	{
-		LogDebug("RealmServer", "Could not connect to realm server, please start realm server first or correct your configuration file");
+		LogDebug("RealmServer", "Could not connect to login server, please start login server first or correct your configuration file");
 		return false;
 	}
 	

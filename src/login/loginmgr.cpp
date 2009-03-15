@@ -17,17 +17,17 @@ LoginMgr::~LoginMgr()
 void LoginMgr::enum_realm_servers(std::vector<RealmSrvInfo>& info)
 {
 	AutoLock lock(_server_lock);
-	std::map<LoginSocket*, RealmSrvInfo>::iterator ptr = _servers_info.begin();
+	std::map<LoginSocketBase*, RealmSrvInfo>::iterator ptr = _servers_info.begin();
 	for (; ptr != _servers_info.end(); ++ptr)
 	{
 		info.push_back(ptr->second);
 	}
 }
-void LoginMgr::add_realm_server(LoginSocket* s)
+void LoginMgr::add_realm_server(LoginSocketBase* s)
 {
 	LogDebug("LoginServer", "One login server is coming, id: %d", s->get_fd());
 	AutoLock lock(_server_lock);
-	LoginSocket* org = _servers[s->get_fd()];
+	LoginSocketBase* org = _servers[s->get_fd()];
 	if (org && org->is_connected())
 	{
 		LogError("LoginServer", "Two conflict server are registed, id : %d", s->get_fd());
@@ -36,7 +36,7 @@ void LoginMgr::add_realm_server(LoginSocket* s)
 	}
 	_servers[s->get_fd()] = s;
 }
-void LoginMgr::remove_realm_server(LoginSocket* s)
+void LoginMgr::remove_realm_server(LoginSocketBase* s)
 {
 	LogDebug("LoginServer", "One login server is lost");
 	AutoLock lock(_server_lock);
@@ -45,35 +45,35 @@ void LoginMgr::remove_realm_server(LoginSocket* s)
 	_servers_info.erase(s);
 }
 
-void LoginMgr::update_realm_server(LoginSocket* s, RealmSrvInfo& info)
+void LoginMgr::update_realm_server(LoginSocketBase* s, RealmSrvInfo& info)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s] = info;
 }
 
-void LoginMgr::update_realm_server_name(LoginSocket* s, std::string name)
+void LoginMgr::update_realm_server_name(LoginSocketBase* s, std::string name)
 {
 	LogDebug("LoginServer", "Login server (id:%d) name changed to : %s", s->get_fd(), name.c_str());
 	AutoLock lock(_server_lock);
 	_servers_info[s].name = name;
 }
 
-void LoginMgr::update_realm_server_info(LoginSocket* s, std::string info)
+void LoginMgr::update_realm_server_info(LoginSocketBase* s, std::string info)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].info = info;
 }
 
-void LoginMgr::update_realm_server_status(LoginSocket* s, RealmSrvStatus status)
+void LoginMgr::update_realm_server_status(LoginSocketBase* s, RealmSrvStatus status)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].status = status;
 }
 
-void LoginMgr::add_client(LoginSocket* s)
+void LoginMgr::add_client(LoginSocketBase* s)
 {
 	AutoLock lock(_client_lock);
-	LoginSocket* org = _clients[s->get_fd()];
+	LoginSocketBase* org = _clients[s->get_fd()];
 	if (org && org->is_connected())
 	{
 		LogError("LoginServer", "Two conflict clients are registed, id : %d", s->get_fd());
@@ -82,7 +82,7 @@ void LoginMgr::add_client(LoginSocket* s)
 	}
 	_clients[s->get_fd()] = s;
 }
-void LoginMgr::remove_client(LoginSocket* s)
+void LoginMgr::remove_client(LoginSocketBase* s)
 {
 	AutoLock lock(_client_lock);
 	s->close();

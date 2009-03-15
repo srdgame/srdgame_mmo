@@ -12,7 +12,7 @@
 
 using namespace srdgame;
 
-WorldServer::WorldServer(const std::string& conf_fn) : _conf_fn(conf_fn), _config(NULL), _socket(NULL), _login_socket(NULL)
+WorldServer::WorldServer(const std::string& conf_fn) : _conf_fn(conf_fn), _config(NULL), _socket(NULL), _realm_socket(NULL)
 {
 //	LogDebug("WorldServer", "Create the server with connfigure file:%s", conf_fn.c_str());
 }
@@ -56,9 +56,9 @@ void WorldServer::run()
 		LogError("WorldServer", "Could not start to listen");
 		return;
 	}
-	if (!this->connect_login())
+	if (!this->connect_realm())
 	{
-		LogError("WorldServer", "Could not connect to login server");
+		LogError("WorldServer", "Could not connect to realm server");
 	}
 	LogNotice(NULL, "-------------------------------------------------");
 	while(!wait_command())
@@ -66,9 +66,9 @@ void WorldServer::run()
 		LogNotice(NULL, "-----------------------");
 	}
 }
-void WorldServer::lost_login()
+void WorldServer::lost_realm()
 {
-	_login_socket = NULL;
+	_realm_socket = NULL;
 }
 bool WorldServer::init_packet_parser()
 {
@@ -121,35 +121,35 @@ bool WorldServer::start_listen()
 }
 
 
-bool WorldServer::connect_login()
+bool WorldServer::connect_realm()
 {
-	int has_login = _config->get_value<int>("ENABLE_LOGIN");
-	if (has_login == 0)
+	int has_realm = _config->get_value<int>("ENABLE_REALM");
+	if (has_realm == 0)
 	{
-		// There is no login server.
+		// There is no realm server.
 		return true;
 	}
-	int port = _config->get_value<int>("LOGIN_PORT");
+	int port = _config->get_value<int>("REALM_PORT");
 	if (0 >= port)
 	{
 		port = 6101;
-		LogWarning("WorldServer", "Invalid login server port has found, adjust to: %d", port);
+		LogWarning("WorldServer", "Invalid realm server port has found, adjust to: %d", port);
 	}
-	std::string addr = _config->get_value<std::string>("LOGIN_ADDRESS");
+	std::string addr = _config->get_value<std::string>("REALM_ADDRESS");
 	if (addr.empty())
 	{
 		addr = "127.0.0.1";
-		LogWarning("WorldServer", "Can not found login server address, use default: %s", addr.c_str());
+		LogWarning("WorldServer", "Can not found realm server address, use default: %s", addr.c_str());
 	}
-	LogDebug("WorldServer", "Try to connect to login server : %s %d", addr.c_str(), port);
-	if (_login_socket)
+	LogDebug("WorldServer", "Try to connect to realm server : %s %d", addr.c_str(), port);
+	if (_realm_socket)
 	{
-		_login_socket->close();
+		_realm_socket->close();
 	}
-	_login_socket = new InterSocket(this);
-	if (!_login_socket->connect(addr, port))
+	_realm_socket = new InterSocket(this);
+	if (!_realm_socket->connect(addr, port))
 	{
-		LogDebug("WorldServer", "Could not connect to login server, please start login server first or correct your configuration file");
+		LogDebug("WorldServer", "Could not connect to realm server, please start realm server first or correct your configuration file");
 		return false;
 	}
 	
@@ -158,8 +158,8 @@ bool WorldServer::connect_login()
 	p.len = sizeof(Packet);
 	LogDebug("WorldServer", "sizeof(Packet) is %d", sizeof(Packet));
 	p.param.Long = 2;
-	_login_socket->send_packet(&p);
-	//_login_socket->send_packet(&p);
+	_realm_socket->send_packet(&p);
+	//_realm_socket->send_packet(&p);
 	
 	return true;
 }
@@ -175,8 +175,8 @@ bool WorldServer::wait_command()
 		of.op = I_OFFLINE;
 		of.len = sizeof(Packet);
 		of.param.Long = 0;
-		if (_login_socket && _login_socket->is_connected())
-			_login_socket->send_packet(&of);
+		if (_realm_socket && _realm_socket->is_connected())
+			_realm_socket->send_packet(&of);
 		ThreadPool::get_singleton().shutdown();
 		return true;
 	}

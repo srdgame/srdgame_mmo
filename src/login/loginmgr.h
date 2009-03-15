@@ -13,7 +13,7 @@
 
 namespace srdgame
 {
-class LoginSocket;
+class LoginSocketBase;
 class LoginMgr : public Singleton < LoginMgr >
 {
 public:
@@ -22,21 +22,21 @@ public:
 
 	void enum_realm_servers(std::vector<RealmSrvInfo>& info);
 
-	void add_realm_server(LoginSocket* s);
-	void remove_realm_server(LoginSocket* s);
+	void add_realm_server(LoginSocketBase* s);
+	void remove_realm_server(LoginSocketBase* s);
 
-	void update_realm_server(LoginSocket* s, RealmSrvInfo& info);
-	void update_realm_server_name(LoginSocket* s, std::string name);
-	void update_realm_server_info(LoginSocket* s, std::string info);
-	void update_realm_server_status(LoginSocket* s, RealmSrvStatus status);
+	void update_realm_server(LoginSocketBase* s, RealmSrvInfo& info);
+	void update_realm_server_name(LoginSocketBase* s, std::string name);
+	void update_realm_server_info(LoginSocketBase* s, std::string info);
+	void update_realm_server_status(LoginSocketBase* s, RealmSrvStatus status);
 
-	void add_client(LoginSocket* s);
-	void remove_client(LoginSocket* s);
+	void add_client(LoginSocketBase* s);
+	void remove_client(LoginSocketBase* s);
 
 protected:
-	std::map<SOCKET, LoginSocket*> _servers;
-	std::map<LoginSocket*, RealmSrvInfo> _servers_info;
-	std::map<SOCKET, LoginSocket*> _clients;
+	std::map<SOCKET, LoginSocketBase*> _servers;
+	std::map<LoginSocketBase*, RealmSrvInfo> _servers_info;
+	std::map<SOCKET, LoginSocketBase*> _clients;
 	Mutex _server_lock;
 	Mutex _client_lock;
 };

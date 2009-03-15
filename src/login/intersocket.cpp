@@ -4,6 +4,7 @@
 #include "loginworker.h"
 #include "opcode.h"
 #include "loginauth.h"
+#include "loginmgr.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -52,11 +53,11 @@ void InterSocket::on_handle(Packet* packet)
 		case I_PING:
 			LogDebug("LoginServer", "I_PING");
 			packet->param.Int++;
-			this->send(packet);
+			this->send_packet(packet);
 			break;
 		case I_OFFLINE:
 			LogDebug("LoginServer", "I_OFFLINE");
-			LoginMgr::get_singleton().remove_realm_server(_socket);
+			LoginMgr::get_singleton().remove_realm_server(this);
 			break;
 		case I_NOTIFY:
 			LogDebug("LoginServer", "I_NOTIFY");
@@ -64,21 +65,21 @@ void InterSocket::on_handle(Packet* packet)
 				if (packet->param.Long != 1)
 				{
 					LogError("LoginServer", "Not a login server are trying to connect us!!!");
-					_socket->close();
+					this->close();
 					break;
 				}
-				LoginMgr::get_singleton().add_realm_server(_socket);
+				LoginMgr::get_singleton().add_realm_server(this);
 				// send ask name and info status packets.
 				Packet p;
 				p.op = IS_GET_NAME;
 				p.len = sizeof(p);
-				this->send(&p);
+				this->send_packet(&p);
 
 				p.op = IS_GET_INFO;
-				this->send(&p);
+				this->send_packet(&p);
 
 				p.op = IS_GET_STATUS;
-				this->send(&p);
+				this->send_packet(&p);
 			}
 
 			// TODO: Ask for info?
@@ -92,7 +93,7 @@ void InterSocket::on_handle(Packet* packet)
 					char* sz = new char[size + 1];
 					::memset(sz, 0, size + 1);
 					::memcpy(sz, packet->param.Data, size);
-					LoginMgr::get_singleton().update_realm_server_name(_socket, std::string(sz));
+					LoginMgr::get_singleton().update_realm_server_name(this, std::string(sz));
 					delete[] sz;
 				}
 			}
@@ -101,8 +102,8 @@ void InterSocket::on_handle(Packet* packet)
 		case IC_POST_STATUS:
 			LogDebug("LoginServer", "IC_STATUS || IC_POST_STATUS");
 			{
-				LoginSrvStatus status = (LoginSrvStatus)packet->param.Long;
-				LoginMgr::get_singleton().update_realm_server_status(_socket, status);
+				RealmSrvStatus status = (RealmSrvStatus)packet->param.Long;
+				LoginMgr::get_singleton().update_realm_server_status(this, status);
 
 			}
 			break;
@@ -115,7 +116,7 @@ void InterSocket::on_handle(Packet* packet)
 					char* sz = new char[size + 1];
 					::memset(sz, 0, size + 1);
 					::memcpy(sz, packet->param.Data, size);
-					LoginMgr::get_singleton().update_realm_server_info(_socket, std::string(sz));
+					LoginMgr::get_singleton().update_realm_server_info(this, std::string(sz));
 					delete[] sz;
 				}
 			}
