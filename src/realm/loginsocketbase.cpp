@@ -1,6 +1,6 @@
-#include "realmworker.h"
+#include "loginworker.h"
 #include "packetdefs.h"
-#include "realmsocketbase.h"
+#include "loginsocketbase.h"
 #include "packetparser.h"
 #include "threadpool.h"
 #include "autolock.h"
@@ -17,10 +17,10 @@ using namespace srdgame;
 #define _LogDebug_ //
 #endif
 
-RealmSocketBase::RealmSocketBase() : _worker(NULL), _dump_in(false), _dump_out(false), _inter(true)
+LoginSocketBase::LoginSocketBase() : _worker(NULL), _dump_in(false), _dump_out(false), _inter(true)
 {
 }
-RealmSocketBase::~RealmSocketBase()
+LoginSocketBase::~LoginSocketBase()
 {
 	_worker_lock.lock();
 	if (_worker)
@@ -30,9 +30,9 @@ RealmSocketBase::~RealmSocketBase()
 	_worker_lock.unlock();
 }
 
-bool RealmSocketBase::send_packet(Packet* packet)
+bool LoginSocketBase::send_packet(Packet* packet)
 {
-	_LogDebug_("RealmServer", "Starting to send packet, opcode: %d", packet->op);
+	_LogDebug_("LoginServer", "Starting to send packet, opcode: %d", packet->op);
 
 	// TODO: To refine this send, the buffer allocation is useless here, we could use send_buf here.
 	char sz[MAX_PACKET_LEN];
@@ -54,7 +54,7 @@ bool RealmSocketBase::send_packet(Packet* packet)
 		PacketDump::get_singleton().dump("PACKET OUT", *packet);
 	}
 
-	_LogDebug_("RealmServer", "Packet length is : %d", size);
+	_LogDebug_("LoginServer", "Packet length is : %d", size);
 	
 	if (size && is_connected())
 	{
@@ -65,11 +65,11 @@ bool RealmSocketBase::send_packet(Packet* packet)
 	if (size == 0)
 		return true;
 
-	LogError("RealmServer", "Socket is't been connected");
+	LogError("LoginServer", "Socket is't been connected");
 	
 	return false;
 }
-void RealmSocketBase::on_rev()
+void LoginSocketBase::on_rev()
 {
 	BufferBase* buf = get_rev_buf();
 	size_t size;
@@ -79,7 +79,7 @@ void RealmSocketBase::on_rev()
 		/*char* new_data = new char[size + 1];
 		::memset(new_data, 0, size+1);
 		::memcpy(new_data, data, size);
-		LogSuccess("RealmServer", "Comming Data: %s", new_data);
+		LogSuccess("LoginServer", "Comming Data: %s", new_data);
 		delete[] new_data;*/
 		size_t index = 0;
 		while (size > index)
@@ -99,10 +99,10 @@ void RealmSocketBase::on_rev()
 					PacketDump::get_singleton().dump("UNCOMPLETE PACKET", data + index, size - index);
 					PacketDump::get_singleton().dump("UNKNOWN PACKET", p);
 				}
-				LogDebug("RealmSocket", "Breaking!!! size is : %d   index is : %d", size, index);
+				LogDebug("LoginSocket", "Breaking!!! size is : %d   index is : %d", size, index);
 				break;
 			}
-			LogDebug("RealmSocket", "One packet received from world server");
+			LogDebug("LoginSocket", "One packet received from world server");
 			// For dump 
 			if (_dump_in)
 			{
@@ -125,13 +125,13 @@ void RealmSocketBase::on_rev()
 	}
 }
 
-void RealmSocketBase::start_worker()
+void LoginSocketBase::start_worker()
 {
 	AutoLock lock(_worker_lock);
 	if (_worker)
 		return;
 
-	LogDebug("RealmServer", "Starting worker thread");
-	_worker = new RealmWorker(this);
+	LogDebug("LoginServer", "Starting worker thread");
+	_worker = new LoginWorker(this);
 	ThreadPool::get_singleton().execute(_worker);
 }

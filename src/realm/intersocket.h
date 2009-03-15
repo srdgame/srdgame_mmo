@@ -1,23 +1,23 @@
-#ifndef REALM_SOCKET_H_
-#define REALM_SOCKET_H_
+#ifndef LOGIN_INTER_SOCKET_H_
+#define LOGIN_INTER_SOCKET_H_
 
-#include "realmsocketbase.h"
+#include "loginsocketbase.h"
 #include "packetdefs.h"
 
 
 namespace srdgame
 {
-class RealmWorker;
+class LoginWorker;
 struct Packet;
 
 // Handle the communication with game clients.
-class RealmSocket : public RealmSocketBase
+class InterSocket : public LoginSocketBase
 {
-	friend class RealmWorker;
-	friend class RealmAuth;
+	friend class LoginWorker;
+	friend class LoginAuth;
 public:
-	RealmSocket();
-	virtual ~RealmSocket();
+	InterSocket();
+	virtual ~InterSocket();
 	//virtual void on_rev();
 	virtual void on_send();
 	virtual void on_connect();

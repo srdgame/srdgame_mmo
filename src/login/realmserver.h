@@ -1,21 +1,21 @@
-#ifndef LOGIN_SERVER_H_
-#define LOGIN_SERVER_H_
+#ifndef REALM_SERVER_H_
+#define REALM_SERVER_H_
 
 #include <string>
 //#include "configfile.h"
-#include "loginsocket.h"
-#include "loginsocketw.h"
+#include "realmsocket.h"
+#include "realmsocketw.h"
 #include "network.h"
 
 namespace srdgame
 {
-class LoginInterSocketR;
+class RealmInterSocketL;
 class ConfigFile;
-class LoginServer
+class RealmServer
 {
 public:
-	LoginServer(const std::string& conf_fn);
-	virtual ~LoginServer();
+	RealmServer(const std::string& conf_fn);
+	virtual ~RealmServer();
 
 	// methods
 	void run();
@@ -28,7 +28,7 @@ protected:
 	bool init_env();
 	bool start_listen();
 	bool start_inter_listen();
-	bool connect_realm();
+	bool connect_login();
 
 	// return true to quit.
 	bool wait_command();
@@ -36,13 +36,13 @@ protected:
 protected:
 	std::string _conf_fn;
 	ConfigFile* _config;
-	TcpListenSocket< LoginSocket > * _socket;
-	TcpListenSocket< LoginInterSocketW > * _inter_socket;
-	LoginInterSocketR* _realm_socket;
+	TcpListenSocket< RealmSocket > * _socket;
+	TcpListenSocket< RealmInterSocketW > * _inter_socket;
+	RealmInterSocketL* _login_socket;
 
-	//SmartPtr< TcpListenSocket< LoginSocket > > _socket;
-	//SmartPtr< TcpListenSocket< LoginInterSocketW > > _inter_socket;
-//	SmartPtr< LoginInterSocketR > _realm_socket;
+	//SmartPtr< TcpListenSocket< RealmSocket > > _socket;
+	//SmartPtr< TcpListenSocket< RealmInterSocketW > > _inter_socket;
+//	SmartPtr< RealmInterSocketL > _login_socket;
 };
 }
 

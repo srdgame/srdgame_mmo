@@ -1,23 +1,23 @@
-#ifndef LOGIN_INTER_SOCKET_W_H_
-#define LOGIN_INTER_SOCKET_W_H_
+#ifndef REALM_INTER_SOCKET_W_H_
+#define REALM_INTER_SOCKET_W_H_
 
-#include "loginsocketbase.h"
+#include "realmsocketbase.h"
 #include "packetdefs.h"
 #include "fastqueue.h"
 
 
 namespace srdgame
 {
-class LoginWorker;
+class RealmWorker;
 struct Packet;
 
 // Handle the communication with world server.
-class LoginInterSocketW : public LoginSocketBase
+class RealmInterSocketW : public RealmSocketBase
 {
-	friend class LoginWorker;
+	friend class RealmWorker;
 public:
-	LoginInterSocketW();
-	virtual ~LoginInterSocketW();
+	RealmInterSocketW();
+	virtual ~RealmInterSocketW();
 	//virtual void on_rev();
 	virtual void on_send();
 	virtual void on_connect();

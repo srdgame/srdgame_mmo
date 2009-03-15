@@ -1,24 +1,24 @@
-#ifndef LOGIN_INTER_SOCKET_R_H_
-#define LOGIN_INTER_SOCKET_R_H_
+#ifndef REALM_INTER_SOCKET_L_H_
+#define REALM_INTER_SOCKET_L_H_
 
-#include "loginsocketbase.h"
+#include "realmsocketbase.h"
 #include "packetdefs.h"
 
 
 namespace srdgame
 {
-class LoginWorker;
+class RealmWorker;
 struct Packet;
-class LoginServer;
+class RealmServer;
 
 // Handle the communication with world server.
-class LoginInterSocketR : public LoginSocketBase
+class RealmInterSocketL : public RealmSocketBase
 {
-	friend class LoginWorker;
-	friend class LoginServer;
+	friend class RealmWorker;
+	friend class RealmServer;
 public:
-	LoginInterSocketR(LoginServer* server);
-	virtual ~LoginInterSocketR();
+	RealmInterSocketL(RealmServer* server);
+	virtual ~RealmInterSocketL();
 	//virtual void on_rev();
 	virtual void on_send();
 	virtual void on_connect();
@@ -28,7 +28,7 @@ public:
 	// Worker will call this to response one packet.
 	virtual void on_handle(Packet* packet);
 protected:
-	LoginServer* _server;
+	RealmServer* _server;
 };
 
 

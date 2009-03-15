@@ -6,7 +6,7 @@
 
 #include <string>
 
-enum LoginSrvStatus
+enum RealmSrvStatus
 {
 	LS_OFFLINE = 0,
 	LS_READY = 1,
@@ -14,10 +14,10 @@ enum LoginSrvStatus
 	LS_CLOSING = 4,
 	LS_TESTING = 128,
 };
-struct LoginSrvInfo
+struct RealmSrvInfo
 {
 	std::string name;
-	LoginSrvStatus status;
+	RealmSrvStatus status;
 	std::string info;
 };
 

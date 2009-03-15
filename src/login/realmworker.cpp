@@ -1,6 +1,6 @@
-#include "loginworker.h"
-#include "loginsocketbase.h"
-#include "loginmgr.h"
+#include "realmworker.h"
+#include "realmsocketbase.h"
+#include "realmmgr.h"
 #include "packetparser.h"
 
 #include "log.h"
@@ -12,10 +12,10 @@ using namespace srdgame;
 #define _LogDebug_ //
 #endif
 
-LoginWorker::LoginWorker(LoginSocketBase* socket) : ThreadBase(), _running(true), _socket(socket)
+RealmWorker::RealmWorker(RealmSocketBase* socket) : ThreadBase(), _running(true), _socket(socket)
 {
 }
-LoginWorker::~LoginWorker()
+RealmWorker::~RealmWorker()
 {
 	if (is_running())
 	{
@@ -23,16 +23,16 @@ LoginWorker::~LoginWorker()
 	}
 }
 
-bool LoginWorker::run()
+bool RealmWorker::run()
 {
-	_LogDebug_("LoginServer", "LoginWorker::run()!!!!!!!!!!!!!!!!!!!!!!!");
+	_LogDebug_("RealmServer", "RealmWorker::run()!!!!!!!!!!!!!!!!!!!!!!!");
 	
 	// return true to delete this object.
 	// return false run() will be called again.
 	// process the data until empty.
 	if (!_socket || !_running)
 	{
-		_LogDebug_("LoginServer", "Quiting Login Worker thread");
+		_LogDebug_("RealmServer", "Quiting Realm Worker thread");
 		_socket->_worker_lock.lock();
 		_socket->_worker = NULL;
 		_socket->_worker_lock.unlock();
@@ -45,7 +45,7 @@ bool LoginWorker::run()
 	Packet p;
 	if (!_socket->_packets.try_pop(p) || !_running)
 	{
-		_LogDebug_("LoginServer", "Login Worker finished its job!!!");
+		_LogDebug_("RealmServer", "Realm Worker finished its job!!!");
 		// no data, we will quit this.
 		_socket->_worker_lock.lock();
 		_socket->_worker = NULL;
@@ -58,20 +58,20 @@ bool LoginWorker::run()
 	return false;
 }
 
-void LoginWorker::shutdown()
+void RealmWorker::shutdown()
 {
 	_running =false;
 }
-void LoginWorker::on_close()
+void RealmWorker::on_close()
 {
 }
 
-bool LoginWorker::is_running()
+bool RealmWorker::is_running()
 {
 	return _running;
 }
 
-void LoginWorker::handle(Packet* packet)
+void RealmWorker::handle(Packet* packet)
 {
 	_socket->on_handle(packet);
 	PacketParser::free(*packet); // Free the space that we have done.

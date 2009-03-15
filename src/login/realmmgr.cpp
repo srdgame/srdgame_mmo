@@ -1,41 +1,41 @@
 
 
-#include "loginmgr.h"
-#include "loginsocket.h"
+#include "realmmgr.h"
+#include "realmsocket.h"
 
 #include "log.h"
 #include "autolock.h"
 
 using namespace srdgame;
 
-LoginMgr::LoginMgr()
+RealmMgr::RealmMgr()
 {
 }
-LoginMgr::~LoginMgr()
+RealmMgr::~RealmMgr()
 {
 }
-void LoginMgr::enum_world_servers(std::vector<WorldSrvInfo>& info)
+void RealmMgr::enum_world_servers(std::vector<WorldSrvInfo>& info)
 {
 	AutoLock lock(_server_lock);
-	std::map<LoginSocketBase*, WorldSrvInfo>::iterator ptr = _servers_info.begin();
+	std::map<RealmSocketBase*, WorldSrvInfo>::iterator ptr = _servers_info.begin();
 	for (; ptr != _servers_info.end(); ++ptr)
 	{
 		info.push_back(ptr->second);
 	}
 }
-void LoginMgr::add_world_server(LoginSocketBase* s)
+void RealmMgr::add_world_server(RealmSocketBase* s)
 {
 	AutoLock lock(_server_lock);
-	LoginSocketBase* org = _servers[s->get_fd()];
+	RealmSocketBase* org = _servers[s->get_fd()];
 	if (org && org->is_connected())
 	{
-		LogError("LoginServer", "Two conflict server are registed, id : %d", s->get_fd());
+		LogError("RealmServer", "Two conflict server are registed, id : %d", s->get_fd());
 		org->close();
 		// TODO:
 	}
 	_servers[s->get_fd()] = s;
 }
-void LoginMgr::remove_world_server(LoginSocketBase* s)
+void RealmMgr::remove_world_server(RealmSocketBase* s)
 {
 	AutoLock lock(_server_lock);
 	s->close();
@@ -43,70 +43,70 @@ void LoginMgr::remove_world_server(LoginSocketBase* s)
 	_servers_info.erase(s);
 }
 
-void LoginMgr::update_world_server(LoginSocketBase* s, WorldSrvInfo& info)
+void RealmMgr::update_world_server(RealmSocketBase* s, WorldSrvInfo& info)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s] = info;
 }
 
-void LoginMgr::update_world_server_name(LoginSocketBase* s, std::string name)
+void RealmMgr::update_world_server_name(RealmSocketBase* s, std::string name)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].name = name;
 }
 
-void LoginMgr::update_world_server_info(LoginSocketBase* s, std::string info)
+void RealmMgr::update_world_server_info(RealmSocketBase* s, std::string info)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].info = info;
 }
 
-void LoginMgr::update_world_server_status(LoginSocketBase* s, WorldSrvStatus status)
+void RealmMgr::update_world_server_status(RealmSocketBase* s, WorldSrvStatus status)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].status = status;
 }
-void LoginMgr::update_world_server_type(LoginSocketBase* s, WorldSrvType type)
+void RealmMgr::update_world_server_type(RealmSocketBase* s, WorldSrvType type)
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].type = type;
 }
-void LoginMgr::add_client(LoginSocketBase* s)
+void RealmMgr::add_client(RealmSocketBase* s)
 {
 	AutoLock lock(_client_lock);
-	LoginSocketBase* org = _clients[s->get_fd()];
+	RealmSocketBase* org = _clients[s->get_fd()];
 	if (org && org->is_connected())
 	{
-		LogError("LoginServer", "Two conflict clients are registed, id : %d", s->get_fd());
+		LogError("RealmServer", "Two conflict clients are registed, id : %d", s->get_fd());
 		org->close();
 		// TODO:
 	}
 	_clients[s->get_fd()] = s;
 }
-void LoginMgr::remove_client(LoginSocketBase* s)
+void RealmMgr::remove_client(RealmSocketBase* s)
 {
 	AutoLock lock(_client_lock);
 	s->close();
 	_clients.erase(s->get_fd());
 }
 
-void LoginMgr::set_name(std::string name)
+void RealmMgr::set_name(std::string name)
 {
 	AutoLock lock(_lock);
 	this->_name = name;
 }
-std::string LoginMgr::get_name()
+std::string RealmMgr::get_name()
 {
 	AutoLock lock(_lock);
 	return this->_name;
 }
 
-void LoginMgr::set_info(std::string info)
+void RealmMgr::set_info(std::string info)
 {
 	AutoLock lock(_lock);
 	this->_info = info;
 }
-std::string LoginMgr::get_info()
+std::string RealmMgr::get_info()
 {	
 	AutoLock lock(_lock);
 	return this->_info;

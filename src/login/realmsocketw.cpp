@@ -1,34 +1,34 @@
-#include "loginsocketw.h"
+#include "realmsocketw.h"
 #include "log.h"
 #include "packetparser.h"
-#include "loginworker.h"
-#include "loginmgr.h"
+#include "realmworker.h"
+#include "realmmgr.h"
 
 using namespace srdgame;
 
-LoginInterSocketW::LoginInterSocketW()
-	: LoginSocketBase()
+RealmInterSocketW::RealmInterSocketW()
+	: RealmSocketBase()
 {
 }
 
-LoginInterSocketW::~LoginInterSocketW()
+RealmInterSocketW::~RealmInterSocketW()
 {
 	
 }
 
-void LoginInterSocketW::on_send()
+void RealmInterSocketW::on_send()
 {
 }
 
-void LoginInterSocketW::on_connect()
+void RealmInterSocketW::on_connect()
 {
 }
 
-void LoginInterSocketW::on_close()
+void RealmInterSocketW::on_close()
 {
-	LogDebug("LoginServer", "connection with world server has been dropdown");
+	LogDebug("RealmServer", "connection with world server has been dropdown");
 }
-void LoginInterSocketW::on_handle(Packet* packet)
+void RealmInterSocketW::on_handle(Packet* packet)
 {
 	switch (packet->op)
 	{
@@ -36,20 +36,20 @@ void LoginInterSocketW::on_handle(Packet* packet)
 			// Just ping.
 			break; //
 		case I_OFFLINE:
-			_LogDebug_("LoginServer", "I_OFFLINE");
+			_LogDebug_("RealmServer", "I_OFFLINE");
 			{
-				LoginMgr::get_singleton().remove_world_server(this);
+				RealmMgr::get_singleton().remove_world_server(this);
 			}
 			break;
 		case I_NOTIFY:
-			_LogDebug_("LoginServer", "I_NOTIFY");
+			_LogDebug_("RealmServer", "I_NOTIFY");
 			{
 				if (packet->param.Long != 2)
 				{
-					LogError("LoginServer", "Error server are connecting, type : %d", packet->param.Long);
+					LogError("RealmServer", "Error server are connecting, type : %d", packet->param.Long);
 					break;
 				}
-				LoginMgr::get_singleton().add_world_server(this);
+				RealmMgr::get_singleton().add_world_server(this);
 				Packet p;
 				p.op = IS_GET_NAME;
 				p.len = sizeof(Packet);
@@ -68,7 +68,7 @@ void LoginInterSocketW::on_handle(Packet* packet)
 		case IS_GET_NAME:
 			break;
 		case IC_NAME:
-			_LogDebug_("LoginServer", "IC_NAME");
+			_LogDebug_("RealmServer", "IC_NAME");
 			{
 				int size = PacketParser::get_ex_len(*packet);
 				if (size > 0)
@@ -76,7 +76,7 @@ void LoginInterSocketW::on_handle(Packet* packet)
 					char* sz = new char[size];
 					::memset(sz, 0, size);
 					::memcpy(sz, packet->param.Data, size);
-					LoginMgr::get_singleton().update_world_server_name(this, std::string(sz));
+					RealmMgr::get_singleton().update_world_server_name(this, std::string(sz));
 					delete[] sz;
 				}
 			}
@@ -85,32 +85,32 @@ void LoginInterSocketW::on_handle(Packet* packet)
 			break;
 		case IC_STATUS:
 		case IC_POST_STATUS:
-			_LogDebug_("LoginServer", "IC_STATUS | IC_POST_STATUS");
+			_LogDebug_("RealmServer", "IC_STATUS | IC_POST_STATUS");
 			{
 				WorldSrvStatus status = (WorldSrvStatus)packet->param.Long;
-				LoginMgr::get_singleton().update_world_server_status(this, status);
+				RealmMgr::get_singleton().update_world_server_status(this, status);
 			}
 			break;
 		case IS_GET_INFO:
 			break;
 		case IC_INFO:
-			_LogDebug_("LoginServer", "IC_INFO");
+			_LogDebug_("RealmServer", "IC_INFO");
 			{
 				int size = PacketParser::get_ex_len(*packet);
 				if (size > 0)
 				{
-					LoginMgr::get_singleton().update_world_server_info(this, std::string(packet->param.Data));
+					RealmMgr::get_singleton().update_world_server_info(this, std::string(packet->param.Data));
 				}
 			}
 			break;
 		case IS_GET_TYPE:
 			break;
 		case IC_TYPE:
-			_LogDebug_("LoginServer", "IC_TYPE");
+			_LogDebug_("RealmServer", "IC_TYPE");
 			{
 				int size = PacketParser::get_ex_len(*packet);
 				WorldSrvType type = (WorldSrvType)packet->param.Long;
-				LoginMgr::get_singleton().update_world_server_type(this, type);
+				RealmMgr::get_singleton().update_world_server_type(this, type);
 			}
 		default:
 			break;

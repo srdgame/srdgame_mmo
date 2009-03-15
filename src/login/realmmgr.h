@@ -1,7 +1,7 @@
 // This will mention all the data of realm 
 
-#ifndef LOGIN_MANAGER_H_
-#define LOGIN_MANAGER_H_
+#ifndef REALM_MANAGER_H_
+#define REALM_MANAGER_H_
 
 #include "singleton.h"
 #include <vector>
@@ -13,37 +13,37 @@
 
 namespace srdgame
 {
-class LoginSocketBase;
-class LoginMgr : public Singleton < LoginMgr >
+class RealmSocketBase;
+class RealmMgr : public Singleton < RealmMgr >
 {
 public:
-	LoginMgr();
-	virtual ~LoginMgr();
+	RealmMgr();
+	virtual ~RealmMgr();
 
 	void enum_world_servers(std::vector<WorldSrvInfo>& info);
 
-	void add_world_server(LoginSocketBase* s);
-	void remove_world_server(LoginSocketBase* s);
+	void add_world_server(RealmSocketBase* s);
+	void remove_world_server(RealmSocketBase* s);
 
-	void update_world_server(LoginSocketBase* s, WorldSrvInfo& info);
-	void update_world_server_name(LoginSocketBase* s, std::string name);
-	void update_world_server_info(LoginSocketBase* s, std::string info);
-	void update_world_server_status(LoginSocketBase* s, WorldSrvStatus status);
-	void update_world_server_type(LoginSocketBase* s, WorldSrvType type);
+	void update_world_server(RealmSocketBase* s, WorldSrvInfo& info);
+	void update_world_server_name(RealmSocketBase* s, std::string name);
+	void update_world_server_info(RealmSocketBase* s, std::string info);
+	void update_world_server_status(RealmSocketBase* s, WorldSrvStatus status);
+	void update_world_server_type(RealmSocketBase* s, WorldSrvType type);
 
-	void add_client(LoginSocketBase* s);
-	void remove_client(LoginSocketBase* s);
+	void add_client(RealmSocketBase* s);
+	void remove_client(RealmSocketBase* s);
 
-	// login server attributes.
+	// realm server attributes.
 	void set_name(std::string name);
 	std::string get_name();
 	void set_info(std::string info);
 	std::string get_info();
 
 protected:
-	std::map<SOCKET, LoginSocketBase*> _servers;
-	std::map<LoginSocketBase*, WorldSrvInfo> _servers_info;
-	std::map<SOCKET, LoginSocketBase*> _clients;
+	std::map<SOCKET, RealmSocketBase*> _servers;
+	std::map<RealmSocketBase*, WorldSrvInfo> _servers_info;
+	std::map<SOCKET, RealmSocketBase*> _clients;
 	Mutex _server_lock;
 	Mutex _client_lock;
 

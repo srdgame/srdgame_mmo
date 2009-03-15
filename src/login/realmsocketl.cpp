@@ -1,39 +1,39 @@
-#include "loginsocketr.h"
+#include "realmsocketl.h"
 #include "log.h"
 #include "packetparser.h"
-#include "loginworker.h"
+#include "realmworker.h"
 #include "typedefs.h"
-#include "loginmgr.h"
-#include "loginserver.h"
+#include "realmmgr.h"
+#include "realmserver.h"
 
 using namespace srdgame;
 
-LoginInterSocketR::LoginInterSocketR(LoginServer* server)
-	: LoginSocketBase()
+RealmInterSocketL::RealmInterSocketL(RealmServer* server)
+	: RealmSocketBase()
 	  , _server(server)
 {
 }
 
-LoginInterSocketR::~LoginInterSocketR()
+RealmInterSocketL::~RealmInterSocketL()
 {
-	LogDebug("LoginServer", "Destructor of LoginInterSocketR (realm connection)");
+	LogDebug("RealmServer", "Destructor of RealmInterSocketL (realm connection)");
 }
 
-void LoginInterSocketR::on_send()
-{
-}
-
-void LoginInterSocketR::on_connect()
+void RealmInterSocketL::on_send()
 {
 }
 
-void LoginInterSocketR::on_close()
+void RealmInterSocketL::on_connect()
 {
-	LogDebug("LoginServer", "Connection with realm server has been dropdown");
+}
+
+void RealmInterSocketL::on_close()
+{
+	LogDebug("RealmServer", "Connection with realm server has been dropdown");
 	_server->lost_realm();
 }
 
-void LoginInterSocketR::on_handle(Packet* packet)
+void RealmInterSocketL::on_handle(Packet* packet)
 {
 	switch (packet->op)
 	{
@@ -46,12 +46,12 @@ void LoginInterSocketR::on_handle(Packet* packet)
 			// Say goodbye, both side command.
 			// TODO: What should we do when realm is going to offline.
 			break;
-		case I_NOTIFY: // Notify others we are going online. Both side action and its param is the client type: Login = 1, World = 2, Realm = 0,
+		case I_NOTIFY: // Notify others we are going online. Both side action and its param is the client type: Realm = 1, World = 2, Realm = 0,
 			// TODO: What should we do when realm is going to be online?
 			break;
 		case IS_GET_NAME: // Ask for name of client.
 			{
-				string name = LoginMgr::get_singleton().get_name();
+				string name = RealmMgr::get_singleton().get_name();
 				Packet p;
 				p.op = IC_NAME;
 				p.len = sizeof(Packet) + name.size();
@@ -78,7 +78,7 @@ void LoginInterSocketR::on_handle(Packet* packet)
 		case IS_GET_INFO:
 			// ask for more detail info, the reply structure is to be defined.
 			{
-				string name = LoginMgr::get_singleton().get_info();
+				string name = RealmMgr::get_singleton().get_info();
 				Packet p;
 				p.op = IC_INFO;
 				p.len = sizeof(Packet) + name.size();
@@ -89,7 +89,7 @@ void LoginInterSocketR::on_handle(Packet* packet)
 		case IC_INFO:
 			break;
 		default:
-			LogWarning("LoginServer", "Unknow packet is received from Realm Server, the opcode is : %d", packet->op);
+			LogWarning("RealmServer", "Unknow packet is received from Login Server, the opcode is : %d", packet->op);
 			break;
 	}
 }
