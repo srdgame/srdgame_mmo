@@ -5,6 +5,7 @@
 
 using namespace srdgame;
 using namespace srdgame::opcode;
+using namespace ro;
 
 size_t from_stream(Packet* dest, const char* src, size_t size)
 {

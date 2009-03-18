@@ -14,7 +14,7 @@ namespace srdgame
 class ConfigFile
 {
 public:
-	ConfigFile(std::string& fn);
+	ConfigFile(const std::string& fn);
 	ConfigFile();
 	virtual ~ConfigFile();
 
@@ -29,7 +29,7 @@ public:
 	{
 		return _attrs[name];
 	}
-	int load_file(std::string& fn);
+	int load_file(const std::string& fn);
 
 	bool is_loaded() { return _loaded;}
 protected:

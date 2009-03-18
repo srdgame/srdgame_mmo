@@ -15,6 +15,9 @@
 
 using namespace srdgame;
 
+namespace ro
+{
+
 bool bin2hex(char* out, unsigned char* in, size_t size);
 
 #define sex_num2str(num) ( (num ==  SEX_FEMALE  ) ? 'F' : (num ==  SEX_MALE  ) ? 'M' : 'S' )
@@ -41,5 +44,5 @@ inline uint32 str2ip(const char* ip_str)
 {
 	return ntohl(inet_addr(ip_str));
 }
-
+}
 #endif

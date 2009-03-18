@@ -18,11 +18,16 @@ QueryResult* Database::query(const char* sql, ...)
 	DBConn* conn = get_free_conn();
 	if (conn)
 	{
+		LogDebug("Database", "SQL: %s", sql_str);
 		if (send_query(conn, sql))
 		{
 			res = get_result(conn);
 		}
 		conn->_lock.unlock();
+	}
+	else
+	{
+		LogError("Database", "No Free connections????????????????");
 	}
 	return res;
 }
@@ -33,11 +38,17 @@ QueryResult* Database::query(const std::string& sql)
 	DBConn* conn = get_free_conn();
 	if (conn)
 	{
+		LogDebug("Database", "SQL: %s", sql.c_str());
 		if (send_query(conn, sql.c_str()))
 		{
 			res = get_result(conn);
 		}
 	}
+	else
+	{
+		LogError("Database", "No Free connections????????????????");
+	}
+
 	conn->_lock.unlock();
 	return res;
 

@@ -3,6 +3,11 @@
 
 #include "singleton.h"
 
+namespace ro
+{
+class LoginInfo;
+}
+
 namespace srdgame
 {
 class LoginSocket;
@@ -17,6 +22,10 @@ public:
 	void handle_admin_login(LoginSocket* socket, const Packet* packet);
 
 	void get_crypto_key(LoginSocket* socket, const Packet* packet);
+
+protected:
+	bool create_new_account(ro::LoginInfo* info, bool female);
+	void lead_to_realm(LoginSocket* socket);
 
 };
 }

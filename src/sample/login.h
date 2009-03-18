@@ -4,7 +4,8 @@
 #include "defs.h"
 #include <iostream>
 #include <cstring>
-
+namespace ro
+{
 int lan_subnetcheck(uint32 ip);
 
 size_t to_refuse_connect(char* buf);
@@ -19,5 +20,7 @@ size_t to_get_loginserver_info(char* buf, const Packet* packet);
 
 size_t from_admin_login(Packet* dest, const char* src, size_t size);
 size_t to_admin_login_result(char* buf, const Packet* packet);
+
+}
 #endif
 

@@ -6,6 +6,7 @@
 #include "loginsocket.h"
 #include "intersocket.h"
 #include "network.h"
+#include "database.h"
 
 namespace srdgame
 {
@@ -37,6 +38,10 @@ protected:
 
 	//SmartPtr< TcpListenSocket< LoginSocket > > _socket;
 	//SmartPtr< TcpListenSocket< LoginSocketInter > > _inter_socket;
+	//
+	
+	// Database info
+	DatabaseInfo _db_info;
 };
 }
 

@@ -35,7 +35,7 @@ class DatabaseMgr : public Singleton < DatabaseMgr >
 		// call to shutdown this thread.
 		virtual void shutdown()
 		{
-			//_running = false;
+			_running = false;
 		}
 		// call when this get closing? not work yet?
 		virtual void on_close();

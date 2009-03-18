@@ -3,7 +3,8 @@
 #include <cstring>
 #include <cstdio>
 #include "md5/md5class.h"
-
+namespace ro
+{
 bool check_encrypted(const char* str1, const char* str2, const char* passwd)
 {
 	char temp[64 + 1];
@@ -30,4 +31,4 @@ bool check_password(const char* md5key, int passwd_enc, const char* passwd, cons
 				((passwd_enc & 0x02) && check_encrypted(ref_passwd, md5key, passwd));
 	}
 }
-
+}

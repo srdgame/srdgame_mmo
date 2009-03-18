@@ -1,8 +1,10 @@
 #ifndef _RO_DEFS_H_
-#define _FO_DEFS_H_
+#define _RO_DEFS_H_
 
 #include "defs.h"
 
+namespace ro
+{
 // define all the structs.
 //
 struct LoginInfo
@@ -44,5 +46,5 @@ struct LoginServerInfo
 {
 	char info[8];
 };
-
+}
 #endif

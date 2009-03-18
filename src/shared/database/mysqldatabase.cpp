@@ -73,7 +73,7 @@ bool MySQLDatabase::open(const DatabaseInfo& info)
 		real_conn = mysql_real_connect( conn, _info._host_ip.c_str(), _info._username.c_str(), _info._password.c_str(), _info._database.c_str(), _info._host_port, NULL, 0 );
 		if (real_conn == NULL )
 		{
-			LogError("MySQLDatabase", "Conn failed due to: `%s`", mysql_error( conn ) );
+			LogError(DB_NAME, "Connection failed due to: `%s`", mysql_error( conn ) );
 			mysql_close(conn);
 			return false;
 		}
@@ -90,6 +90,14 @@ void MySQLDatabase::close()
 
 bool MySQLDatabase::send_query(DBConn* conn, const char* sql)
 {
+	MySQLConn* conn_ = static_cast<MySQLConn*>(conn);
+	int res = mysql_query(conn_->_mysql, sql);
+	if (res > 0)
+	{
+		LogError("MySQLDatabase", "Sql query failed due to [%s], Query: [%s]\n", mysql_error(conn_->_mysql ), sql);
+	}
+
+	return res == 0 ? true : false;
 }
 QueryResult* MySQLDatabase::get_result(DBConn* conn)
 {

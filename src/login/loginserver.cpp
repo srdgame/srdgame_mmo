@@ -8,6 +8,7 @@
 #include "typedefs.h"
 #include "loginmgr.h"
 #include "packetparser.h"
+#include "databasemgr.h"
 
 using namespace srdgame;
 
@@ -70,6 +71,7 @@ bool LoginServer::init_env()
 {
 	ThreadPool::get_singleton().init(10);
 	SocketMgr::get_singleton().start_worker();
+	DatabaseMgr::get_singleton().init(_config);
 	return true;
 }
 bool LoginServer::init_packet_parser()

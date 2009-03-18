@@ -10,7 +10,7 @@
 using namespace std;
 using namespace srdgame;
 
-ConfigFile::ConfigFile(std::string& fn) : _loaded (false)
+ConfigFile::ConfigFile(const std::string& fn) : _loaded (false)
 {
 	if (fn.empty())
 	{
@@ -39,7 +39,7 @@ ConfigFile::~ConfigFile()
 }
 
 
-int ConfigFile::load_file(std::string& fn)
+int ConfigFile::load_file(const std::string& fn)
 {
 	fstream file(fn.c_str());
 	if (!file.good())

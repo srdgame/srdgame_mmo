@@ -10,6 +10,11 @@
 using namespace srdgame;
 using namespace std;
 
+DatabaseMgr::Worker::Worker(DatabaseMgr* mgr)
+	: _mgr(mgr), _running(false)
+{
+}
+
 bool DatabaseMgr::Worker::run()
 {
 	if (_mgr->_closing)
@@ -35,14 +40,11 @@ bool DatabaseMgr::Worker::run()
 			}
 			_mgr->_db->send_query(con, query._sql.c_str());
 			con->_lock.unlock();
-			break;	
+			break;
 		}
 	}
-	else
-	{
-		usleep(1000);
-	}
-	return false;
+
+	return true;
 }
 void DatabaseMgr::Worker::on_close()
 {
@@ -52,7 +54,7 @@ void DatabaseMgr::Worker::on_close()
 	{
 		LogError("DATABASE", "Worker quit but the jobs are not finished!!!!!!!!!!!!!!!!!");
 	}
-	_mgr->_worker_lock.lock();
+	_mgr->_worker_lock.unlock();
 }
 
 DatabaseMgr::DatabaseMgr() : _inited(false), _closing(false), _config(NULL), _db(NULL)
@@ -77,6 +79,7 @@ void DatabaseMgr::init(ConfigFile* config)
 	info._host_port = _config->get_value<unsigned int>("DB_SERVER_PORT");
 	info._username = _config->get_value<string>("DB_USER_NAME");
 	info._password = _config->get_value<string>("DB_PASSWORD");
+	info._database = _config->get_value<string>("DB_DATABASE");
 
 	switch (type)
 	{
@@ -95,9 +98,11 @@ void DatabaseMgr::init(ConfigFile* config)
 	if (!_db->open(info))
 	{
 		delete _db;
+		_db = NULL;
 		LogError("Database", "Could not connect to database");
 	}
 
+	LogSuccess("Database", "Connectted to database successfully!!");
 	_inited = true;
 }
 
@@ -124,7 +129,7 @@ QueryResult* DatabaseMgr::query(const std::string& sql)
 {
 	if (!_inited || !_db)
 		return NULL;
-	return this->query(sql);
+	return _db->query(sql);
 }
 bool DatabaseMgr::execute(const char* sql, ...)
 {
@@ -146,7 +151,9 @@ bool DatabaseMgr::execute(const std::string& sql)
 	AsyncQuery eq;
 	eq._sql = sql;
 	eq._func = NULL;
+	_LogDebug_("DBMGR", "EXECUTE SQL: %s", sql.c_str());
 	_query_queue.push(eq);
+	this->start_worker();
 }
 void DatabaseMgr::shutdown()
 {
@@ -165,7 +172,11 @@ void DatabaseMgr::shutdown()
 	// Assertion for left jobs???
 	//
 	_query_queue.clear();
-	_db->close();
+	if (_db)
+	{
+		_db->close();
+		delete _db;
+	}
 	_closing = false;
 }
 

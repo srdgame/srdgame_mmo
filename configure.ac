@@ -12,6 +12,7 @@ AC_PROG_CXX
 AC_PROG_CC
 
 # Checks for libraries.
+AC_CHECK_LIB([mysqlclient], [mysql_init])
 
 # Checks for header files.
 AC_HEADER_STDC

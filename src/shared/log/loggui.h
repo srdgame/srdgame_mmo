@@ -109,6 +109,7 @@ public:
 		{
 			Color(TWHITE);
 			fputs(source, stdout);
+			putchar('\t');
 			putchar(':');
 			putchar(' ');
 			Color(TNORMAL);

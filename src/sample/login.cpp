@@ -3,6 +3,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "ro_defs.h"
+
+namespace ro
+{
+
 //--------------------------------------------
 // Test to know if an IP come from LAN or WAN.
 //--------------------------------------------
@@ -195,6 +199,7 @@ size_t to_server_list_result(char* buf, const Packet* packet)
 		uint32 subnet_char_ip = lan_subnetcheck(ip);
 		PUINT32(buf, 47 + i * 32) = htonl((subnet_char_ip) ? subnet_char_ip : info->ip);
 		printf("IP of Server : %d.%d.%d.%d.\n", CONVIP(info->ip));
+		printf("Port of Server : %d\n", info->port);
 
 		PUINT16(buf, 47 + i * 32 + 4) = ntows(htons(info->port));
 
@@ -274,4 +279,6 @@ size_t to_admin_login_result(char* buf, const Packet* packet)
 	PUINT16(buf, 0) = 0x7919;
 	PUINT8(buf, 2) = PUINT64(packet->param.Data, 0) == 0 ? 0 : 1;
 	return res;
+}
+
 }
