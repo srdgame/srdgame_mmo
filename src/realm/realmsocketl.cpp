@@ -78,11 +78,16 @@ void RealmInterSocketL::on_handle(Packet* packet)
 		case IS_GET_INFO:
 			// ask for more detail info, the reply structure is to be defined.
 			{
-				string name = RealmMgr::get_singleton().get_info();
+				/*string name = RealmMgr::get_singleton().get_info();
 				Packet p;
 				p.op = IC_INFO;
 				p.len = sizeof(Packet) + name.size();
-				p.param.Data = name.c_str();
+				p.param.Data = name.c_str();*/
+				Packet p;
+				p.op = IC_INFO;
+				p.len = sizeof(Packet) + sizeof(RealmSrvInfo);
+				RealmSrvInfo info = RealmMgr::get_singleton().get_info();
+				p.param.Data = (char*)&info;
 				send_packet(&p);
 			}
 			break;

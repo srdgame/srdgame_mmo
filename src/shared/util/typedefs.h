@@ -5,6 +5,7 @@
 //
 
 #include <string>
+#include "metadefs.h"
 
 enum RealmSrvStatus
 {
@@ -16,9 +17,11 @@ enum RealmSrvStatus
 };
 struct RealmSrvInfo
 {
-	std::string name;
+	char name[64];
+	char ip[16];
+	int port;
 	RealmSrvStatus status;
-	std::string info;
+	char info[256];
 };
 
 enum WorldSrvStatus
@@ -38,9 +41,11 @@ enum WorldSrvType
 
 struct WorldSrvInfo
 {
-	std::string name;
+	char name[64];
+	char ip[16];
+	int port;
 	WorldSrvStatus status;
-	std::string info;
+	char info[256];
 	WorldSrvType type;
 };
 #endif

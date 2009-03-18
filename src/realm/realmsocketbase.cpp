@@ -97,7 +97,7 @@ void RealmSocketBase::on_rev()
 				if (_dump_in)
 				{
 					PacketDump::get_singleton().dump("UNCOMPLETE PACKET", data + index, size - index);
-					PacketDump::get_singleton().dump("UNKNOWN PACKET", p);
+					//PacketDump::get_singleton().dump("UNKNOWN PACKET", p);
 				}
 				LogDebug("RealmSocket", "Breaking!!! size is : %d   index is : %d", size, index);
 				break;

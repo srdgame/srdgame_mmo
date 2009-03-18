@@ -22,11 +22,9 @@ enum InterOpcode
 	IC_STATUS = 41, // 
 	IC_POST_STATUS = 42, // Post the status to server
 
-	IS_GET_INFO = 50, // ask for more detail info, the reply structure is to be defined.
+	IS_GET_INFO = 50, // ask for whole information, include Name and Status and any other information.
 	IC_INFO = 51, //
 
-	IS_GET_TYPE = 60, // ask for server type,
-	IC_TYPE = 61,
 	// More
 };
 

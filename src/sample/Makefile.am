@@ -7,6 +7,8 @@ lib_LTLIBRARIES = libsample.la
 libsample_la_SOURCES = defs.h \
 					   login.h \
 					   login.cpp \
+					   char.h \
+					   char.cpp \
 					   strlib.h \
 					   strlib.cpp \
 					   crypto.h \

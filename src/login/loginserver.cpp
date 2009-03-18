@@ -172,7 +172,7 @@ bool LoginServer::wait_command()
 		for (; i < info.size(); ++i)
 		{
 			LogSuccess("LoginServer", "Login Server : %d", i);
-			LogSuccess("LoginServer", "Name: %s\t Info: %s", info[i].name.c_str(), info[i].info.c_str());
+			LogSuccess("LoginServer", "Name: %s\t Info: %s", info[i].name, info[i].info);
 			switch (info[i].status)
 			{
 				case LS_OFFLINE:

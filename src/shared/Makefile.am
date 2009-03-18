@@ -1,1 +1,1 @@
-SUBDIRS = log network thread util crypto config database packet script
+SUBDIRS = log network thread util crypto config database packet script sample

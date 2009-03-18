@@ -43,7 +43,7 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/login/Makefile
                  src/realm/Makefile
-		 src/sample/Makefile
+		 		 src/sample/Makefile
                  src/script/Makefile
                  src/shared/Makefile
                  src/shared/config/Makefile
@@ -53,8 +53,9 @@ AC_CONFIG_FILES([Makefile
                  src/shared/database/Makefile
                  src/shared/log/Makefile
                  src/shared/network/Makefile
-		 src/shared/packet/Makefile
-		 src/shared/script/Makefile
+		 		 src/shared/packet/Makefile
+				 src/shared/sample/Makefile
+		 		 src/shared/script/Makefile
                  src/shared/thread/Makefile
                  src/shared/util/Makefile
                  src/world/Makefile])

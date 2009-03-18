@@ -27,9 +27,7 @@ public:
 
 	void update_world_server(RealmSocketBase* s, WorldSrvInfo& info);
 	void update_world_server_name(RealmSocketBase* s, std::string name);
-	void update_world_server_info(RealmSocketBase* s, std::string info);
 	void update_world_server_status(RealmSocketBase* s, WorldSrvStatus status);
-	void update_world_server_type(RealmSocketBase* s, WorldSrvType type);
 
 	void add_client(RealmSocketBase* s);
 	void remove_client(RealmSocketBase* s);
@@ -37,8 +35,8 @@ public:
 	// realm server attributes.
 	void set_name(std::string name);
 	std::string get_name();
-	void set_info(std::string info);
-	std::string get_info();
+	void set_info(RealmSrvInfo& info);
+	RealmSrvInfo& get_info();
 
 protected:
 	std::map<SOCKET, RealmSocketBase*> _servers;
@@ -48,8 +46,7 @@ protected:
 	Mutex _client_lock;
 
 	Mutex _lock;
-	std::string _name;
-	std::string _info;
+	RealmSrvInfo _info;
 };
 
 }

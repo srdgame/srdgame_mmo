@@ -28,8 +28,8 @@ public:
 	// world server attributes.
 	void set_name(std::string name);
 	std::string get_name();
-	void set_info(std::string info);
-	std::string get_info();
+	void set_info(WorldSrvInfo& info);
+	WorldSrvInfo& get_info();
 
 protected:
 	std::map<SOCKET, WorldSocketBase*> _clients;
@@ -37,8 +37,7 @@ protected:
 	Mutex _client_lock;
 
 	Mutex _lock;
-	std::string _name;
-	std::string _info;
+	WorldSrvInfo _info;
 };
 
 }

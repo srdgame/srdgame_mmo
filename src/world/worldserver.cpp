@@ -78,8 +78,32 @@ bool WorldServer::init_env()
 {
 	ThreadPool::get_singleton().init(10);
 	SocketMgr::get_singleton().start_worker();
-	WorldMgr::get_singleton().set_name(_config->get_value<std::string>("NAME"));
-	WorldMgr::get_singleton().set_info(_config->get_value<std::string>("INFO"));
+	//WorldMgr::get_singleton().set_name(_config->get_value<std::string>("NAME"));
+	WorldSrvInfo info;
+
+	string sname = _config->get_value<std::string>("NAME");
+	::memset(info.name, 0, sizeof(info.name));
+	::memcpy(info.name, sname.c_str(), sname.size());
+
+	string sinfo = _config->get_value<std::string>("INFO");
+	::memset(info.info, 0, sizeof(info.info));
+	::memcpy(info.info, sinfo.c_str(), sinfo.size());
+	info.status = WS_READY;
+	
+	::memset(info.ip, 0, sizeof(info.ip));
+	string host = _config->get_value<std::string>("HOST_IP");
+	if (host.empty())
+	{
+		host = get_host_ip();
+	}
+	if (!host.empty())
+	{
+		::memcpy(info.ip, host.c_str(), host.size());
+	}
+	info.port = _config->get_value<int>("PORT");
+	info.port = info.port == 0 ? 8001 : info.port;
+	info.type = WT_TESTING;
+	WorldMgr::get_singleton().set_info(info);
 	return true;
 }
 
@@ -100,8 +124,8 @@ bool WorldServer::start_listen()
 	int port = _config->get_value<int>("PORT");
 	if (port <= 0)
 	{
-		LogWarning("WorldServer", "Invalid listen port found, change it to: %d", 7001);
-		port = 7001;
+		LogWarning("WorldServer", "Invalid listen port found, change it to: %d", 8001);
+		port = 8001;
 	}
 	std::string addr = _config->get_value<std::string>("ADDRESS");
 	if (addr.empty())

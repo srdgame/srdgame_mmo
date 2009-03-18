@@ -121,27 +121,17 @@ void InterSocket::on_handle(Packet* packet)
 		case IS_GET_INFO:
 			// ask for more detail info, the reply structure is to be defined.
 			{
-				string name = WorldMgr::get_singleton().get_info();
+				WorldSrvInfo info = WorldMgr::get_singleton().get_info();
 				Packet p;
 				p.op = IC_INFO;
-				p.len = sizeof(Packet) + name.size();
-				p.param.Data = name.c_str();
+				p.len = sizeof(Packet) + sizeof(WorldSrvInfo);
+				p.param.Data = (char*)&info;
 				send_packet(&p);
 			}
 			break;
 		case IC_INFO:
 			break;
-		case IS_GET_TYPE:
-			{
-				Packet p;
-				p.op = IC_TYPE;
-				p.len = sizeof(Packet);
-				p.param.Long = WT_TESTING;
-				send_packet(&p);
-			}
-			break;
-		case IC_TYPE:
-			break;
+
 		default:
 			LogWarning("WorldServer", "Unknow packet is received from Login Server, the opcode is : %d", packet->op);
 			break;

@@ -38,7 +38,7 @@ void RealmMgr::add_world_server(RealmSocketBase* s)
 void RealmMgr::remove_world_server(RealmSocketBase* s)
 {
 	AutoLock lock(_server_lock);
-	s->close();
+	//s->close();
 	_servers.erase(s->get_fd());
 	_servers_info.erase(s);
 }
@@ -52,13 +52,7 @@ void RealmMgr::update_world_server(RealmSocketBase* s, WorldSrvInfo& info)
 void RealmMgr::update_world_server_name(RealmSocketBase* s, std::string name)
 {
 	AutoLock lock(_server_lock);
-	_servers_info[s].name = name;
-}
-
-void RealmMgr::update_world_server_info(RealmSocketBase* s, std::string info)
-{
-	AutoLock lock(_server_lock);
-	_servers_info[s].info = info;
+	::memcpy(_servers_info[s].name, name.c_str(), name.size());
 }
 
 void RealmMgr::update_world_server_status(RealmSocketBase* s, WorldSrvStatus status)
@@ -66,11 +60,7 @@ void RealmMgr::update_world_server_status(RealmSocketBase* s, WorldSrvStatus sta
 	AutoLock lock(_server_lock);
 	_servers_info[s].status = status;
 }
-void RealmMgr::update_world_server_type(RealmSocketBase* s, WorldSrvType type)
-{
-	AutoLock lock(_server_lock);
-	_servers_info[s].type = type;
-}
+
 void RealmMgr::add_client(RealmSocketBase* s)
 {
 	AutoLock lock(_client_lock);
@@ -86,27 +76,27 @@ void RealmMgr::add_client(RealmSocketBase* s)
 void RealmMgr::remove_client(RealmSocketBase* s)
 {
 	AutoLock lock(_client_lock);
-	s->close();
+//	s->close();
 	_clients.erase(s->get_fd());
 }
 
 void RealmMgr::set_name(std::string name)
 {
 	AutoLock lock(_lock);
-	this->_name = name;
+	::memcpy(_info.name, name.c_str(), name.size());
 }
 std::string RealmMgr::get_name()
 {
 	AutoLock lock(_lock);
-	return this->_name;
+	return this->_info.name;
 }
 
-void RealmMgr::set_info(std::string info)
+void RealmMgr::set_info(RealmSrvInfo& info)
 {
 	AutoLock lock(_lock);
 	this->_info = info;
 }
-std::string RealmMgr::get_info()
+RealmSrvInfo& RealmMgr::get_info()
 {	
 	AutoLock lock(_lock);
 	return this->_info;

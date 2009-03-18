@@ -37,20 +37,20 @@ void WorldMgr::remove_client(WorldSocketBase* s)
 void WorldMgr::set_name(std::string name)
 {
 	AutoLock lock(_lock);
-	this->_name = name;
+	::memcpy(_info.name, name.c_str(), name.size());;
 }
 std::string WorldMgr::get_name()
 {
 	AutoLock lock(_lock);
-	return this->_name;
+	return string(this->_info.name);
 }
 
-void WorldMgr::set_info(std::string info)
+void WorldMgr::set_info(WorldSrvInfo& info)
 {
 	AutoLock lock(_lock);
 	this->_info = info;
 }
-std::string WorldMgr::get_info()
+WorldSrvInfo& WorldMgr::get_info()
 {	
 	AutoLock lock(_lock);
 	return this->_info;

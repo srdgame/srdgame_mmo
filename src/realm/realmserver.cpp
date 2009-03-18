@@ -81,8 +81,29 @@ bool RealmServer::init_env()
 {
 	ThreadPool::get_singleton().init(10);
 	SocketMgr::get_singleton().start_worker();
-	RealmMgr::get_singleton().set_name(_config->get_value<std::string>("NAME"));
-	RealmMgr::get_singleton().set_info(_config->get_value<std::string>("INFO"));
+	//RealmMgr::get_singleton().set_name(_config->get_value<std::string>("NAME"));
+	RealmSrvInfo info;
+	std::string name = _config->get_value<std::string>("NAME");
+	::memset(info.name, 0, sizeof(info.name));
+	::memcpy(info.name, name.c_str(), name.size());
+
+	std::string sinfo = _config->get_value<std::string>("INFO");
+	::memset(info.info, 0, sizeof(info.info));
+	::memcpy(info.info, sinfo.c_str(), sinfo.size()); 
+	info.status = LS_READY;
+
+	::memset(info.ip, 0, sizeof(info.ip));
+	std::string host = _config->get_value<std::string>("HOST_IP");
+	if (host.empty())
+	{
+		host = get_host_ip();
+	}
+	if (!host.empty())
+	{
+		::memcpy(info.ip, host.c_str(), host.size());
+	}
+	info.port = _config->get_value<int>("PORT") == 0 ? 7001 : _config->get_value<int>("PORT");
+	RealmMgr::get_singleton().set_info(info);
 	return true;
 }
 bool RealmServer::init_packet_parser()
@@ -220,7 +241,7 @@ bool RealmServer::wait_command()
 		for (; i < info.size(); ++i)
 		{
 			LogSuccess("RealmServer", "World Server : %d", i);
-			LogSuccess("RealmServer", "Name: %s\t Info: %s", info[i].name.c_str(), info[i].info.c_str());
+			LogSuccess("RealmServer", "Name: %s\t Info: %s", info[i].name, info[i].info);
 			switch (info[i].type)
 			{
 				case WT_NORMAL:

@@ -1,6 +1,6 @@
 #include "accountmgr.h"
 #include "ro_defs.h"
-#include "sample/rosql.h"
+#include "rosql.h"
 #include "log.h"
 
 using namespace srdgame;

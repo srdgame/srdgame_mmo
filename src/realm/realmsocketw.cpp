@@ -27,6 +27,7 @@ void RealmInterSocketW::on_connect()
 void RealmInterSocketW::on_close()
 {
 	LogDebug("RealmServer", "connection with world server has been dropdown");
+	//RealmMgr::get_singleton().remove_world_server(this);
 }
 void RealmInterSocketW::on_handle(Packet* packet)
 {
@@ -61,8 +62,6 @@ void RealmInterSocketW::on_handle(Packet* packet)
 				p.op = IS_GET_STATUS;
 				this->send_packet(&p);
 
-				p.op = IS_GET_TYPE;
-				this->send_packet(&p);
 			}
 			break;
 		case IS_GET_NAME:
@@ -99,19 +98,17 @@ void RealmInterSocketW::on_handle(Packet* packet)
 				int size = PacketParser::get_ex_len(*packet);
 				if (size > 0)
 				{
-					RealmMgr::get_singleton().update_world_server_info(this, std::string(packet->param.Data));
+					if (size != sizeof(WorldSrvInfo))
+					{
+						LogError("RealmServer", "Incorrect world server is connecting, Or read the README to know limition");
+						break;
+					}
+					WorldSrvInfo* info = (WorldSrvInfo*)packet->param.Data;
+					RealmMgr::get_singleton().update_world_server(this, *info);
 				}
 			}
 			break;
-		case IS_GET_TYPE:
-			break;
-		case IC_TYPE:
-			_LogDebug_("RealmServer", "IC_TYPE");
-			{
-				int size = PacketParser::get_ex_len(*packet);
-				WorldSrvType type = (WorldSrvType)packet->param.Long;
-				RealmMgr::get_singleton().update_world_server_type(this, type);
-			}
+
 		default:
 			break;
 	}

@@ -43,6 +43,7 @@ void InterSocket::on_connect()
 
 void InterSocket::on_close()
 {
+	//LoginMgr::get_singleton().remove_realm_server(this);
 }
 
 void InterSocket::on_handle(Packet* packet)
@@ -113,11 +114,19 @@ void InterSocket::on_handle(Packet* packet)
 				int size = PacketParser::get_ex_len(*packet);
 				if (size > 0)
 				{
-					char* sz = new char[size + 1];
+					/*char* sz = new char[size + 1];
 					::memset(sz, 0, size + 1);
 					::memcpy(sz, packet->param.Data, size);
 					LoginMgr::get_singleton().update_realm_server_info(this, std::string(sz));
 					delete[] sz;
+					*/
+					if (size != sizeof(RealmSrvInfo))
+					{
+						LogError("LoginServer", "Incorrect server is connecting or Please read the README for system limitition");
+						break;
+					}
+					RealmSrvInfo* info = (RealmSrvInfo*)packet->param.Data;
+					LoginMgr::get_singleton().update_realm_server(this, *info);
 				}
 			}
 			break;

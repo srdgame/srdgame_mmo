@@ -2,7 +2,7 @@
 #define RO_SQL_H_
 
 #include "ro_defs.h"
-#include "../userinfo.h"
+#include "userinfo.h"
 #include "metadefs.h"
 #include "rouser.h"
 #include "field.h"

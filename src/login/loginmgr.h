@@ -27,7 +27,6 @@ public:
 
 	void update_realm_server(LoginSocketBase* s, RealmSrvInfo& info);
 	void update_realm_server_name(LoginSocketBase* s, std::string name);
-	void update_realm_server_info(LoginSocketBase* s, std::string info);
 	void update_realm_server_status(LoginSocketBase* s, RealmSrvStatus status);
 
 	void add_client(LoginSocketBase* s);

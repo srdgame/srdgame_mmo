@@ -1,0 +1,13 @@
+######################################################################
+#
+# System limititon. Since we did not handle the htonl htons, so the system run those 
+# severs have to run on same kind of hardware and same system.
+#
+#######################################################################
+#
+# Attention:
+# 	Please handle the hton(*) ntoh(*) in your parser libraries.
+#	In servers we assume there is no such functions.
+#
+#
+######################################################################

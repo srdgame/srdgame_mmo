@@ -1,14 +1,17 @@
 #include "loginauth.h"
 #include "loginsocket.h"
 #include "packetdefs.h"
+#include "typedefs.h"
 #include "opcode.h"
 #include "userinfo.h"
 #include "accountmgr.h"
+#include "loginmgr.h"
 
 #include "ro_defs.h"
 #include "strlib.h"
-#include "sample/rouser.h"
+#include "rouser.h"
 #include <cstdlib>
+#include <vector>
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -133,6 +136,11 @@ bool LoginAuth::create_new_account(LoginInfo* info, bool female)
 
 void LoginAuth::lead_to_realm(LoginSocket* socket)
 {
+	std::vector<RealmSrvInfo> servers;
+	LoginMgr::get_singleton().enum_realm_servers(servers);
+
+	size_t size = servers.size();
+
 	// Send server list.
 	ServerListHeader header;
 	header.ip = str2ip(socket->get_remote_ip().c_str());
@@ -140,22 +148,29 @@ void LoginAuth::lead_to_realm(LoginSocket* socket)
 	header.id1 = rand(); // Not used I guess.
 	header.id2 = rand(); // Not used I guess.
 	header.sex = 'F';
-	header.server_count = 1; // Only one now, it is fake.
+	header.server_count = (uint32)size; // Only one now, it is fake.
 
-	ServerInfo info; // fake one TODO:
-	info.ip = str2ip("192.168.0.100");
-	info.port = 7002;
-	char  name[20] = "TEST";
-	memset(info.name, 0, 20);
-	memcpy(info.name, name, strlen(name));
-	info.users = 1;
 
-	char* buf = new char[sizeof(header) + sizeof(info)];
+	char* buf = new char[sizeof(header) + sizeof(ServerInfo) * size];
 	memcpy(buf, (char*)&header, sizeof(header));
-	memcpy(buf + sizeof(header), (char*)&info, sizeof(info));
+
+	for( size_t i = 0; i < size; ++i)
+	{
+		ServerInfo info; // fake one TODO:
+		info.ip = str2ip(servers[i].ip);
+		info.port = (uint16)servers[i].port;
+		memset(info.name, 0, 20);
+		memcpy(info.name, servers[i].name, 20);
+		info.users = 1;
+	
+		// Copy to buffer.
+		memcpy(buf + sizeof(header) + sizeof(info) * i, (char*)&info, sizeof(info));
+	}
+
+	// Send packetage.
 	Packet listp;
 	listp.op = ES_SERVER_LIST;
-	listp.len = sizeof(Packet) + sizeof(header) + sizeof(info);
+	listp.len = sizeof(Packet) + sizeof(header) + sizeof(ServerInfo);
 	listp.param.Data = buf;
 
 	socket->send_packet(&listp);
