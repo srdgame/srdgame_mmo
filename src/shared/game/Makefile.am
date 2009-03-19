@@ -1,7 +1,7 @@
-INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../shared/util -I$(srcdir)/../shared/thread
+INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../util -I$(srcdir)/../thread
 
-noinst_LIBRARIES = libcommon.a
+noinst_LIBRARIES = libgame.a
 
-libcommon_a_SOURCES = userinfo.h \
+libgame_a_SOURCES = userinfo.h \
 					  userinfo.cpp
 

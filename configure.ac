@@ -41,17 +41,16 @@ AC_PROG_LIBTOOL
 AC_CONFIG_FILES([Makefile
                  plan/Makefile
                  src/Makefile
-				 src/common/Makefile
                  src/login/Makefile
                  src/realm/Makefile
 		 		 src/sample/Makefile
-                 src/script/Makefile
                  src/shared/Makefile
                  src/shared/config/Makefile
                  src/shared/crypto/Makefile
                  src/shared/crypto/md5/Makefile
                  src/shared/crypto/sha/Makefile
                  src/shared/database/Makefile
+				 src/shared/game/Makefile
                  src/shared/log/Makefile
                  src/shared/network/Makefile
 		 		 src/shared/packet/Makefile

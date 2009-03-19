@@ -1,4 +1,4 @@
-INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../util -I$(srcdir)/../thread -I$(srcdir)/../../login -I$(srcdir)/../../sample -I$(srcdir)/../packet -I$(srcdir)/../database -I$(srcdir)/../log -I$(srcdir)/../config -I$(srcdir)/../../common
+INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../util -I$(srcdir)/../thread -I$(srcdir)/../../login -I$(srcdir)/../../sample -I$(srcdir)/../packet -I$(srcdir)/../database -I$(srcdir)/../log -I$(srcdir)/../config -I$(srcdir)/../game
 
 noinst_LIBRARIES = libsample.a
 
