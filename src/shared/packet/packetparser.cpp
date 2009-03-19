@@ -8,15 +8,15 @@
 
 using namespace srdgame;
 
-static int g_header_len = sizeof(long) + sizeof(long) + sizeof(long);
-static int g_void_ptr_len = sizeof(void*);
+static int g_header_len = sizeof(int) + sizeof(int);
+static int g_packet_param_len = sizeof(PacketParam);
 
 void PacketParser::free(Packet& p)
 {
 	int param_len = p.len - g_header_len;
 	if (param_len <= 0)
 		return;
-	if (param_len > g_void_ptr_len)
+	if (param_len > g_packet_param_len)
 	{
 		delete[] p.param.Data;
 	}
@@ -26,7 +26,7 @@ void PacketParser::free(Packet& p)
 int PacketParser::get_ex_len(const Packet& p)
 {
 	//LogDebug("PacketParser", "p.len = %d, g_header_len = %d, so get_ex_len = %d", p.len, g_header_len, p.len - g_header_len);
-	return p.len - g_header_len - g_void_ptr_len;
+	return p.len - g_header_len - g_packet_param_len;
 }
 
 PacketParser::~PacketParser()
@@ -63,7 +63,7 @@ size_t PacketParser::from_inter(Packet& dest, const char* src, size_t size)
 	LogDebug("PacketParser", "param_len is : %d", param_len);
 #endif
 	// invalid stream.
-	if (param_len < g_void_ptr_len)
+	if (param_len < g_packet_param_len)
 	{
 
 		LogError("PacketParser", "Invalide stream found");
@@ -77,7 +77,7 @@ size_t PacketParser::from_inter(Packet& dest, const char* src, size_t size)
 	}
 
 	// if the param needs to be pointer or not
-	if (param_len > g_void_ptr_len)
+	if (param_len > g_packet_param_len)
 	{
 		char* buf = new char[param_len];
 		::memcpy(buf, src + g_header_len, param_len);
@@ -100,7 +100,7 @@ size_t PacketParser::to_inter(char* dest, const Packet& src)
 #ifdef PACKET_DEBUG
 	LogDebug("PacketParser", "Packet:\t opcode: %d\t len: %d", src.op, src.len);
 	LogDebug("PacketParser", "g_header_len is %d", g_header_len);
-	LogDebug("PacketParser", "g_void_ptr_len is %d", g_void_ptr_len);
+	LogDebug("PacketParser", "g_packet_param_len is %d", g_packet_param_len);
 	LogDebug("PacketParser", "sizeof(PacketParam) is %d", sizeof(PacketParam));
 #endif
 	// copy the header.
@@ -111,7 +111,7 @@ size_t PacketParser::to_inter(char* dest, const Packet& src)
 #ifdef PACKET_DEBUG
 	LogDebug("PacketParser", "Packet param len is %d", param_len);
 #endif
-	if (param_len > g_void_ptr_len)
+	if (param_len > g_packet_param_len)
 	{
 		::memcpy(dest + g_header_len, (char*)src.param.Data, param_len);
 	}

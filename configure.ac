@@ -41,6 +41,7 @@ AC_PROG_LIBTOOL
 AC_CONFIG_FILES([Makefile
                  plan/Makefile
                  src/Makefile
+				 src/common/Makefile
                  src/login/Makefile
                  src/realm/Makefile
 		 		 src/sample/Makefile
