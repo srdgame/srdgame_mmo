@@ -5,6 +5,7 @@ find . -name 'Makefile.in' -exec rm -f {} \;
 find . -name '*~' -ok rm -f {} \;
 find . -name '*.dump' -ok rm -f {} \;
 find . -type d -name '.deps' | xargs rm -fr \;
+find . -name '*.swp' -ok rm -f {} \;
 
 rm config.*
 rm aclocal.m4
