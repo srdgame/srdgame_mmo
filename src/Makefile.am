@@ -1,1 +1,1 @@
-SUBDIRS = shared script login realm world sample common
+SUBDIRS = shared login realm world sample
