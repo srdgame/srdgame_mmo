@@ -1,16 +1,22 @@
 #ifndef POSITION_H_
 #define POSITION_H_
 
-#include "attribute.h"
+#include "metadefs.h"
 
-class Position
+
+struct Position
 {
 public:
-	Position();
-	~Position();
+	uint32 x;
+	uint32 y;
+	uint32 z;
+	uint32 r;
+};
 
-public:
-	Attribute _attr;
+template<class T>
+struct PositionEx : public Position
+{
+	T* _ex;
 };
 
 #endif

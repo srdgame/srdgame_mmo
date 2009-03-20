@@ -1,6 +1,8 @@
 #ifndef N_OBJECT_H_
 #define N_OBJECT_H_
 
+#include "object.h"
+
 enum NotifyPriority
 {
 	NP_NOTHING = 0, // Even you do not notify, it still ok.
@@ -11,11 +13,10 @@ enum NotifyPriority
 	NP_GOD, // Ok this is god, take him first.
 };
 
-class NObject
+class NObject : Object
 {
 public:
-	NObject();
-	virtual NObject();
+	virtual NObject()[];
 
 public:
 	// Notified, return next needed notify time.  Normally this will be checked just as prefer not what will exactly happen.
