@@ -3,12 +3,12 @@
 
 enum NotifyPriority
 {
-	NP_NOTHING = 0,
-	NP_CAN_IGNORE,
-	NP_MAY_GOOD,
-	NP_HAVE_TO,
-	NP_NEEDED,
-	NP_GOD,
+	NP_NOTHING = 0, // Even you do not notify, it still ok.
+	NP_CAN_IGNORE, // Even you do not notify, it still ok for a while, but not always.
+	NP_MAY_GOOD, // You may notify it, and it makes good stuff.
+	NP_HAVE_TO, // You have to notify it when you get time.
+	NP_NEEDED, // This notify is needed by system.
+	NP_GOD, // Ok this is god, take him first.
 };
 
 class NObject
@@ -18,9 +18,9 @@ public:
 	virtual NObject();
 
 public:
-	// Notified
-	long notify(long time);
-	NotifyPriority get_priority();
+	// Notified, return next needed notify time.  Normally this will be checked just as prefer not what will exactly happen.
+	long notify(long time) = 0;
+	NotifyPriority get_priority() {return NP_NOTHING;};
 };
 
 #endif
