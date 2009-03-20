@@ -10,34 +10,35 @@ class CharInfo
 public:
 	virtual ~CharInfo(){}
 
-	std::string& get_name()
+	inline int get_class()
+	{
+		return _class;
+	}
+	inline std::string& get_name()
 	{
 		return _name;
 	}
-	Object* get_obj()
-	{
-		return _obj;
-	}
+protected:
+	int _class;// character classes.
+	// TODO:
 	std::string _name;
-	Object* _obj;
 };
 
 template <class T>
 class CharInfoEx : public CharInfo
 {
 public:
-	virtual ~CharInfoEx()
+	CharInfoEx(T& t) : _ex(t)
 	{
-		if(_ex)
-			delete _ex;
 	}
+	virtual ~CharInfoEx()
 
-	T* get_ex_data()
+	inline T* get_ex_data()
 	{
-		return _ex;
+		return &_ex;
 	}
 protected:
-	T* _ex;
+	T _ex;
 };
 }
 

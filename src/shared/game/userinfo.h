@@ -9,9 +9,12 @@ namespace srdgame
 class UserInfo
 {
 public:
-	UserInfo();
-	virtual ~UserInfo();
-
+	UserInfo() : _id(0), _crypto(0)
+	{
+	}
+	virtual ~UserInfo()
+	{
+	}
 public:
 	long _id;
 	std::string _name; // user name;

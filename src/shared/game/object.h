@@ -9,8 +9,6 @@ class Object
 {
 public:
 	~Object(){
-		if (_pos)
-			delete _pos;
 	};
 
 public:
@@ -18,9 +16,8 @@ public:
 	bool clicked(Object* by){return false;}
 	bool attacked(Object* by){return false;}
 
-	Position* get_pos(){ return _pos;}
+	Position* get_pos() = 0; // implement this by sub classes.
 protected:
-	Position* _pos;
 }
 }
 
