@@ -6,16 +6,8 @@
 
 namespace srdgame
 {
-class UserInfo
+struct UserInfo
 {
-public:
-	UserInfo() : _id(0), _crypto(0)
-	{
-	}
-	virtual ~UserInfo()
-	{
-	}
-public:
 	long _id;
 	std::string _name; // user name;
 	std::string _pass; // password;
@@ -23,25 +15,9 @@ public:
 };
 
 template <class T>
-class UserInfoEx : public UserInfo
+struct UserInfoEx : public UserInfo
 {
-public:
-	UserInfoEx(T* data) : UserInfo(), _ex_data(*data)
-	{
-	}
-	UserInfoEx() : UserInfo()
-	{
-	}
-	~UserInfoEx()
-	{
-	}
-
-	T* get_ex_data()
-	{
-		return &_ex_data;
-	}
-private:
-	T _ex_data;
+	T _ex;
 };
 
 }

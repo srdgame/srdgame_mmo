@@ -10,39 +10,8 @@ enum EmailStatus
 	ES_READ,
 	ES_DELETING,
 };
-class Email
+struct Email
 {
-public:
-	Email(uint32 id, uint32 from, uint32 to) :
-		_id(id), _from(from), _to(to)
-	{
-	}
-	virtual ~Email()
-	{
-	}
-	
-	inline uint32 get_id()
-	{
-		return _id;
-	}
-	inline uint32 get_from();
-	{
-		return _from;
-	}
-	inline uint32 get_to()
-	{
-		return _to;
-	}
-	std::string& get_title()
-	{
-		return &_title;
-	}
-	std::string& get_msg()
-	{
-		return &_msg;
-	}
-
-protected:
 	uint32 _id;
 	uint32 _from;
 	uint32 _to;
@@ -53,21 +22,8 @@ protected:
 };
 
 template <class T>
-class EmailEx : Email
+struct EmailEx : Email
 {
-	EmailEx(T& t, uint32 id, uint32 from, uint32 to) :
-		Email(id, from, to), _ex(t)
-	{
-	}
-	virtual ~Email()
-	{
-	}
-
-	inline T* get_ex_data()
-	{
-		return &_ex;
-	}
-protected:
 	T _ex;
 };
 
