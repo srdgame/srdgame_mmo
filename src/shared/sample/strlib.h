@@ -13,7 +13,7 @@
 #include <cstring>
 #include "metadefs.h"
 
-using namespace srdgame;
+//using namespace srdgame;
 
 namespace ro
 {

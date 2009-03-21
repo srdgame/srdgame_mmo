@@ -184,7 +184,7 @@ bool RoSql::fetch_account_info(Field* fields, UserInfoEx< RoUser >& info)
 	_LogDebug_(LN, "Fetching completed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	return true;
 }
-int get_max_char_id()
+int RoSql::get_max_char_id()
 {
 	std::string sql = "SELECT MAX(`char_id`)+1 FROM `%s`";
 

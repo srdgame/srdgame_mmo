@@ -2,6 +2,7 @@
 #define CHAR_MGR_H_
 
 #include "singleton.h"
+#include <string>
 //#include "mutex.h"
 
 namespace ro

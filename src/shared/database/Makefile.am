@@ -3,11 +3,11 @@ AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/../util -I$(srcdir)/../thread -I$(srcdir)/
 noinst_LIBRARIES = libdatabase.a
 
 libdatabase_a_SOURCES = database.h \
-			dbconn.h \
-			databasemgr.h \
-			field.h \
-			mysqldatabase.h \
-			queryresult.h \
 			database.cpp \
+			dbconn.h \
+			field.h \
+			queryresult.h \
+			mysqldatabase.h \
 			mysqldatabase.cpp \
+			databasemgr.h \
 			databasemgr.cpp

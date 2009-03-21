@@ -4,7 +4,7 @@
 //#include "defs.h"
 #include "metadefs.h"
 
-using namespace srdgame;
+//using namespace srdgame;
 
 namespace ro
 {

@@ -1,4 +1,4 @@
-INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir)/../shared/log -I$(srcdir)/../shared/network -I$(srcdir)/../shared/thread -I$(srcdir)/../shared/util -I$(srcdir) -I$(srcdir)/../shared/config -I$(srcdir)/../shared/packet -I$(srcdir)/../shared/database  -I$(srcdir)/../shared/game -I$(srcdir)/../sample -I$(srcdir)/../shared/sample
+INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir)/../shared/log -I$(srcdir)/../shared/network -I$(srcdir)/../shared/thread -I$(srcdir)/../shared/util -I$(srcdir) -I$(srcdir)/../shared/config -I$(srcdir)/../shared/packet -I$(srcdir)/../shared/database -I$(srcdir)/../shared/game -I$(srcdir)/../sample -I$(srcdir)/../shared/sample
 
 noinst_PROGRAMS = srdgame-loginserver
 

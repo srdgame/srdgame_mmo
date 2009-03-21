@@ -14,3 +14,5 @@ libsample_a_SOURCES = ro_defs.h\
 					  roconf.cpp \
 					  rocharinfo.h
 
+#libsample_a_LIBADD = ldatabase
+#libsample_a_LDFLAGS = -L$(srcdir)/../shared/database

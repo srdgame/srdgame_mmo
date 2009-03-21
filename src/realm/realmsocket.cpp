@@ -5,6 +5,7 @@
 #include "opcode.h"
 #include "rocharinfo.h"
 #include "ro_defs.h"
+#include "rosql.h"
 #include "charmgr.h"
 
 using namespace ro;

@@ -5,8 +5,8 @@
 #include "userinfo.h"
 #include "metadefs.h"
 #include "ro.h"
-#include "field.h"
 #include "rocharinfo.h"
+#include "field.h"
 
 namespace ro
 {
@@ -27,9 +27,9 @@ public:
 	bool load_char(int char_id, RoCharInfo& info, bool load_everything = false);
 	bool save_char(int char_id, RoCharInfo& info);
 protected:
-	bool fetch_account_info(Field* fields, srdgame::UserInfoEx< RoUser >& info);
-	bool fetch_chars_info(Field* fields, RoCharInfo& info);
-	bool fetch_char_info(Field* fields, RoCharInfo& info);
+	bool fetch_account_info(srdgame::Field* fields, srdgame::UserInfoEx< RoUser >& info);
+	bool fetch_chars_info(srdgame::Field* fields, RoCharInfo& info);
+	bool fetch_char_info(srdgame::Field* fields, RoCharInfo& info);
 };
 }
 
