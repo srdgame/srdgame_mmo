@@ -4,13 +4,13 @@ namespace srdgame
 {
 struct SkillInfo
 {
-	uint32 _id;
-	uint16 _lvl;
-	uint16 _flag;
+	int _id;
+	int _lvl;
+	int _flag;
 };
 
 template <class T>
-struct SkillEx : public SkillInfo
+struct SkillInfoEx : public SkillInfo
 {
 	T _ex;
 };

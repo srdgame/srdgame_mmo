@@ -44,5 +44,21 @@ inline uint32 str2ip(const char* ip_str)
 {
 	return ntohl(inet_addr(ip_str));
 }
+
+//--------------------------------------------
+// Test to know if an IP come from LAN or WAN.
+//--------------------------------------------
+inline int lan_subnetcheck(uint32 ip)
+{
+	/*
+	int i;
+	ARR_FIND( 0, subnet_count, i, (subnet[i].char_ip & subnet[i].mask) == (ip & subnet[i].mask) );
+	return ( i < subnet_count ) ? subnet[i].char_ip : 0;*/
+	return 0;
+}
+inline uint16 ntows(uint16 netshort)
+{
+	return ((netshort & 0xFF) << 8) | ((netshort & 0xFF00) >> 8);
+}
 }
 #endif

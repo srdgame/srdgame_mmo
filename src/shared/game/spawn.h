@@ -6,15 +6,15 @@ namespace srdgame
 {
 enum SpawnType
 {
-	ST_ITEM;
-	ST_NPC;
-	ST_SPAWN;
+	ST_ITEM,
+	ST_NPC,
+	ST_SPAWN,
 };
-struct Spawn
+struct SpawnInfo
 {
 	int _id;
 	int _spawn_obj_id;
-	Spawn _type;
+	SpawnType _type;
 };
 
 class SpawnObject : public NObject

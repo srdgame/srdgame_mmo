@@ -2,11 +2,12 @@
 #define RO_CHAR_INFO_H_
 
 #include "metadefs.h"
-#include "charinfo.h"
+#include "gamedefs.h"
+#include "ro_defs.h"
 
 using namespace srdgame;
 
-namespace ro;
+namespace ro
 {
 static const uint16 MaxItemCount = 10; // TODO:
 static const uint8 MaxItemSlotCount = 16;
@@ -30,20 +31,20 @@ struct RoCharItemCard
 };
 struct RoCharItem
 {
-	uint32 _id; // The unique id?
-	uint32 _type; // The item type
-	uint32 _amount; // Mount?
-	uint32 _identify; // for job?
-	uint32 _refine; 
-	uint32 _attrs;
+	int _id; // The unique id?
+	int _type; // The item type
+	int _amount; // Mount?
+	int _identify; // for job?
+	int _refine; 
+	int _attrs;
 	RoCharItemCard _cards[MaxItemSlotCount];
-	uint32 _expire_time;
+	int _expire_time;
 };
-struct RoCharSkill : public Skill
+struct RoCharSkillInfo : public SkillInfo
 {
 
 };
-struct RoCharFamily : public Family
+struct RoCharFamilyInfo : public NpcFamilyInfo
 {
 
 };
@@ -52,51 +53,59 @@ enum RoCharMajorType
 	MT_ARCH = 0,
 	MT_SPEAR,
 	MT_SWORD,
-	MT_COUNT;
+	MT_COUNT,
 };
 struct RoCharMajor
 {
 	RoCharMajorType _type;
-	uint32 _faith;
-	uint32 _calls;
+	int _faith;
+	int _calls;
 };
-struct RoCharFriend : public Friend
+struct RoCharFriendInfo : public FriendInfo
 {
 
 };
 struct RoCharHotKey
 {
-	uint32 id;
+	int id;
 	uint16 lvl;
 	uint16 type; // 0: item, 1:skill
 };
+struct RoPosition : public Position
+{
+	char _name[MAX_MAP_NAME_LEN];
+};
 class RoCharInfo : public CharInfo
 {
-protected:
-	RoCharFamily _family;
+public:
+	RoCharFamilyInfo _family;
 	RoCharProp _prop;
-	RoCharFace _face;
+	RoCharShow _show;
 	RoCharExp _exp;
 	RoCharItem _items[MaxItemCount];
-	RoCharSkill _skills[MaxSkillCount];
-	RoCharFriend _friends[MaxFriendCount];
-	RoCharHotKey _hotkeys[MaxHotKeyCount]
+	RoCharSkillInfo _skills[MaxSkillCount];
+	RoCharFriendInfo _friends[MaxFriendCount];
+	RoCharHotKey _hotkeys[MaxHotKeyCount];
 	// More:
-	uint32 _option;
-	uint32 _party_id;
-	uint32 _guild_id;
-	uint32 _pet_id;
-	uint32 _home_id;
-	uint32 _mer_id; // ????
+	int _option;
+	int _party_id;
+	int _guild_id;
+	int _pet_id;
+	int _home_id;
+	int _mer_id; // ????
+	int _homun_id;
+
 	
-	uint32 _fame; //声望
+	int _fame; //声望
 
 	RoCharMajor _majors[MT_COUNT];
 
-	uint32 _weapon;
-	uint32 _shield;
+	int _slot; // The slot for select chars
+	int _hungry;
 
-	uint32 _hungry;
+	// Map
+	RoPosition _last_pos;
+	RoPosition _save_pos;
 };
 }
 #endif

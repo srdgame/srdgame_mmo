@@ -1,6 +1,6 @@
 #ifndef NPC_INFO_H_
 #define NPC_INFO_H_
-
+#include <string>
 namespace srdgame
 {
 
@@ -22,14 +22,14 @@ struct NpcProp
 struct NpcShow
 {
 	int _class; // Face class.
-	uint16 _slot;
-	uint8 _sex;
+	char _sex;
 	int _hair_style;
 	int _hair_color;
 	int _clothes_color;
 	int _head_top;
 	int _head_middle;
 	int _head_bottom;
+	int _weapon;
 	int _shield;
 	bool _show_equid;
 };
@@ -44,33 +44,12 @@ struct NpcExp
 	int _zeny;
 };
 
-class NpcInfo
+struct NpcInfo
 {
-public:
-	NpcInfo(int id, int cl, std::string name) :
-	_id(id), _class(cl), _name(name)
-	{
-	}
-	virtual ~NpcInfo(){}
-
-	inline int get_id()
-	{
-		return _id;
-	}
-	inline int get_class()
-	{
-		return _class;
-	}
-	inline const string& get_name()
-	{
-		return _name;
-	}
-
-protected:
 	int _id;
 	int _class;
 	std::string _name;
-}
+};
 
 }
 

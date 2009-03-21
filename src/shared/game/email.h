@@ -1,6 +1,9 @@
 #ifndef EMAIL_H_
 #define EMAIL_H_
 
+#include <string>
+#include <vector>
+
 namespace srdgame
 {
 enum EmailStatus
@@ -12,9 +15,9 @@ enum EmailStatus
 };
 struct Email
 {
-	uint32 _id;
-	uint32 _from;
-	uint32 _to;
+	int _id;
+	int _from;
+	int _to;
 	std::string _title;
 	std::string _msg;
 	EmailStatus _status;
@@ -30,7 +33,7 @@ struct EmailEx : Email
 class EmailBox
 {
 public:
-	EmailBox(uint32 char_id) : _char_id(char_id)
+	EmailBox(int char_id) : _char_id(char_id)
 	{
 		_new_emails.resize(_max_email_count);
 		_read_emails.resize(_max_email_count);
@@ -40,7 +43,7 @@ public:
 	{
 	}
 
-	virtual load() = 0;
+	virtual bool load() = 0;
 
 	inline size_t get_unread_count()
 	{
@@ -52,15 +55,15 @@ public:
 	}
 	inline bool is_full()
 	{
-		return get_read_count() + get_unread_count < _max_email_count;
+		return get_read_count() + get_unread_count() < _max_email_count;
 	}
 
 protected:
-	uint32 _char_id;
-	static const _max_email_count;
-	std::vector _new_emails;
-	std::vector _read_emails;
-	std::vector _deleting_emails;
+	int _char_id;
+	static const int _max_email_count = 10;
+	std::vector<Email> _new_emails;
+	std::vector<Email> _read_emails;
+	std::vector<Email> _deleting_emails;
 };
 }
 

@@ -3,7 +3,7 @@
 
 #include "realmsocketbase.h"
 #include "packetdefs.h"
-
+#include "rocharinfo.h"
 
 namespace srdgame
 {
@@ -28,6 +28,8 @@ public:
 	virtual void on_handle(Packet* packet);
 
 protected:
+	ro::RoCharInfo* _chars;
+	int _account_id;
 };
 }
 

@@ -3,6 +3,8 @@
 
 #include "object.h"
 
+namespace srdgame
+{
 enum NotifyPriority
 {
 	NP_NOTHING = 0, // Even you do not notify, it still ok.
@@ -13,15 +15,15 @@ enum NotifyPriority
 	NP_GOD, // Ok this is god, take him first.
 };
 
-class NObject : Object
+class NObject : public Object
 {
 public:
-	virtual NObject()[];
+	virtual ~NObject(){}
 
 public:
 	// Notified, return next needed notify time.  Normally this will be checked just as prefer not what will exactly happen.
-	long notify(long time) = 0;
-	NotifyPriority get_priority() {return NP_NOTHING;};
+	virtual long notify(long time) = 0;
+	virtual NotifyPriority get_priority() {return NP_NOTHING;};
 };
-
+}
 #endif

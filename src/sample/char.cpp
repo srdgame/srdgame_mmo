@@ -1,4 +1,13 @@
 #include "char.h"
+#include "strlib.h"
+#include "defs.h"
+#include <cassert>
+#include <cmath>
+
+using namespace std;
+using namespace srdgame;
+namespace ro
+{
 
 size_t char_to_buf(char* buf, const RoCharInfo* info)
 {
@@ -9,38 +18,38 @@ size_t char_to_buf(char* buf, const RoCharInfo* info)
 	PUINT32(buf, len) = info->_id;				len += 4;
 	PUINT32(buf, len) = info->_exp._base_exp; 	len += 4;
 	PUINT32(buf, len) = info->_exp._job_exp;	len += 4;
-	PUINT32(buf, len) = info->_exp._job_level;	len += 4;
+	PUINT32(buf, len) = info->_exp._job_lvl;	len += 4;
 	PUINT32(buf, len) = 0;						len += 4;
 	PUINT32(buf, len) = 0;						len += 4;
-	PUINT32(buf, len) = p->_option;				len += 4;
-	PUINT32(buf, len) = p->_prop._karma;		len += 4;
-	PUINT32(buf, len) = p->_prop._manner;		len += 4;
-	PUINT16(buf, len) = p->_exp._prop_point; 	len += 2;
-	PUINT16(buf, len) = p->_prop._cur_hp;		len += 2;
-	PUINT16(buf, len) = p->_prop._max_hp;		len += 2;
-	PUINT16(buf, len) = p->_prop._cur_sp;		len += 2;
-	PUINT16(buf, len) = p->_prop._max_sp;		len += 2;
+	PUINT32(buf, len) = info->_option;				len += 4;
+	PUINT32(buf, len) = info->_prop._karma;		len += 4;
+	PUINT32(buf, len) = info->_prop._manner;		len += 4;
+	PUINT16(buf, len) = info->_exp._prop_point; 	len += 2;
+	PUINT16(buf, len) = info->_prop._cur_hp;		len += 2;
+	PUINT16(buf, len) = info->_prop._max_hp;		len += 2;
+	PUINT16(buf, len) = info->_prop._cur_sp;		len += 2;
+	PUINT16(buf, len) = info->_prop._max_sp;		len += 2;
 	PUINT16(buf, len) = DEFAULT_WALK_SPEED;		len += 2;
-	PUINT16(buf, len) = p->_class;				len += 2;
-	PUINT16(buf, len) = p->_show._hair;			len += 2;
-	PUINT16(buf, len) = p->_option & 0x20 ? 0 : p->weapon;	len += 2; // when the weapon is sent and your option is riding, the client crashes on login!?
-	PUINT16(buf, len) = p->_exp._base_lvl;		len += 2;
-	PUINT16(buf, len) = p->_exp._skill_point;	len += 2;
-	PUINT16(buf, len) = p->_show._head_bottom;	len += 2;
-	PUINT16(buf, len) = p->_show._shield;		len += 2;
-	PUINT16(buf, len) = p->_show._head_top;		len += 2;
-	PUINT16(buf, len) = p->_show._head_middle;	len += 2;
-	PUINT16(buf, len) = p->_show._hair_color;	len += 2;
-	PUINT16(buf, len) = p->_show.clothes_color;	len += 2;
+	PUINT16(buf, len) = info->_class;				len += 2;
+	PUINT16(buf, len) = info->_show._hair_style;			len += 2;
+	PUINT16(buf, len) = info->_option & 0x20 ? 0 : info->_show._weapon;	len += 2; // when the weapon is sent and your option is riding, the client crashes on login!?
+	PUINT16(buf, len) = info->_exp._base_lvl;		len += 2;
+	PUINT16(buf, len) = info->_exp._skill_point;	len += 2;
+	PUINT16(buf, len) = info->_show._head_bottom;	len += 2;
+	PUINT16(buf, len) = info->_show._shield;		len += 2;
+	PUINT16(buf, len) = info->_show._head_top;		len += 2;
+	PUINT16(buf, len) = info->_show._head_middle;	len += 2;
+	PUINT16(buf, len) = info->_show._hair_color;	len += 2;
+	PUINT16(buf, len) = info->_show._clothes_color;	len += 2;
 	memset(PCHAR(buf, len), 0, 24);
-	memcpy(PCHAR(buf, len), p->_name.c_sr(), p->_name.length()); len += 24;
-	PUINT8(buf, len) = min(p->_prop._str, 255);		len += 1;
-	PUINT8(buf, len) = min(p->_prop._agi, 255);		len += 1;
-	PUINT8(buf, len) = min(p->_prop._vit, 255);		len += 1;
-	PUINT8(buf, len) = min(p->_prop._int, 255);		len += 1;
-	PUINT8(buf, len) = min(p->_prop._dex, 255);		len += 1;
-	PUINT8(buf, len) = min(p->_prop._luk, 255);		len += 1;
-	PUINT16(buf, len) = min(p->_show._slot);		len += 2;
+	memcpy(PCHAR(buf, len), info->_name.c_str(), info->_name.length()); len += 24;
+	PUINT8(buf, len) = min(info->_prop._str, 255);		len += 1;
+	PUINT8(buf, len) = min(info->_prop._agi, 255);		len += 1;
+	PUINT8(buf, len) = min(info->_prop._vit, 255);		len += 1;
+	PUINT8(buf, len) = min(info->_prop._int, 255);		len += 1;
+	PUINT8(buf, len) = min(info->_prop._dex, 255);		len += 1;
+	PUINT8(buf, len) = min(info->_prop._luk, 255);		len += 1;
+	PUINT16(buf, len) = info->_slot;					len += 2;
 	PUINT16(buf, len) = 1; 							len += 2;// Rename bit, 0 == rename, 1 == norename.
 	assert(len == 108);
 	return len;
@@ -66,7 +75,7 @@ size_t delete_char_ok(char* buf, const RoCharInfo* info)
 	size_t len = 0;
 	PUINT16(buf, len) = 0x2b12;						len += 2;
 	PUINT32(buf, len) = info->_id;					len += 4;
-	PUINT32(buf, len) = info->_family._parter_id;	len += 4;
+	PUINT32(buf, len) = info->_family._partner_id;	len += 4;
 	return len;
 }
 
@@ -84,18 +93,18 @@ size_t char_auth_failed(char* buf, uint8 reason)
 	return 3;
 }
 
-size_t from_login_to_char(LoginToChar* dest, char* src, size_t src_len)
+size_t from_login_to_char(LoginToChar* dest, const char* src, size_t src_len)
 {
 	if(src_len < 17)
 		return 0;
 	size_t len = 0;
 	assert(PUINT16(src, len) == 0x65);		len += 2;
 
-	dest._account = PUINT32(src, len);		len += 4;
-	dest._id1 = PUINT32(src, len);			len += 4;
-	dest._id2 = PUINT32(src, len);			len += 4;
+	dest->_account = PUINT32(src, len);		len += 4;
+	dest->_id1 = PUINT32(src, len);			len += 4;
+	dest->_id2 = PUINT32(src, len);			len += 4;
 	len += 2; // TODO: what is these two bytes?
-	dest._sex = PUINT8(src, len);			len += 1;
+	dest->_sex = PUINT8(src, len);			len += 1;
 	assert(len == 17);
 	return len;
 }
@@ -104,7 +113,7 @@ size_t to_login_to_char(char* src, uint32 account)
 	PUINT32(src, 4) = account;
 	return 4;
 }
-size_t from_select_char(uint32& slot, char* src, size_t src_len)
+size_t from_select_char(uint32& slot, const char* src, size_t src_len)
 {
 	if (src_len < 3)
 		return 0;
@@ -132,13 +141,13 @@ size_t to_select_char_ok(char* dest, const MapServerInfo& info)
 	return len;
 }
 
-size_t from_create_char(CreateCharData& data, char* src, size_t src_len)
+size_t from_create_char(CreateCharData& data, const char* src, size_t src_len)
 {
 	if (src_len < 37)
 		return 0;
 	assert(PUINT16(src, 0) == 0x67);
 	size_t len = 0;
-	assert(sizeof(ChreateCharData) == 35);
+	assert(sizeof(CreateCharData) == 35);
 	::memcpy(data._name, src, 35); // Just copy it :-).
 	return 37;
 }
@@ -148,8 +157,15 @@ size_t to_create_char_failed(char* dest, uint8 reason)
 	PUINT8(dest, 2) = reason;
 	return 3;
 }
+size_t to_create_char_ok(char* dest, RoCharInfo* info)
+{
+	PUINT16(dest, 0) = 0x6d;
+	size_t len = 2;
+	len += char_to_buf(dest + len, info);
+	return len;
+}
 
-size_t from_delete_char(DeleteCharData& data, char* src, size_t src_len)
+size_t from_delete_char(DeleteCharData& data, const char* src, size_t src_len)
 {
 	if (src_len < 2)
 		return 0;
@@ -171,14 +187,14 @@ size_t from_delete_char(DeleteCharData& data, char* src, size_t src_len)
 
 size_t to_delete_char_failed(char* dest, uint8 reason)
 {
-	return to_email_auth_failed(dest, reason);
+	return to_send_email_auth_failed(dest, reason);
 }
 size_t to_delete_char_ok(char* dest)
 {
 	PUINT16(dest, 0) = 0x6f;
 	return 2;
 }
-size_t from_keep_aliv(uint32 account, char* src, size_t src_len)
+size_t from_keep_alive(uint32& account, const char* src, size_t src_len)
 {
 	if (src_len < 6)
 		return 0;
@@ -187,7 +203,7 @@ size_t from_keep_aliv(uint32 account, char* src, size_t src_len)
 	return 6;
 }
 
-size_t from_char_rename(CharRenameData& data, char* src, size_t src_len)
+size_t from_char_rename(CharRenameData& data, const char* src, size_t src_len)
 {
 	if (src_len < 34)
 		return 0;
@@ -195,4 +211,7 @@ size_t from_char_rename(CharRenameData& data, char* src, size_t src_len)
 	assert(sizeof(data) == 32);
 	::memcpy((char*)&data, src, 32);
 	return 32;
+}
+
+
 }

@@ -1,5 +1,7 @@
 #ifndef QUEST_H_
 #define QUEST_H_
+
+
 namespace srdgame
 {
 enum QuestState
@@ -10,10 +12,10 @@ enum QuestState
 class Quest
 {
 public:
-	Quest(uint32 id) : _id(id), _state(QS_INACTIVE){}
-	virtual Quest(){}
+	Quest(int id) : _id(id), _state(QS_INACTIVE){}
+	virtual ~Quest(){}
 
-	inline uint32 get_id()
+	inline int get_id()
 	{
 		return _id;
 	}
@@ -22,8 +24,8 @@ public:
 		return _state;
 	}
 protected:
-	uint32 _id;
-	uint32 _expire_time;
+	int _id;
+	int _expire_time;
 	QuestState _state;
 };
 
@@ -31,7 +33,7 @@ template <class T>
 class QuestEx : public Quest
 {
 public:
-	QuestEx(uint32 id, T& t) : Quest(id), _ex(t)
+	QuestEx(int id, T& t) : Quest(id), _ex(t)
 	{
 	}
 	virtual ~QuestEx()

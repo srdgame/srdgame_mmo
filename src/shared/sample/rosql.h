@@ -4,8 +4,9 @@
 #include "ro_defs.h"
 #include "userinfo.h"
 #include "metadefs.h"
-#include "rouser.h"
+#include "ro.h"
 #include "field.h"
+#include "rocharinfo.h"
 
 namespace ro
 {
@@ -16,13 +17,19 @@ public:
 	virtual ~RoSql();
 
 	bool create_account(srdgame::UserInfoEx<RoUser>& info);
-	srdgame::uint32 get_max_id();
+	int get_max_id();
 
-	bool load_account(uint32 id, srdgame::UserInfoEx<RoUser>& info);
+	bool load_account(int id, srdgame::UserInfoEx<RoUser>& info);
 	bool load_account(const char* name, srdgame::UserInfoEx<RoUser>& info);
 
+	int get_max_char_id();
+	size_t load_chars(int account_id, RoCharInfo* result);
+	bool load_char(int char_id, RoCharInfo& info, bool load_everything = false);
+	bool save_char(int char_id, RoCharInfo& info);
 protected:
 	bool fetch_account_info(Field* fields, srdgame::UserInfoEx< RoUser >& info);
+	bool fetch_chars_info(Field* fields, RoCharInfo& info);
+	bool fetch_char_info(Field* fields, RoCharInfo& info);
 };
 }
 

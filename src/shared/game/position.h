@@ -3,14 +3,14 @@
 
 #include "metadefs.h"
 
-
+namespace srdgame
+{
 struct Position
 {
-public:
-	uint32 x;
-	uint32 y;
-	uint32 z;
-	uint32 r;
+	int _x;
+	int _y;
+	int _z;
+	int _r;
 };
 
 template<class T>
@@ -18,5 +18,5 @@ struct PositionEx : public Position
 {
 	T* _ex;
 };
-
+}
 #endif

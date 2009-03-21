@@ -1,12 +1,12 @@
 #ifndef FAMILY_H_
 #define FAMILY_H_
 
-struct NpcFamily
+struct NpcFamilyInfo
 {
-	uint32 _partner_id;
-	uint32 _father_id;
-	uint32 _mother_id;
-	uint32 _child_id;
+	int _partner_id;
+	int _father_id;
+	int _mother_id;
+	int _child_id;
 
 };
 

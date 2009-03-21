@@ -1,20 +1,23 @@
 #ifndef AUCTION_H_
 #define AUCTION_H_
 
+#include <string>
+#include <ctime>
+
 namespace srdgame
 {
-struct AuctionItem
+struct AuctionItemInfo
 {
-	uint32 _id;
-	uint32 _seller_id;
+	int _id;
+	int _seller_id;
 	std::string _seller_name;
 
-	uint32 _item_id;
+	int _item_id;
 	std::string _item_name;
 
-	uint32 _price;
+	int _price;
 	time_t _stamp; // 
-	uint32 _expire_time;
+	int _expire_time;
 };
 }
 

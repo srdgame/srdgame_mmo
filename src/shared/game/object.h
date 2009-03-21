@@ -4,11 +4,12 @@
 
 namespace srdgame
 {
+
 class Position;
 class Object
 {
 public:
-	~Object(){
+	virtual ~Object(){
 	};
 
 public:
@@ -16,9 +17,10 @@ public:
 	bool clicked(Object* by){return false;}
 	bool attacked(Object* by){return false;}
 
-	Position* get_pos() = 0; // implement this by sub classes.
+	virtual Position* get_pos() = 0; // implement this by sub classes.
 protected:
-}
+};
+
 }
 
 #endif

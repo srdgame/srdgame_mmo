@@ -22,16 +22,16 @@ enum ItemType
 };*/
 struct ItemInfo
 {
-	uint32 _id;
-	uint32 _type;
-	uint32 _expire_time;
+	int _id;
+	int _type;
+	int _expire_time;
 };
 
 template <class T>
 struct ItemInfoEx : public ItemInfo
 {
 	T _ex;
-}
+};
 
 }
 

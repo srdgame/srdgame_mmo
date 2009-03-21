@@ -2,6 +2,9 @@
 #define _RO_DEFS_H_
 
 //#include "defs.h"
+#include "metadefs.h"
+
+using namespace srdgame;
 
 namespace ro
 {
@@ -96,5 +99,7 @@ struct CharRenameData
 #define DEFAULT_WALK_SPEED 150
 #define MIN_WALK_SPEED 0
 #define MAX_WALK_SPEED 1000
+#define MAX_NAME_LEN 24
+#define MAX_MAP_NAME_LEN 16
 }
 #endif
