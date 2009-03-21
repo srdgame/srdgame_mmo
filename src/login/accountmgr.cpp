@@ -18,7 +18,7 @@ AccountMgr::~AccountMgr()
 
 bool AccountMgr::create_new(UserInfo* info)
 {
-	UserInfoEx<RoUser>* ro_info = dynamic_cast<UserInfoEx< RoUser>* >(info);
+	UserInfoEx<RoUser>* ro_info = static_cast<UserInfoEx< RoUser>* >(info);
 	if (ro_info == NULL)
 		return false;;
 

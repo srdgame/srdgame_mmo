@@ -1,7 +1,7 @@
 #ifndef _RO_DEFS_H_
 #define _RO_DEFS_H_
 
-#include "defs.h"
+//#include "defs.h"
 
 namespace ro
 {
@@ -20,6 +20,8 @@ struct AdminLoginInfo
 	uint16 crypto_type;
 	char pass[32];
 };
+
+// Char server info;
 struct ServerInfo
 {
 	uint32 ip;
@@ -29,6 +31,7 @@ struct ServerInfo
 	uint16 maintenance;
 	uint16 new_;
 };
+// Char server list.
 struct ServerListHeader
 {
 	uint32 account;
@@ -46,5 +49,52 @@ struct LoginServerInfo
 {
 	char info[8];
 };
+
+// For Char servers.
+//
+struct LoginToChar
+{
+	uint32 _account;
+	uint32 _id1;
+	uint32 _id2;
+	uint8 _sex;
+	bool _auth;
+};
+struct MapServerInfo
+{
+	uint32 _account;
+	uint32 _ip;
+	uint16 _port;
+	char _name[16];
+};
+struct CreateCharData
+{
+	char _name[24];
+	uint8 _str;
+	uint8 _agi;
+	uint8 _vit;
+	uint8 _int;
+	uint8 _dex;
+	uint8 _luk;
+	uint8 _slot; // The slot index for select characters.... -_-!
+	uint16 _hair_color;
+	uint16 _hair_style;
+};
+struct DeleteCharData
+{
+	uint32 _id;
+	char _email[40];
+	// MORE?
+};
+struct CharRenameData
+{
+	uint32 _id;
+	uint32 _char_id;
+	char _new_name[24];
+};
+// TODO: Replace these defines with configuration file.
+#define DEFAULT_WALK_SPEED 150
+#define MIN_WALK_SPEED 0
+#define MAX_WALK_SPEED 1000
 }
 #endif

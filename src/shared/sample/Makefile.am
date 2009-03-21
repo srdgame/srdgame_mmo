@@ -11,5 +11,6 @@ libsample_a_SOURCES = ro_defs.h\
 					  rojob.h \
 					  rojob.cpp \
 					  roconf.h \
-					  roconf.cpp
+					  roconf.cpp \
+					  rocharinfo.h
 

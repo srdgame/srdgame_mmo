@@ -6,48 +6,72 @@ namespace srdgame
 
 struct NpcProp
 {
-	uint32 _str;
-	uint32 _agi;
-	uint32 _vit;
-	uint32 _int;
-	uint32 _dex;
-	uint32 _luk;
-	uint32 _max_hp;
-	uint32 _max_sp;
-	uint32 _cur_hp;
-	uint32 _cur_sp;
-	uint32 _karma;
-	uint32 _manner;
+	int _str;
+	int _agi;
+	int _vit;
+	int _int;
+	int _dex;
+	int _luk;
+	int _max_hp;
+	int _max_sp;
+	int _cur_hp;
+	int _cur_sp;
+	int _karma;
+	int _manner;
 };
 struct NpcShow
 {
-	uint32 _class; // Face class.
+	int _class; // Face class.
 	uint16 _slot;
 	uint8 _sex;
-	uint32 _hair_style;
-	uint32 _hair_color;
-	uint32 _clothes_color;
-	uint32 _head_top;
-	uint32 _head_middle;
-	uint32 _head_bottom;
+	int _hair_style;
+	int _hair_color;
+	int _clothes_color;
+	int _head_top;
+	int _head_middle;
+	int _head_bottom;
+	int _shield;
 	bool _show_equid;
 };
+
+// Npc could have exp, and increase their level.
 struct NpcExp
 {
-	uint32 _base_lvl;
-	uint32 _job_lvl;
-	uint32 _base_exp;
-	uint32 _job_exp;
-	uint32 _zeny;
-	uint32 _prop_point;
-	uint32 _skill_point;
+	int _base_lvl;
+	int _job_lvl;
+	int _base_exp;
+	int _job_exp;
+	int _zeny;
 };
 
-struct NpcInfo
+class NpcInfo
 {
-	uint32 _id;
-	uint32 _acc_id;
+public:
+	NpcInfo(int id, int cl, std::string name) :
+	_id(id), _class(cl), _name(name)
+	{
+	}
+	virtual ~NpcInfo(){}
+
+	inline int get_id()
+	{
+		return _id;
+	}
+	inline int get_class()
+	{
+		return _class;
+	}
+	inline const string& get_name()
+	{
+		return _name;
+	}
+
+protected:
+	int _id;
+	int _class;
+	std::string _name;
 }
+
 }
 
 #endif

@@ -127,9 +127,9 @@ bool LoginAuth::create_new_account(LoginInfo* info, bool female)
 	user_info._name = info->name;
 	user_info._pass = info->pass;
 	user_info._id = 0;
-	RoUser* user = user_info.get_ex_data();
+	RoUser* user = &user_info._ex;
 	memset((char*)user, 0, sizeof(RoUser));
-	user_info.get_ex_data()->_sex = female ? 'F' : 'M';
+	user_info._ex._sex = female ? 'F' : 'M';
 	AccountMgr::get_instance()->create_new(&user_info);
 	return false;
 }

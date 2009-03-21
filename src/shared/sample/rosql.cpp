@@ -42,7 +42,7 @@ RoSql::~RoSql()
 
 bool RoSql::create_account(UserInfoEx<RoUser>& info)
 {
-	RoUser* user = info.get_ex_data();
+	RoUser* user = &info._ex;
 	if (info._id == 0)
 	{
 		LogError("rosql", "could not create account with id == 0");
@@ -169,7 +169,7 @@ bool RoSql::fetch_account_info(Field* fields, UserInfoEx< RoUser >& info)
 	info._id = fields[0].get<long>();
 	info._name = fields[1].get<std::string>();
 	info._pass = fields[2].get<std::string>();
-	RoUser* user = info.get_ex_data();
+	RoUser* user = &info._ex;
 	
 	user->_sex = fields[3].get<char>();
 	memcpy(user->_email, fields[4].get<char*>(), sizeof(user->_email));

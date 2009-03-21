@@ -2,7 +2,7 @@
 #define RO_CHAR_INFO_H_
 
 #include "metadefs.h"
-#include "npcinfo.h"
+#include "charinfo.h"
 
 using namespace srdgame;
 
@@ -21,7 +21,7 @@ struct RoCharShow : public NpcShow
 {
 
 };
-struct RoCharExp : public NpcExp
+struct RoCharExp : public CharExp
 {
 
 };
@@ -39,18 +39,13 @@ struct RoCharItem
 	RoCharItemCard _cards[MaxItemSlotCount];
 	uint32 _expire_time;
 };
-struct RoCharSkill
+struct RoCharSkill : public Skill
 {
-	uint32 _id;
-	uint16 _lvl;
-	uint16 _flag;
+
 };
-struct RoCharFamily
+struct RoCharFamily : public Family
 {
-	uint32 _partner_id;
-	uint32 _father_id;
-	uint32 _mother_id;
-	uint32 _child_id;
+
 };
 enum RoCharMajorType
 {
@@ -65,12 +60,9 @@ struct RoCharMajor
 	uint32 _faith;
 	uint32 _calls;
 };
-struct RoCharFriend
+struct RoCharFriend : public Friend
 {
-	uint32 account_id;
-	uint32 char_id;
-	std::string name;
-	std::string nick_name;
+
 };
 struct RoCharHotKey
 {
@@ -78,10 +70,9 @@ struct RoCharHotKey
 	uint16 lvl;
 	uint16 type; // 0: item, 1:skill
 };
-struct RoCharData
+class RoCharInfo : public CharInfo
 {
-	uint32 _id;
-	uint32 _acc_id;
+protected:
 	RoCharFamily _family;
 	RoCharProp _prop;
 	RoCharFace _face;
