@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <ctime>
 
 namespace srdgame
 {
@@ -15,6 +16,9 @@ enum EmailStatus
 };
 struct Email
 {
+	Email() : _id(0), _from(0), _to(0), _status(ES_NEW), _stamp(0)
+	{
+	}
 	int _id;
 	int _from;
 	int _to;

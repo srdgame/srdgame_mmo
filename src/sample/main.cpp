@@ -154,6 +154,7 @@ size_t to_stream(char* dest, const Packet* src)
 			{
 				if (src->param.Int != 0)
 				{
+					printf("ES_LOGIN_TO_CHAR, with account id : %d", src->param.Int);
 					res = to_login_to_char(dest, src->param.Int);
 				}
 				else
@@ -163,15 +164,12 @@ size_t to_stream(char* dest, const Packet* src)
 			}break;
 		case ES_CHAR_LIST:
 			{
-				int* num =((int*) src->param.Data);
-				int count = *num;
-				num ++;
-				RoCharInfo* info = (RoCharInfo*)num;
-				res = chars_to_buf(dest, info, count);
+				CharDataList* list =((CharDataList*) src->param.Data);
+				res = chars_to_buf(dest, list->_chars, list->_count);
 			}break;
 		case ES_SELECT_CHAR:
 			{
-				if (src->len == sizeof(src))
+				if (src->len == sizeof(Packet))
 				{
 					uint8 reason = src->param.Char;
 					res = to_send_email_auth_failed(dest, reason);
@@ -185,7 +183,7 @@ size_t to_stream(char* dest, const Packet* src)
 			break;
 		case ES_CHAR_CREATE:
 			{
-				if (src->len == sizeof(src))
+				if (src->len == sizeof(Packet))
 				{
 					uint8 reason = src->param.Char;
 					res = to_create_char_failed(dest, reason);
@@ -195,6 +193,7 @@ size_t to_stream(char* dest, const Packet* src)
 					res = to_create_char_ok(dest, (RoCharInfo*)src->param.Data);
 				}
 			}
+			break;
 		case ES_CHAR_DELETE:
 			{
 				if (src->param.Char == 0)
@@ -211,7 +210,7 @@ size_t to_stream(char* dest, const Packet* src)
 			res = 0;
 			break;
 		case ES_CHAR_KEEP_ALIVE:
-			res = 0;
+			res = to_keep_alive(dest, src->param.Int);
 			break;
 		default:
 			break;

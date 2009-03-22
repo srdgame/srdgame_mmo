@@ -20,6 +20,7 @@ struct DatabaseInfo
 	std::string _username;
 	std::string _password;
 	std::string _database;
+	unsigned int _max_conn_count;
 };
 class QueryResult;
 class DBConn;

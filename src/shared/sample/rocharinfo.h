@@ -4,6 +4,7 @@
 #include "metadefs.h"
 #include "gamedefs.h"
 #include "ro_defs.h"
+#include <cstring>
 
 using namespace srdgame;
 
@@ -31,6 +32,9 @@ struct RoCharItemCard
 };
 struct RoCharItem
 {
+	RoCharItem() : _id(0), _type(0), _amount(0), _identify(0), _refine(0), _attrs(0), _expire_time(0)
+	{
+	}
 	int _id; // The unique id?
 	int _type; // The item type
 	int _amount; // Mount?
@@ -57,6 +61,9 @@ enum RoCharMajorType
 };
 struct RoCharMajor
 {
+	RoCharMajor() : _type(MT_ARCH), _faith(0), _calls(0)
+	{
+	}
 	RoCharMajorType _type;
 	int _faith;
 	int _calls;
@@ -67,16 +74,28 @@ struct RoCharFriendInfo : public FriendInfo
 };
 struct RoCharHotKey
 {
-	int id;
-	uint16 lvl;
-	uint16 type; // 0: item, 1:skill
+	RoCharHotKey() : _id(0), _lvl(0), _type(0)
+	{
+	}
+	int _id;
+	uint16 _lvl;
+	uint16 _type; // 0: item, 1:skill
 };
+
 struct RoPosition : public Position
 {
+	RoPosition()
+	{
+		memset(_name, 0, MAX_MAP_NAME_LEN);
+	}
 	char _name[MAX_MAP_NAME_LEN];
 };
 class RoCharInfo : public CharInfo
 {
+public:
+	RoCharInfo() : _option(0), _party_id(0), _guild_id(0), _pet_id(0), _home_id(0), _mer_id(0), _homun_id(0), _fame(0), _slot(0), _hungry(0)
+	{
+	}
 public:
 	RoCharFamilyInfo _family;
 	RoCharProp _prop;

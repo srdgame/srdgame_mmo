@@ -70,6 +70,11 @@ struct MapServerInfo
 	uint16 _port;
 	char _name[16];
 };
+struct CharDataList
+{
+	int _count;
+	struct RoCharInfo* _chars;
+};
 struct CreateCharData
 {
 	char _name[24];

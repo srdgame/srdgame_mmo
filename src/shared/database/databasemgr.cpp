@@ -10,6 +10,15 @@
 using namespace srdgame;
 using namespace std;
 
+#define _DATABASE_MGR_DEBUG_
+#undef _LogDebug_
+
+#ifdef _DATABASE_MGR_DEBUG_
+#define _LogDebug_ LogDebug
+#else
+#define _LogDebug_ //
+#endif
+
 DatabaseMgr::Worker::Worker(DatabaseMgr* mgr)
 	: _mgr(mgr), _running(false)
 {
@@ -17,18 +26,22 @@ DatabaseMgr::Worker::Worker(DatabaseMgr* mgr)
 
 bool DatabaseMgr::Worker::run()
 {
+	_LogDebug_("Database", "Worker is started");
 	if (_mgr->_closing)
 	{
+		_LogDebug_("Database", "Manager is closing, so worker is quiting");
 		_running = false;
 		return true;
 	}
 	AsyncQuery query;
 	if (_mgr->_query_queue.try_pop(query))
 	{
+		_LogDebug_("Database", "one query has been found");
 		while (!_mgr->_closing)
 		{
 			if (query._func)
 			{
+				_LogDebug_("Database", "Query has its callback");
 				query._func(_mgr->_db->query(query._sql));
 				break;
 			}
@@ -36,12 +49,15 @@ bool DatabaseMgr::Worker::run()
 			DBConn* con = _mgr->_db->get_free_conn();
 			if (!con)
 			{
+				_LogDebug_("Database", "No avaliable db connection");
 				continue;
 			}
+			_LogDebug_("Database", "Sending query................");
 			_mgr->_db->send_query(con, query._sql.c_str());
 			con->_lock.unlock();
 			break;
 		}
+		return false;
 	}
 
 	return true;
@@ -57,7 +73,7 @@ void DatabaseMgr::Worker::on_close()
 	_mgr->_worker_lock.unlock();
 }
 
-DatabaseMgr::DatabaseMgr() : _inited(false), _closing(false), _config(NULL), _db(NULL)
+DatabaseMgr::DatabaseMgr() : _inited(false), _closing(false), _config(NULL), _db(NULL), _worker(NULL)
 {
 }
 DatabaseMgr::~DatabaseMgr()
@@ -80,6 +96,12 @@ void DatabaseMgr::init(ConfigFile* config)
 	info._username = _config->get_value<string>("DB_USER_NAME");
 	info._password = _config->get_value<string>("DB_PASSWORD");
 	info._database = _config->get_value<string>("DB_DATABASE");
+	info._max_conn_count = _config->get_value<unsigned int>("DB_MAX_CONNECTION_COUNT");
+	if (info._max_conn_count == 0)
+	{
+		LogError("DATABASE", "Could not used 0 as max connection count, adjust to 10");
+		info._max_conn_count = 10;
+	}
 
 	switch (type)
 	{
@@ -134,7 +156,7 @@ QueryResult* DatabaseMgr::query(const std::string& sql)
 bool DatabaseMgr::execute(const char* sql, ...)
 {
 	if (!_inited || !_db)
-		return NULL;
+		return false;
 
 	char sql_str[MAX_SQL_STRING_SIZE];
 	memset(sql_str, 0, MAX_SQL_STRING_SIZE);

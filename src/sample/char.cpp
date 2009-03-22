@@ -16,6 +16,7 @@ size_t char_to_buf(char* buf, const RoCharInfo* info)
 
 	size_t len = 0;
 	PUINT32(buf, len) = info->_id;				len += 4;
+	PUINT32(buf, len) = info->_exp._zeny;		len += 4;
 	PUINT32(buf, len) = info->_exp._base_exp; 	len += 4;
 	PUINT32(buf, len) = info->_exp._job_exp;	len += 4;
 	PUINT32(buf, len) = info->_exp._job_lvl;	len += 4;
@@ -42,7 +43,7 @@ size_t char_to_buf(char* buf, const RoCharInfo* info)
 	PUINT16(buf, len) = info->_show._hair_color;	len += 2;
 	PUINT16(buf, len) = info->_show._clothes_color;	len += 2;
 	memset(PCHAR(buf, len), 0, 24);
-	memcpy(PCHAR(buf, len), info->_name.c_str(), info->_name.length()); len += 24;
+	memcpy(PCHAR(buf, len), info->_name.c_str(), min((int)info->_name.length(), 24)); len += 24;
 	PUINT8(buf, len) = min(info->_prop._str, 255);		len += 1;
 	PUINT8(buf, len) = min(info->_prop._agi, 255);		len += 1;
 	PUINT8(buf, len) = min(info->_prop._vit, 255);		len += 1;
@@ -60,7 +61,7 @@ size_t chars_to_buf(char* buf, const RoCharInfo* infos, size_t num)
 {
 	size_t len = 0;
 	PUINT16(buf, len) = 0x6b; 		len += 4;// will wirte another 2 bytes later.
-	memset(PCHAR(buf, len), 0, 20); // unknown.
+	memset(PCHAR(buf, len), 0, 20); len += 20;// unknown.
 	for (size_t i = 0; i < num; ++i)
 	{
 		len += char_to_buf(buf + len, infos + i);
@@ -68,6 +69,7 @@ size_t chars_to_buf(char* buf, const RoCharInfo* infos, size_t num)
 	assert(len == 24 + num * 108);
 	PUINT16(buf, 2) = len;
 	return len;
+	//return 24 + 9 * 108;
 }
 
 size_t delete_char_ok(char* buf, const RoCharInfo* info)
@@ -110,7 +112,7 @@ size_t from_login_to_char(LoginToChar* dest, const char* src, size_t src_len)
 }
 size_t to_login_to_char(char* src, uint32 account)
 {
-	PUINT32(src, 4) = account;
+	PUINT32(src, 0) = account;
 	return 4;
 }
 size_t from_select_char(uint32& slot, const char* src, size_t src_len)
@@ -141,14 +143,28 @@ size_t to_select_char_ok(char* dest, const MapServerInfo& info)
 	return len;
 }
 
-size_t from_create_char(CreateCharData& data, const char* src, size_t src_len)
+size_t from_create_char(CreateCharData& data, const char* buf, size_t src_len)
 {
 	if (src_len < 37)
 		return 0;
-	assert(PUINT16(src, 0) == 0x67);
-	size_t len = 0;
-	assert(sizeof(CreateCharData) == 35);
+	assert(PUINT16(buf, 0) == 0x67);
+	size_t len = 2;
+	/*assert(sizeof(CreateCharData) == 35);
 	::memcpy(data._name, src, 35); // Just copy it :-).
+	*/
+	memcpy(data._name, PCHAR(buf, len), 24);	len += 24;
+	data._str = PUINT8(buf, len);				len += 1;
+	data._agi = PUINT8(buf, len);				len += 1;
+	data._vit = PUINT8(buf, len);				len += 1;
+	data._int = PUINT8(buf, len);				len += 1;
+	data._dex = PUINT8(buf, len);				len += 1;
+	data._luk = PUINT8(buf, len);				len += 1;
+	data._slot = PUINT8(buf, len); 				len += 1;// The slot index for select characters.... -_-!
+	data._hair_color = PUINT16(buf, len);		len += 2;
+	data._hair_style = PUINT16(buf, len);		len += 2;
+
+	assert(len == 37);
+
 	return 37;
 }
 size_t to_create_char_failed(char* dest, uint8 reason)
@@ -200,6 +216,12 @@ size_t from_keep_alive(uint32& account, const char* src, size_t src_len)
 		return 0;
 	assert(PUINT16(src, 0) == 0x187);
 	account = PUINT32(src, 2);
+	return 6;
+}
+size_t to_keep_alive(char* dest, uint32 account)
+{
+	PUINT16(dest, 0) = 0x187;
+	PUINT32(dest, 2) = account;
 	return 6;
 }
 

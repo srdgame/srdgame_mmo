@@ -9,6 +9,7 @@
 #include "realmmgr.h"
 #include "realmsocketl.h"
 #include "packetparser.h"
+#include "databasemgr.h"
 
 using namespace srdgame;
 
@@ -81,6 +82,7 @@ bool RealmServer::init_env()
 {
 	ThreadPool::get_singleton().init(10);
 	SocketMgr::get_singleton().start_worker();
+	DatabaseMgr::get_singleton().init(_config);
 	//RealmMgr::get_singleton().set_name(_config->get_value<std::string>("NAME"));
 	RealmSrvInfo info;
 	std::string name = _config->get_value<std::string>("NAME");

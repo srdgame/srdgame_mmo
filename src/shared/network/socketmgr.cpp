@@ -96,7 +96,7 @@ void SocketMgr::add(ListenSocket* s)
 	
 	struct epoll_event event;
 	::memset(&event, 0, sizeof(epoll_event));
-	event.events = EPOLLIN;
+	event.events = EPOLLIN | EPOLLOUT;
 	event.events = event.events | EPOLLET;
 	event.data.fd = s->get_fd();
 	

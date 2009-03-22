@@ -99,10 +99,17 @@ void RealmSocketBase::on_rev()
 					PacketDump::get_singleton().dump("UNCOMPLETE PACKET", data + index, size - index);
 					//PacketDump::get_singleton().dump("UNKNOWN PACKET", p);
 				}
-				LogDebug("RealmSocket", "Breaking!!! size is : %d   index is : %d", size, index);
+				_LogDebug_("RealmSocket", "Breaking!!! size is : %d   index is : %d", size, index);
 				break;
 			}
-			LogDebug("RealmSocket", "One packet received from world server");
+			if (_inter)
+			{
+				_LogDebug_("RealmSocket", "One packet received from world server");
+			}
+			else
+			{
+				_LogDebug_("RealmSocket", "One packet received from client");
+			}
 			// For dump 
 			if (_dump_in)
 			{
@@ -131,7 +138,7 @@ void RealmSocketBase::start_worker()
 	if (_worker)
 		return;
 
-	LogDebug("RealmServer", "Starting worker thread");
+	_LogDebug_("RealmServer", "Starting worker thread");
 	_worker = new RealmWorker(this);
 	ThreadPool::get_singleton().execute(_worker);
 }

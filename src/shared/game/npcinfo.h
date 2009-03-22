@@ -6,6 +6,9 @@ namespace srdgame
 
 struct NpcProp
 {
+	NpcProp() : _str(0), _agi(0), _vit(0), _int(0), _dex(0), _luk(0), _max_hp(1), _cur_hp(1), _max_sp(0), _cur_sp(0), _karma(0), _manner(0)
+	{
+	}
 	int _str;
 	int _agi;
 	int _vit;
@@ -21,6 +24,9 @@ struct NpcProp
 };
 struct NpcShow
 {
+	NpcShow() : _class(0), _sex(0), _hair_style(0), _hair_color(0), _clothes_color(0), _head_top(0), _head_middle(0), _head_bottom(0), _weapon(0), _shield(0), _show_equid(true)
+	{
+	}
 	int _class; // Face class.
 	char _sex;
 	int _hair_style;
@@ -37,6 +43,9 @@ struct NpcShow
 // Npc could have exp, and increase their level.
 struct NpcExp
 {
+	NpcExp() : _base_lvl(1), _job_lvl(0), _base_exp(0), _job_exp(0), _zeny(0)
+	{
+	}
 	int _base_lvl;
 	int _job_lvl;
 	int _base_exp;
@@ -46,6 +55,9 @@ struct NpcExp
 
 struct NpcInfo
 {
+	NpcInfo() : _id(0), _class(0)
+	{
+	}
 	int _id;
 	int _class;
 	std::string _name;

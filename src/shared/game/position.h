@@ -7,6 +7,9 @@ namespace srdgame
 {
 struct Position
 {
+	Position() : _x (0), _y(0), _z(0), _r(0)
+	{
+	}
 	int _x;
 	int _y;
 	int _z;

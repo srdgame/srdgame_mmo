@@ -5,8 +5,11 @@
 
 struct FriendInfo
 {
-	int account_id;
-	int char_id;
+	FriendInfo() : _account_id(0), _char_id(0)
+	{
+	}
+	int _account_id;
+	int _char_id;
 	std::string name;
 	std::string nick_name;
 };

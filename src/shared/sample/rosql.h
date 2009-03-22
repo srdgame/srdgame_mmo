@@ -23,7 +23,7 @@ public:
 	bool load_account(const char* name, srdgame::UserInfoEx<RoUser>& info);
 
 	int get_max_char_id();
-	size_t load_chars(int account_id, RoCharInfo* result);
+	size_t load_chars(int account_id, RoCharInfo*& result);
 	bool load_char(int char_id, RoCharInfo& info, bool load_everything = false);
 	bool save_char(int char_id, RoCharInfo& info);
 protected:

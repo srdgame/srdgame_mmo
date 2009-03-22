@@ -4,6 +4,9 @@ namespace srdgame
 {
 struct SkillInfo
 {
+	SkillInfo() : _id(0), _lvl(0), _flag(0)
+	{
+	}
 	int _id;
 	int _lvl;
 	int _flag;

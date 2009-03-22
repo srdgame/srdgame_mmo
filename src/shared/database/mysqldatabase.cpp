@@ -55,7 +55,7 @@ bool MySQLDatabase::open(const DatabaseInfo& info)
 	size_t conn_size = 0;
 	MYSQL* conn;
 	MYSQL* real_conn;
-	for (; conn_size < MYSQL_CONNECTION_COUNT; ++conn_size)
+	for (; conn_size < info._max_conn_count; ++conn_size)
 	{
 		conn = mysql_init(NULL);
 		if (!conn)

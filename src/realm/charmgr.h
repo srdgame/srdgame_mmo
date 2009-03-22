@@ -22,7 +22,7 @@ public:
 
 	ro::RoCharInfo* create_new(ro::CreateCharData* data, int account_id);
 
-	size_t load_chars(int account_id, ro::RoCharInfo* chars);
+	size_t load_chars(int account_id, ro::RoCharInfo*& chars);
 private:
 	ro::RoSql* _sql;
 };

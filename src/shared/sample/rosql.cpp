@@ -192,6 +192,7 @@ int RoSql::get_max_char_id()
 			RO_CHAR_TB);
 	if (res == NULL)
 	{
+		_LogDebug_(LN, "NO result when select max char_id");
 		return 1000;
 	}
 	
@@ -203,11 +204,12 @@ int RoSql::get_max_char_id()
 	}
 
 	int max = f[0].get<int>();
+	_LogDebug_(LN, "Max char_id is %d", max);
 	res->Delete();
 	return max;
 
 }
-size_t RoSql::load_chars(int account_id, RoCharInfo* result)
+size_t RoSql::load_chars(int account_id, RoCharInfo*& result)
 {
 	std::string sql = "SELECT `char_id`,`char_num`,`name`,`class`,`base_level`,`job_level`,`base_exp`,`job_exp`,`zeny`,`str`,`agi`,`vit`,`int`,`dex`,`luk`,`max_hp`,`hp`,`max_sp`,`sp`,`status_point`,`skill_point`,`option`,`karma`,`manner`,`hair`,`hair_color`,`clothes_color`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom` FROM `%s` WHERE `account_id`='%d'";
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(),
@@ -222,7 +224,6 @@ size_t RoSql::load_chars(int account_id, RoCharInfo* result)
 		return 0;
 	}
 	result = new RoCharInfo[count];
-	::memset((char*) result, 0, sizeof(RoCharInfo) * count);
 
 	size_t i = 0;
 	for (; i < count; ++i)
@@ -269,7 +270,21 @@ bool RoSql::load_char(int char_id, RoCharInfo& info, bool load_everything)
 bool RoSql::save_char(int char_id, RoCharInfo& info)
 {
 	if (char_id != info._id)
+	{
+		LogError("RO", "Incorrect char id provided, the id are not equal. char_id : %d, info._id : %d", char_id, info._id);
 		return false;
+	}
+	LogNotice("RO", "Saving char info~~~~~~~~~~~~~~~~~~~~~~");
+	// Insert one new row
+	std::string row_sql = "INSERT INTO `%s` (`account_id`, `char_num`, `name`, `zeny`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
+		"`max_sp`, `sp`, `hair`, `hair_color`, `last_map`, `last_x`, `last_y`, `save_map`, `save_x`, `save_y`) VALUES ("
+		"'%d', '%d', '%s', '%d',  '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d','%d', '%d','%d', '%d', '%s', '%d', '%d', '%s', '%d', '%d')";
+	DatabaseMgr::get_singleton().execute(row_sql.c_str(),
+			RO_CHAR_TB, info._account_id, info._slot, info._name.c_str(), info._exp._zeny, info._prop._str, info._prop._agi,
+			info._prop._vit, info._prop._int, info._prop._dex, info._prop._luk, info._prop._max_hp, info._prop._cur_hp,
+			info._prop._max_sp, info._prop._cur_sp, info._show._hair_style, info._show._hair_color, info._last_pos._name,
+			info._last_pos._x, info._last_pos._y, info._save_pos._name, info._save_pos._x, info._save_pos._y);
+
 	// save items.
 	// save card data
 	// save storage data
@@ -306,6 +321,7 @@ bool RoSql::save_char(int char_id, RoCharInfo& info)
 		info._prop._karma, info._prop._manner, info._fame,
 		info._account_id, info._id);
 
+	LogSuccess("RO", "Save char completed!!!!");
 	// Major save?
 	// Memo points.
 	//
@@ -352,6 +368,7 @@ bool RoSql::fetch_chars_info(Field* f, RoCharInfo& info)
 	info._show._head_top = f[29].get<int>();
 	info._show._head_middle = f[30].get<int>();
 	info._show._head_bottom = f[31].get<int>();
+	return true;
 }
 
 bool RoSql::fetch_char_info(Field* f, RoCharInfo& info)

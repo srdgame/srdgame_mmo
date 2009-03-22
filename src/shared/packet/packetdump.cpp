@@ -114,6 +114,7 @@ void PacketDump::dump_to_file(FILE* file, const char* source, const char* data, 
 
 		fprintf(file, "%06X  %s", start_i, line);	
 	}
+	fflush(file);
 	fprintf(file, "\n\n");
 }
 

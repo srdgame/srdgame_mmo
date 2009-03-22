@@ -22,6 +22,9 @@ enum ItemType
 };*/
 struct ItemInfo
 {
+	ItemInfo() : _id(0), _type(0), _expire_time(0)
+	{
+	}
 	int _id;
 	int _type;
 	int _expire_time;

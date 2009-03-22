@@ -105,13 +105,15 @@ bool TcpSocket::send(const char* data, size_t size)
 		_LogDebug_("SOCKET", "Sending................");
 		_send_buf_lock.lock();
 		char* buf = _send_buf.reserve(size, r_size);
+		_LogDebug_("SOCKET", "Reserver for buffer size: %d, reserved : %d", size, r_size);
 		memcpy(buf, data, r_size);
 		_send_buf.commit(r_size);
 		_send_buf_lock.unlock();
 		size -= r_size;
 		data += r_size;
-        	post_event(EPOLLOUT);
+        post_event(EPOLLOUT);
 	}
+	_LogDebug_("SOCKET", "Write to buffer completed!!!!!!!!!!!!!");
 	return true;
 }
 

@@ -23,8 +23,8 @@ RoCharInfo* CharMgr::create_new(CreateCharData* data, int account_id)
 		return NULL;
 
 	RoCharInfo* info = new RoCharInfo;
-	memset((char*)info, 0, sizeof(RoCharInfo));
-	info->_name = data->_name;
+	//memset((char*)info, 0, sizeof(RoCharInfo));
+	info->_name = string(data->_name);
 	info->_id = _sql->get_max_char_id();
 	info->_account_id = account_id;
 	info->_prop._str = data->_str;
@@ -37,10 +37,11 @@ RoCharInfo* CharMgr::create_new(CreateCharData* data, int account_id)
 	info->_show._hair_color = data->_hair_color;
 	info->_show._hair_style = data->_hair_style;
 
+	//("RealmServer", "Require to create char :%d", info->_id);
 	_sql->save_char(_sql->get_max_char_id(), *info);
 	return info;
 }
-size_t CharMgr::load_chars(int account_id, RoCharInfo* chars)
+size_t CharMgr::load_chars(int account_id, RoCharInfo*& chars)
 {
 	return _sql->load_chars(account_id, chars);
 }
