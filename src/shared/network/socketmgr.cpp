@@ -54,6 +54,7 @@ void SocketMgr::add(Socket* s)
 		// the connection is existing.
 		LogWarning("SOCKET", "The connection is existing about fd: %d", s->get_fd());
 		s->close();
+		s->_delete();
 		return;
 	}
 
@@ -64,6 +65,8 @@ void SocketMgr::add(Socket* s)
 		if (_max_fd >= SOCKET_HOLDER_SIZE)
 		{
 			LogError("SOCKET", "Socket fd is too big than what we can hold, max_fd : %d", _max_fd);
+			s->close();
+			s->_delete();
 			return;
 		}
 	}
@@ -72,12 +75,12 @@ void SocketMgr::add(Socket* s)
 
 	// Register event
 	struct epoll_event ev;
-    	memset(&ev, 0, sizeof(epoll_event));
-    	ev.events = EPOLLIN;
-    	ev.events |= EPOLLET;			/* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
-    	ev.data.fd = s->get_fd();
+    memset(&ev, 0, sizeof(epoll_event));
+    ev.events = EPOLLIN | EPOLLERR | EPOLLHUP;
+    ev.events |= EPOLLET;			/* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
+    ev.data.fd = s->get_fd();
     
-    	if(0 != epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
+    if(0 != epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
 	{
 		LogWarning("SOCKET", "Could not add event to epoll set on fd %u", ev.data.fd);
 		// TODO: output debug.  and quit?
@@ -85,7 +88,7 @@ void SocketMgr::add(Socket* s)
 	// set the _count.
 	++_count;
 }
-void SocketMgr::add(ListenSocket* s)
+void SocketMgr::add_listen(ListenSocket* s)
 {
 	LogDebug("SOCKET", "Adding listening socket : %d", s->get_fd());
 
@@ -96,7 +99,7 @@ void SocketMgr::add(ListenSocket* s)
 	
 	struct epoll_event event;
 	::memset(&event, 0, sizeof(epoll_event));
-	event.events = EPOLLIN | EPOLLOUT;
+	event.events = EPOLLIN;
 	event.events = event.events | EPOLLET;
 	event.data.fd = s->get_fd();
 	
@@ -121,10 +124,10 @@ void SocketMgr::remove(Socket* s)
 	}
 
     	// Remove from epoll list.
-    	struct epoll_event ev;
+	struct epoll_event ev;
 	memset(&ev, 0, sizeof(epoll_event));
-    	ev.data.fd = s->get_fd();
-    	ev.events = EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLHUP | EPOLLONESHOT;
+  	ev.data.fd = s->get_fd();
+   	ev.events = EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLHUP | EPOLLONESHOT;
 
 	if(epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, ev.data.fd, &ev))
 	{
@@ -137,7 +140,7 @@ void SocketMgr::remove(Socket* s)
 		LogSuccess("SOCKET", "Removed fd %u from epoll set", s->get_fd());
 	}
 	
-    	_fds[s->get_fd()] = NULL;
+    _fds[s->get_fd()] = NULL;
 	--_count;
 }
 void SocketMgr::close_all()
@@ -147,7 +150,6 @@ void SocketMgr::close_all()
 		if (_fds[i])
 		{
 			Socket* ptr = _fds[i];
-			ptr->close();
 			ptr->_delete();
 		//	_fds[i] = NULL;  the close will remove itself.
 		}

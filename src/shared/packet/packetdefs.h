@@ -26,6 +26,9 @@ enum InterOpcode
 	IC_INFO = 51, //
 
 	// More
+	IS_GET_MAPS = 60, // Ask for maps that hold by world server.
+	IC_MAPS = 61,	// Map information, refer to util/typedefs.h WorldMapInfo, and if there already one world server hold the map, the later one will be ignored.
+	IC_POST_MAPS = 62, // post map information 
 };
 
 union PacketParam

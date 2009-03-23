@@ -5,6 +5,7 @@
 #include "typedefs.h"
 #include "worldmgr.h"
 #include "worldserver.h"
+#include "mapmgr.h"
 
 using namespace srdgame;
 
@@ -12,6 +13,7 @@ InterSocket::InterSocket(WorldServer* server)
 	: WorldSocketBase()
 	  , _server(server)
 {
+	_inter = true;
 }
 
 InterSocket::~InterSocket()
@@ -132,6 +134,12 @@ void InterSocket::on_handle(Packet* packet)
 		case IC_INFO:
 			break;
 
+		case IS_GET_MAPS:
+			MapMgr::get_singleton().send_maps();
+			break;
+		case IC_MAPS:
+		case IC_POST_MAPS:
+			break;
 		default:
 			LogWarning("WorldServer", "Unknow packet is received from Login Server, the opcode is : %d", packet->op);
 			break;

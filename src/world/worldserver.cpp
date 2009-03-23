@@ -9,8 +9,11 @@
 #include "worldmgr.h"
 #include "intersocket.h"
 #include "packetparser.h"
+#include "mapmgr.h"
+#include "ro.h"
 
 using namespace srdgame;
+using namespace ro;
 
 WorldServer::WorldServer(const std::string& conf_fn) : _conf_fn(conf_fn), _config(NULL), _socket(NULL), _realm_socket(NULL)
 {
@@ -76,6 +79,7 @@ bool WorldServer::init_packet_parser()
 }
 bool WorldServer::init_env()
 {
+	init_ro();
 	ThreadPool::get_singleton().init(10);
 	SocketMgr::get_singleton().start_worker();
 	//WorldMgr::get_singleton().set_name(_config->get_value<std::string>("NAME"));
@@ -104,6 +108,9 @@ bool WorldServer::init_env()
 	info.port = info.port == 0 ? 8001 : info.port;
 	info.type = WT_TESTING;
 	WorldMgr::get_singleton().set_info(info);
+
+	// Load maps.
+	MapMgr::get_singleton().load_maps();
 	return true;
 }
 
@@ -171,6 +178,10 @@ bool WorldServer::connect_realm()
 		_realm_socket->close();
 	}
 	_realm_socket = new InterSocket(this);
+	
+	// bind to mapmgr.
+	MapMgr::get_singleton().bind(_realm_socket);
+
 	if (!_realm_socket->connect(addr, port))
 	{
 		LogDebug("WorldServer", "Could not connect to realm server, please start realm server first or correct your configuration file");

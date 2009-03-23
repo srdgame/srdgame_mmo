@@ -74,9 +74,9 @@ size_t from_stream(Packet* dest, const char* src, size_t size)
 			{
 				dest->op = EC_SELECT_CHAR;
 				dest->len = sizeof(Packet);
-				uint32 account = 0;
-				res = from_select_char(account, src, size);
-				dest->param.Int = (int)account;
+				uint32 slot = 0;
+				res = from_select_char(slot, src, size);
+				dest->param.Int = (int)slot;
 			}
 			break;
 		case 0x0067:

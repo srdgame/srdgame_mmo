@@ -1,3 +1,6 @@
+#ifndef RO_H_H_
+#define RO_H_H_
+
 #include "ro_defs.h"
 #include "roconf.h"
 #include "rosql.h"
@@ -14,3 +17,5 @@ inline void init_ro()
 	RoJob::get_singleton().load();
 }
 }
+
+#endif

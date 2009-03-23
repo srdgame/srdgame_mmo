@@ -10,8 +10,10 @@
 #include "realmsocketl.h"
 #include "packetparser.h"
 #include "databasemgr.h"
+#include "ro.h"
 
 using namespace srdgame;
+using namespace ro;
 
 RealmServer::RealmServer(const std::string& conf_fn) : _conf_fn(conf_fn), _config(NULL), _socket(NULL), _inter_socket(NULL), _login_socket(NULL)
 {
@@ -80,6 +82,7 @@ void RealmServer::lost_login()
 }
 bool RealmServer::init_env()
 {
+	init_ro();
 	ThreadPool::get_singleton().init(10);
 	SocketMgr::get_singleton().start_worker();
 	DatabaseMgr::get_singleton().init(_config);
@@ -231,6 +234,13 @@ bool RealmServer::wait_command()
 		ThreadPool::get_singleton().shutdown();
 		return true;
 	}
+	else if (str == "help")
+	{
+		LogNotice("RealmServer", "   list: N  list all the world servers");
+		LogNotice("RealmServer", "listmap: N  list all the maps");
+		LogNotice("RealmServer", "   help: N  list all avaliable commands");
+		LogNotice("RealmServer", "   quit: N  quit realm server");
+	}
 	else if (str == "list")
 	{
 		std::vector<WorldSrvInfo> info;
@@ -279,6 +289,15 @@ bool RealmServer::wait_command()
 					break;
 			}
 		
+		}
+	}
+	else if(str == "listmap")
+	{
+		std::vector<std::string> maps;
+		RealmMgr::get_singleton().enum_maps(maps);
+		for (size_t i = 0; i < maps.size(); ++i)
+		{
+			LogSuccess("RealmServer", "Map : %s", maps[i].c_str());
 		}
 	}
 	else

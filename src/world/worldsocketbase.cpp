@@ -9,7 +9,7 @@ using namespace srdgame;
 
 #define SOCKET_DEBUG
 
-WorldSocketBase::WorldSocketBase() : _worker(NULL)
+WorldSocketBase::WorldSocketBase() : _worker(NULL), _inter(false)
 {
 }
 WorldSocketBase::~WorldSocketBase()
@@ -30,7 +30,15 @@ bool WorldSocketBase::send_packet(Packet* packet)
 	// TODO: To refine this send, the buffer allocation is useless here, we could use send_buf here.
 	char sz[MAX_PACKET_LEN];
 	::memset(sz, 0, MAX_PACKET_LEN);
-	size_t size = PacketParser::get_singleton().to_inter(sz, *packet);
+	size_t size = 0;
+	if (_inter)
+	{
+		size = PacketParser::get_singleton().to_inter(sz, *packet);
+	}
+	else
+	{
+		size = PacketParser::get_singleton().to_ex(sz, *packet);
+	}
 
 #ifdef SOCKET_DEBUG
 	LogDebug("WorldServer", "Packet length is : %d", size);

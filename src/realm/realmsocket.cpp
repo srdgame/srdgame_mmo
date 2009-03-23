@@ -95,6 +95,32 @@ void RealmSocket::on_handle(Packet* packet)
 			}
 			break;
 		case EC_SELECT_CHAR:
+			{
+				int slot = packet->param.Int;
+				for (size_t i = 0; i < _chars.size(); ++i)
+				{
+					if (_chars[i]->_slot == slot)
+					{
+						Packet p;
+						p.op = ES_SELECT_CHAR;
+						p.len = sizeof(Packet) + sizeof(MapServerInfo);
+						MapServerInfo info;
+						info._account = _chars[i]->_account_id;
+						info._ip = 0;
+						info._port = 0;
+						memset(info._map_name, 0, MAX_MAP_NAME_LEN);
+						memcpy(info._map_name, _chars[i]->_last_pos._map_name, MAX_MAP_NAME_LEN);
+						p.param.Data = (char*) &info;
+						send_packet(&p);
+						break;
+					}
+				}
+				Packet p;
+				p.op = ES_SELECT_CHAR;
+				p.len = sizeof(Packet);
+				p.param.Int = 1;
+				send_packet(&p);
+			}
 			break;
 		case EC_CHAR_LIST:
 			break;

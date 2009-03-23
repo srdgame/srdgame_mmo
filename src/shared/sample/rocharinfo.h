@@ -86,9 +86,9 @@ struct RoPosition : public Position
 {
 	RoPosition()
 	{
-		memset(_name, 0, MAX_MAP_NAME_LEN);
+		memset(_map_name, 0, MAX_MAP_NAME_LEN);
 	}
-	char _name[MAX_MAP_NAME_LEN];
+	char _map_name[MAX_MAP_NAME_LEN];
 };
 class RoCharInfo : public CharInfo
 {

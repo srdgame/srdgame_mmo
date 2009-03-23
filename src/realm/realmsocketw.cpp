@@ -62,6 +62,8 @@ void RealmInterSocketW::on_handle(Packet* packet)
 				p.op = IS_GET_STATUS;
 				this->send_packet(&p);
 
+				p.op = IS_GET_MAPS;
+				this->send_packet(&p);
 			}
 			break;
 		case IS_GET_NAME:
@@ -108,7 +110,31 @@ void RealmInterSocketW::on_handle(Packet* packet)
 				}
 			}
 			break;
-
+		case IS_GET_MAPS:
+			break;
+		case IC_MAPS:
+		case IC_POST_MAPS:
+			_LogDebug_("RealmServer", "IC_MAPS | IC_POST_MAPS");
+			{
+				int size = PacketParser::get_ex_len(*packet);
+				if (size > 0)
+				{
+					if (size == sizeof(WorldMapInfo))
+					{
+						WorldMapInfo* info = (WorldMapInfo*)packet->param.Data;
+						RealmMgr::get_singleton().add_map(this, info);
+					}
+					else
+					{
+						LogError("RealmServer", "Incorrect packet");
+					}
+				}
+				else
+				{
+					LogError("RealmServer", "Incorrect packet");
+				}
+			}
+			break;
 		default:
 			break;
 	}

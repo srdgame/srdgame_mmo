@@ -41,6 +41,15 @@ void RealmMgr::remove_world_server(RealmSocketBase* s)
 	//s->close();
 	_servers.erase(s->get_fd());
 	_servers_info.erase(s);
+	std::map<RealmSocketBase*, std::vector<std::string> >::iterator ptr = _server_maps.find(s);
+	if (ptr != _server_maps.end())
+	{
+		for (size_t i = 0; i < ptr->second.size(); ++i)
+		{
+			_map_servers.erase(ptr->second[i]);
+		}
+		_server_maps.erase(ptr);
+	}
 }
 
 void RealmMgr::update_world_server(RealmSocketBase* s, WorldSrvInfo& info)
@@ -59,6 +68,22 @@ void RealmMgr::update_world_server_status(RealmSocketBase* s, WorldSrvStatus sta
 {
 	AutoLock lock(_server_lock);
 	_servers_info[s].status = status;
+}
+
+void RealmMgr::add_map(RealmSocketBase* s, WorldMapInfo* info)
+{
+	AutoLock lock(_server_lock);
+	_server_maps[s].push_back(info->_name);
+	_map_servers[info->_name] = s;
+}
+void RealmMgr::enum_maps(vector<string>& maps)
+{
+	AutoLock lock(_server_lock);
+	map<RealmSocketBase*, vector<string> >::iterator ptr = _server_maps.begin();
+	for (; ptr != _server_maps.end(); ++ptr)
+	{
+		copy(ptr->second.begin(), ptr->second.end(), back_inserter(maps));  
+	}
 }
 
 void RealmMgr::add_client(RealmSocketBase* s)

@@ -3,8 +3,8 @@
 
 #include "ro_defs.h"
 #include "userinfo.h"
+#include "rouser.h"
 #include "metadefs.h"
-#include "ro.h"
 #include "rocharinfo.h"
 #include "field.h"
 

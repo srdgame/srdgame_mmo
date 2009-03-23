@@ -68,7 +68,7 @@ struct MapServerInfo
 	uint32 _account;
 	uint32 _ip;
 	uint16 _port;
-	char _name[16];
+	char _map_name[16];
 };
 struct CharDataList
 {

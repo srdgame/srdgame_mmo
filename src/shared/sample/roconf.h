@@ -1,3 +1,6 @@
+#ifndef RO_CONF_H_
+#define RO_CONF_H_
+
 #include "singleton.h"
 #include <string>
 
@@ -23,3 +26,5 @@ private:
 	bool _loaded;
 };
 }
+
+#endif

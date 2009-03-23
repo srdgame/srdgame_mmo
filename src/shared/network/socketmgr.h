@@ -30,7 +30,7 @@ public:
 public:
 	// Add socket to be here to be managed.
 	void add(Socket* s);
-	void add(ListenSocket* s);
+	void add_listen(ListenSocket* s);
 
 	// Remove the socket from here.
 	void remove(Socket* s);

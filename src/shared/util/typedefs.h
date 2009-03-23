@@ -48,4 +48,10 @@ struct WorldSrvInfo
 	char info[256];
 	WorldSrvType type;
 };
+
+struct WorldMapInfo
+{
+	int _index;
+	char _name[64];
+};
 #endif

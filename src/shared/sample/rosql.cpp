@@ -282,8 +282,8 @@ bool RoSql::save_char(int char_id, RoCharInfo& info)
 	DatabaseMgr::get_singleton().execute(row_sql.c_str(),
 			RO_CHAR_TB, info._account_id, info._slot, info._name.c_str(), info._exp._zeny, info._prop._str, info._prop._agi,
 			info._prop._vit, info._prop._int, info._prop._dex, info._prop._luk, info._prop._max_hp, info._prop._cur_hp,
-			info._prop._max_sp, info._prop._cur_sp, info._show._hair_style, info._show._hair_color, info._last_pos._name,
-			info._last_pos._x, info._last_pos._y, info._save_pos._name, info._save_pos._x, info._save_pos._y);
+			info._prop._max_sp, info._prop._cur_sp, info._show._hair_style, info._show._hair_color, info._last_pos._map_name,
+			info._last_pos._x, info._last_pos._y, info._save_pos._map_name, info._save_pos._x, info._save_pos._y);
 
 	// save items.
 	// save card data
@@ -305,7 +305,7 @@ bool RoSql::save_char(int char_id, RoCharInfo& info)
 			info._prop._str, info._prop._agi, info._prop._vit, info._prop._int, info._prop._dex, info._prop._luk,
 			info._option, info._party_id, info._guild_id, info._pet_id, info._homun_id,
 			info._show._weapon, info._show._shield, info._show._head_top, info._show._head_middle, info._show._head_bottom,
-			info._last_pos._name, info._last_pos._x, info._last_pos._y, info._save_pos._name, info._save_pos._x, info._save_pos._y,
+			info._last_pos._map_name, info._last_pos._x, info._last_pos._y, info._save_pos._map_name, info._save_pos._x, info._save_pos._y,
 			info._account_id, info._id);
 
 	// other seldom stuff.
@@ -412,12 +412,12 @@ bool RoSql::fetch_char_info(Field* f, RoCharInfo& info)
 	info._show._head_top = f[33].get<int>();
 	info._show._head_middle = f[34].get<int>();
 	info._show._head_bottom = f[35].get<int>();
-	memcpy(info._last_pos._name, f[36].get<char*>(), sizeof(info._last_pos._name));
+	memcpy(info._last_pos._map_name, f[36].get<char*>(), sizeof(info._last_pos._map_name));
 	info._last_pos._x = f[37].get<int>();
 	info._last_pos._y = f[38].get<int>();
 	info._last_pos._z = 0;
 	info._last_pos._r = 0;
-	memcpy(info._save_pos._name, f[39].get<char*>(), sizeof(info._save_pos._name));
+	memcpy(info._save_pos._map_name, f[39].get<char*>(), sizeof(info._save_pos._map_name));
 	info._save_pos._x = f[40].get<int>();
 	info._save_pos._y = f[41].get<int>();
 	info._save_pos._z = info._save_pos._r = 0;
