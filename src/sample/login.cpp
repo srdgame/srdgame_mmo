@@ -3,16 +3,18 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "ro_defs.h"
+#include "share.h"
 
 namespace ro
 {
 
 size_t to_refuse_connect(char* buf)
-{
+{/*
 	memset(buf, 0, 23);
 	PINT16(buf, 0) = 0x6a;
 	PINT8(buf, 2) = 3; // 3 = Rejected from server.
-	return 23;
+	return 23;*/
+	send_6a_to_disconnect(buf, 3);
 }
 #define CONVIP(ip) ((ip)>>24)&0xFF,((ip)>>16)&0xFF,((ip)>>8)&0xFF,((ip)>>0)&0xFF
 

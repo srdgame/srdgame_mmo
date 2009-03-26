@@ -100,6 +100,19 @@ struct CharRenameData
 	uint32 _char_id;
 	char _new_name[24];
 };
+
+// For Map server
+struct ConnectToMap
+{
+	uint32 _account_id;
+	uint32 _char_id;
+	uint32 _login_id1;
+	uint32 _client_tick;
+	uint8 _sex;
+	// For version
+	uint16 _ver;
+}
+
 // TODO: Replace these defines with configuration file.
 #define DEFAULT_WALK_SPEED 150
 #define MIN_WALK_SPEED 0

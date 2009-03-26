@@ -104,6 +104,11 @@ enum ExOpcode
 
 	EC_CHAR_KEEP_ALIVE = 120,
 	ES_CHAR_KEEP_ALIVE = 121,
+
+	// Map server.
+	EC_CONNECT_TO_MAP = 150,
+	ES_CONNECT_TO_MAP = 151,
+
 };
 }
 }

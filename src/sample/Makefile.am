@@ -11,6 +11,10 @@ libsample_la_SOURCES = defs.h \
 					   char.cpp \
 					   crypto.h \
 					   crypto.cpp \
+					   map.h \
+					   map.cpp \
+					   share.h \
+					   share.cpp \
 					   main.cpp
 
 
