@@ -235,6 +235,7 @@ size_t RoSql::load_chars(int account_id, RoCharInfo*& result)
 		info->_account_id = account_id;
 		if (!fetch_chars_info(f, *info))
 			break;
+		res->next();
 	}
 	res->Delete();
 	return i;

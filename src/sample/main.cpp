@@ -4,10 +4,20 @@
 #include "login.h"
 #include "char.h"
 #include "ro_defs.h"
+#include "map_main.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
 using namespace ro;
+
+void init()
+{
+	std::cerr << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+	// Actually load the configuration db files,
+	FromDispatch::get_singleton().init();
+	// Just map the functions with opcode.
+	ToDispatch::get_singleton().init();
+}
 
 size_t from_stream(Packet* dest, const char* src, size_t size)
 {
@@ -40,7 +50,7 @@ size_t from_stream(Packet* dest, const char* src, size_t size)
 		case 0x01dd:
 		case 0x01fa:
 		case 0x027c: //login with username password.
-			res = from_userinfo(dest, src, size, opcode);
+			res = from_userinfo(dest, src, size);
 			break;
 		case 0x01db: // get md5 key.
 		case 0x791a: // for md5 key.
@@ -116,6 +126,7 @@ size_t from_stream(Packet* dest, const char* src, size_t size)
 			}
 			break;
 		default:
+			res = map_from_stream(dest, src, size);
 			break;
 
 	}
@@ -165,6 +176,7 @@ size_t to_stream(char* dest, const Packet* src)
 		case ES_CHAR_LIST:
 			{
 				CharDataList* list =((CharDataList*) src->param.Data);
+				printf("ES_CHAR_LIST, with character count : %d", list->_count);
 				res = chars_to_buf(dest, list->_chars, list->_count);
 			}break;
 		case ES_SELECT_CHAR:
@@ -213,6 +225,7 @@ size_t to_stream(char* dest, const Packet* src)
 			res = to_keep_alive(dest, src->param.Int);
 			break;
 		default:
+			res = map_to_stream(dest, src);
 			break;
 	}
 	std::cout << "In to_stream function!!!!" << std::endl;

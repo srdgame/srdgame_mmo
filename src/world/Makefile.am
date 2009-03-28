@@ -21,6 +21,8 @@ srdgame_worldserver_SOURCES  = worldserver.h \
 				   map.cpp \
 				   mapmgr.h \
 				   mapmgr.cpp \
+				   mapconf.h \
+				   mapconf.cpp \
 			       main.cpp
 
 srdgame_worldserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lgame -ldatabase -lsample -lpthread -ldl

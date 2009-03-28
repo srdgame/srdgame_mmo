@@ -27,6 +27,9 @@ public:
 	// Worker will call this to response one packet.
 	virtual void on_handle(Packet* packet);
 
+	protected:
+	void clean_chars();
+
 protected:
 	std::vector<ro::RoCharInfo*> _chars;
 	int _account_id;

@@ -1,5 +1,6 @@
 #include "map.h"
 #include "share.h"
+#include "ro_defs.h"
 
 namespace ro
 {
@@ -36,7 +37,7 @@ size_t from_map_connect(Packet* dest, const char* src, size_t size)
 	ctm->_ver = op;
 	ctm->_account_id = PUINT32(src, index[0]);
 	ctm->_char_id = PUINT32(src, index[1]);
-	ctm->_login_id11 = PUINT32(src, index[2]);
+	ctm->_login_id1 = PUINT32(src, index[2]);
 	ctm->_client_tick = PUINT32(src, index[3]);
 	ctm->_sex = PUINT8(src, index[4]);
 
@@ -54,7 +55,8 @@ size_t to_map_connect(char* buf, const Packet* packet)
 	}
 	else
 	{
-		PUINT(src, 0) = 0x0283;
-		PUINT(src, 2) = packet
+		PUINT16(buf, 0) = 0x0283;
+		//PUINT(src, 2) = packet
 	}
+}
 }

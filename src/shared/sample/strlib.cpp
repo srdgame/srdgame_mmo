@@ -14,3 +14,4 @@ bool bin2hex(char* out, unsigned char* in, size_t size)
 	*out = '\0';
 	return true;
 }
+

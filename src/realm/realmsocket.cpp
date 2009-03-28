@@ -37,11 +37,7 @@ RealmSocket::~RealmSocket()
 	{
 		_worker->shutdown();
 	}
-	for( size_t i = 0; i < _chars.size(); ++i)
-	{
-		RoCharInfo* info = _chars[i];
-		delete info;
-	}
+	
 }
 void RealmSocket::on_send()
 {
@@ -62,6 +58,8 @@ void RealmSocket::on_handle(Packet* packet)
 	{	// Char server
 		case EC_LOGIN_TO_CHAR:
 			{
+				clean_chars();
+
 				LoginToChar* l = (LoginToChar*)packet->param.Data;
 				_LogDebug_("RealmServer", "Account is connected, id : %d", l->_account);
 				_account_id	 = l->_account;
@@ -91,7 +89,7 @@ void RealmSocket::on_handle(Packet* packet)
 				p.param.Data = (char*)list;
 				this->send_packet(&p);
 				//delete [] chars;
-				delete [] p.param.Data;
+				//delete [] p.param.Data;
 			}
 			break;
 		case EC_SELECT_CHAR:
@@ -168,4 +166,12 @@ void RealmSocket::on_handle(Packet* packet)
 			break;
 	}
 }
-
+void RealmSocket::clean_chars()
+{
+	for( size_t i = 0; i < _chars.size(); ++i)
+	{
+		RoCharInfo* info = _chars[i];
+		delete info;
+	}
+	_chars.clear();
+}

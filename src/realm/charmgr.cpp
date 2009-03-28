@@ -6,6 +6,18 @@ using namespace std;
 using namespace ro;
 using namespace srdgame;
 
+#ifndef CHAR_MGR_DEBUG
+#define CHAR_MGR_DEBUG
+#undef _LogDebug_
+#endif
+
+#ifdef CHAR_MGR_DEBUG
+#define _LogDebug_ LogDebug
+#else
+#define _LogDebug_ //
+#endif
+
+#define LN "CHAR_MGR"
 
 CharMgr::CharMgr()
 {
@@ -44,6 +56,8 @@ RoCharInfo* CharMgr::create_new(CreateCharData* data, int account_id)
 size_t CharMgr::load_chars(int account_id, RoCharInfo*& chars)
 {
 	return _sql->load_chars(account_id, chars);
+	//_LogDebug_(LN, "%s characters have been loaded", count);
+	//return count;
 }
 
 

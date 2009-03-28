@@ -15,6 +15,12 @@ libsample_la_SOURCES = defs.h \
 					   map.cpp \
 					   share.h \
 					   share.cpp \
+					   fromdispatch.h \
+					   fromdispatch.cpp \
+					   todispatch.h \
+					   todispatch.cpp \
+					   packetdb.h \
+					   packetdb.cpp \
 					   main.cpp
 
 

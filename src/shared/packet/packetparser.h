@@ -10,6 +10,7 @@ namespace srdgame
 {
 typedef size_t (*from_stream_func)(Packet* dest, const char* src, size_t size);
 typedef size_t (*to_stream_func)(char* dest, const Packet* src);
+typedef void (*init_func)(void);
 
 class PacketParser : public Singleton < PacketParser >
 {

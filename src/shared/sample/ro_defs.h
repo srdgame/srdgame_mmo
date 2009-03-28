@@ -111,7 +111,7 @@ struct ConnectToMap
 	uint8 _sex;
 	// For version
 	uint16 _ver;
-}
+};
 
 // TODO: Replace these defines with configuration file.
 #define DEFAULT_WALK_SPEED 150

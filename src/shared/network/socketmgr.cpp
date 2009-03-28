@@ -123,7 +123,9 @@ void SocketMgr::remove(Socket* s)
 		return;
 	}
 
-    	// Remove from epoll list.
+    _fds[s->get_fd()] = NULL;
+
+    // Remove from epoll list.
 	struct epoll_event ev;
 	memset(&ev, 0, sizeof(epoll_event));
   	ev.data.fd = s->get_fd();
@@ -140,7 +142,6 @@ void SocketMgr::remove(Socket* s)
 		LogSuccess("SOCKET", "Removed fd %u from epoll set", s->get_fd());
 	}
 	
-    _fds[s->get_fd()] = NULL;
 	--_count;
 }
 void SocketMgr::close_all()

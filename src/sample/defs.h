@@ -11,6 +11,7 @@ extern "C"
 {
 extern size_t from_stream(Packet* dest, const char* src, size_t size);
 extern size_t to_stream(char* dest, const Packet* src);
+extern void init();
 }
 enum {
 	SEX_FEMALE = 0,

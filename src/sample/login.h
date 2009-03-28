@@ -9,7 +9,7 @@ namespace ro
 int lan_subnetcheck(uint32 ip);
 
 size_t to_refuse_connect(char* buf);
-size_t from_userinfo(Packet* dest, const char* src, size_t size, uint16 opcode);
+size_t from_userinfo(Packet* dest, const char* src, size_t size);
 size_t to_auth_result(char* buf, const Packet* packet);
 
 size_t to_server_list_result(char* buf, const Packet* packet);

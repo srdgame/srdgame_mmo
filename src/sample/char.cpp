@@ -14,6 +14,7 @@ size_t char_to_buf(char* buf, const RoCharInfo* info)
 	if (buf == NULL || info == NULL)
 		return 0;
 
+	//printf("CHAR_TO_BUF, with name : %s\n", info->_name.c_str());
 	size_t len = 0;
 	PUINT32(buf, len) = info->_id;				len += 4;
 	PUINT32(buf, len) = info->_exp._zeny;		len += 4;
@@ -94,6 +95,16 @@ size_t char_auth_failed(char* buf, uint8 reason)
 	PUINT8(buf, 2) = reason;
 	return 3;
 }
+size_t from_login_to_char(Packet* dest, const char* src, size_t size)
+{
+	size_t res = 0;
+	dest->op = EC_LOGIN_TO_CHAR;
+	dest->len = sizeof(Packet) + sizeof(LoginToChar);
+	LoginToChar* l = new LoginToChar();
+	res = from_login_to_char(l, src, size);
+	dest->param.Data = (char*)l;
+	return res;
+}
 
 size_t from_login_to_char(LoginToChar* dest, const char* src, size_t src_len)
 {
@@ -114,6 +125,16 @@ size_t to_login_to_char(char* src, uint32 account)
 {
 	PUINT32(src, 0) = account;
 	return 4;
+}
+size_t from_select_char(Packet* dest, const char* src, size_t size)
+{
+	size_t res = 0;
+	dest->op = EC_SELECT_CHAR;
+	dest->len = sizeof(Packet);
+	uint32 slot = 0;
+	res = from_select_char(slot, src, size);
+	dest->param.Int = (int)slot;
+	return res;
 }
 size_t from_select_char(uint32& slot, const char* src, size_t src_len)
 {
@@ -142,7 +163,16 @@ size_t to_select_char_ok(char* dest, const MapServerInfo& info)
 	assert(len == 28);
 	return len;
 }
-
+size_t from_create_char(Packet* dest, const char* src, size_t size)
+{
+	size_t res = 0;
+	dest->op = EC_CHAR_CREATE;
+	dest->len = sizeof(Packet) + sizeof(CreateCharData);
+	CreateCharData* data = new CreateCharData();
+	res = from_create_char(*data, src, size);
+	dest->param.Data = (char*)data;
+	return res;
+}
 size_t from_create_char(CreateCharData& data, const char* buf, size_t src_len)
 {
 	if (src_len < 37)
@@ -181,6 +211,17 @@ size_t to_create_char_ok(char* dest, RoCharInfo* info)
 	return len;
 }
 
+size_t from_delete_char(Packet* dest, const char* src, size_t size)
+{
+	size_t res = 0;
+	dest->op = EC_CHAR_DELETE;
+	dest->len = sizeof(Packet) + sizeof(DeleteCharData);
+	DeleteCharData* data = new DeleteCharData();
+	res = from_delete_char(*data, src, size);
+	dest->param.Data = (char*)data;
+	return res;
+}
+
 size_t from_delete_char(DeleteCharData& data, const char* src, size_t src_len)
 {
 	if (src_len < 2)
@@ -210,6 +251,16 @@ size_t to_delete_char_ok(char* dest)
 	PUINT16(dest, 0) = 0x6f;
 	return 2;
 }
+size_t from_keep_alive(Packet* dest, const char* src, size_t size)
+{
+	size_t res = 0;
+	dest->op = EC_CHAR_KEEP_ALIVE;
+	dest->len = sizeof(Packet);
+	uint32 account = 0;
+	res = from_keep_alive(account, src, size);
+	dest->param.Int = (int) account;
+	return res;
+}
 size_t from_keep_alive(uint32& account, const char* src, size_t src_len)
 {
 	if (src_len < 6)
@@ -223,6 +274,16 @@ size_t to_keep_alive(char* dest, uint32 account)
 	PUINT16(dest, 0) = 0x187;
 	PUINT32(dest, 2) = account;
 	return 6;
+}
+
+size_t from_char_rename(Packet* dest, const char* src, size_t size)
+{
+	size_t res = 0;
+	dest->op = EC_CHAR_RENAME;
+	dest->len = sizeof(Packet) + sizeof(CharRenameData);
+	CharRenameData* data = new CharRenameData();
+	res = from_char_rename(*data, src, size);
+	return res;
 }
 
 size_t from_char_rename(CharRenameData& data, const char* src, size_t src_len)

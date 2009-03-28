@@ -18,9 +18,10 @@ size_t to_refuse_connect(char* buf)
 }
 #define CONVIP(ip) ((ip)>>24)&0xFF,((ip)>>16)&0xFF,((ip)>>8)&0xFF,((ip)>>0)&0xFF
 
-size_t from_userinfo(Packet* dest, const char* src, size_t size, uint16 opcode)
+size_t from_userinfo(Packet* dest, const char* src, size_t size)
 {
 	size_t res = 0;
+	uint16 opcode = PUINT16(src, 0);
 
 	if ((opcode  == 0x0064 && size < 55)){
 		return 0;

@@ -134,8 +134,17 @@ bool PacketParser::init_ex(const char* ex_name)
 		LogError("PacketParser", "Could not load protocol lib : %s  The error is : %s", dlerror());
 		return false;
 	}
-	_ex_from_func = (from_stream_func)dlsym(_lib, "from_stream");
+	init_func f = (init_func)(dlsym(_lib, "init"));
 	char* error = dlerror();
+	if (NULL != error)
+	{		
+		LogError("PacketParser", "Could not find init(), error is : %s", error);
+		dlclose(_lib);
+		_lib = NULL;
+		return false;
+	}
+	_ex_from_func = (from_stream_func)dlsym(_lib, "from_stream");
+	error = dlerror();
 	if (NULL != error)
 	{
 		LogError("PacketParser", "Could not find from_stream, error is : %s", error);
@@ -153,9 +162,13 @@ bool PacketParser::init_ex(const char* ex_name)
 		return false;
 	}
 	LogSuccess("PacketParser", "Load external protocol parser successfully!!!");
+
+	// try to init the extern parser.
+	(*f)();
+
 	Packet p;
 	char* ch = NULL;
-	if (0 == from_ex(p, ch, 0) && 0 == to_ex(ch, p))
+	if (0 == from_ex(p, ch, 0))//&& 0 == to_ex(ch, p))
 	{
 		LogSuccess("PacketParser", "Checking OK");
 	}
