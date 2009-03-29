@@ -44,6 +44,7 @@ void SocketMgr::add(Socket* s)
 	if (!NetworkConfig::get_singleton().socket_check(s))
 	{
 		s->close();
+		s->_delete();
 		return;
 	}
 
@@ -99,7 +100,7 @@ void SocketMgr::add_listen(ListenSocket* s)
 	
 	struct epoll_event event;
 	::memset(&event, 0, sizeof(epoll_event));
-	event.events = EPOLLIN;
+	event.events = EPOLLIN | EPOLLERR | EPOLLHUP;
 	event.events = event.events | EPOLLET;
 	event.data.fd = s->get_fd();
 	
@@ -118,7 +119,6 @@ void SocketMgr::remove(Socket* s)
 	}
 	if (_fds[s->get_fd()] != s)
 	{
-		// TODO: output debug
 		LogWarning("SOCKET", "Could not remove socket on fd: %u", s->get_fd()); 
 		return;
 	}

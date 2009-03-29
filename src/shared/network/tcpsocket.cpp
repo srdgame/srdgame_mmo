@@ -185,6 +185,7 @@ void TcpSocket::read_callback(size_t size)
 		{
 			// Wait for next post.
 			_LogDebug_("SOCKET", "No spare buffer, wait for next post");
+			_rev_buf.commit(0);
 			post_event(EPOLLIN);
 			return;
 		};
@@ -287,7 +288,7 @@ void TcpSocket::post_event(unsigned int event)
 	struct epoll_event ev;
 	memset(&ev, 0, sizeof(epoll_event));
 	ev.data.fd = _fd;
-	ev.events = event | EPOLLERR | EPOLLHUP;
+	ev.events = event;
 	ev.events = ev.events | EPOLLET;			/* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
 
 	// post actual event

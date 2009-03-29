@@ -36,7 +36,7 @@ bool SocketWorker::run()
 	while(_running)
 	{
 		_LogDebug_("SocketWorker", "Start to wait for epoll event");
-		fd_count = epoll_wait(mgr->_epoll_fd, _events, THREAD_EVENT_SIZE, 5000);
+		fd_count = epoll_wait(mgr->_epoll_fd, _events, THREAD_EVENT_SIZE, 500);
 		_LogDebug_("SocketWorker", "Epoll event coming, count: %d", fd_count);
 		if (!_running)
 			break;
@@ -85,7 +85,7 @@ bool SocketWorker::run()
 				/* changing to written state? */
 				if(ptr->is_connected())
 				{
-					//ptr->post_event(EPOLLOUT);
+				//	ptr->post_event(EPOLLOUT);
 				}
 				else
 				{
