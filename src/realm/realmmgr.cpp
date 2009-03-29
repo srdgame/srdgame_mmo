@@ -30,7 +30,7 @@ void RealmMgr::add_world_server(RealmSocketBase* s)
 	if (org && org->is_connected())
 	{
 		LogError("RealmServer", "Two conflict server are registed, id : %d", s->get_fd());
-		org->close();
+		//org->close();
 		// TODO:
 	}
 	_servers[s->get_fd()] = s;

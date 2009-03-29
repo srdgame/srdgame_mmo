@@ -103,12 +103,16 @@ bool TcpSocket::send(const char* data, size_t size)
 	while (size != 0)
 	{
 		_LogDebug_("SOCKET", "Sending................");
+
 		_send_buf_lock.lock();
 		char* buf = _send_buf.reserve(size, r_size);
 		_LogDebug_("SOCKET", "Reserver for buffer size: %d, reserved : %d", size, r_size);
+		if (r_size == 0)
+			usleep(1000);
 		memcpy(buf, data, r_size);
 		_send_buf.commit(r_size);
 		_send_buf_lock.unlock();
+
 		size -= r_size;
 		data += r_size;
         post_event(EPOLLOUT);
@@ -187,7 +191,7 @@ void TcpSocket::read_callback(size_t size)
 			_LogDebug_("SOCKET", "No spare buffer, wait for next post");
 			_rev_buf.commit(0);
 			post_event(EPOLLIN);
-			return;
+			break;
 		};
 
 		int bytes = recv(_fd, buf, spare, 0);
@@ -280,6 +284,10 @@ void TcpSocket::write_callback()
 				if (send_size == size)
 					break;
 			}
+		}
+		else
+		{
+			break;
 		}
 	}
 }

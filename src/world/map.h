@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include "mutex.h"
+#include "romap.h"
 
 namespace srdgame
 {
@@ -14,6 +15,9 @@ class Map
 public:
 	Map(const std::string& name);
 	virtual ~Map();
+
+public:
+	void bind(ro::MapData& data);
 
 public:
 	inline std::string get_name(){ return _name;};
@@ -29,6 +33,8 @@ private:
 
 	std::map<int, Npc*> _npcs;
 	Mutex _npcs_lock;
+
+	ro::MapData* _ro_map;
 };
 }
 

@@ -11,13 +11,15 @@ using namespace std;
 #undef LN
 #endif
 
+#undef MAP_DEBUG
+
 #ifdef MAP_DEBUG
 #define _LogDebug_ LogDebug
-#define LN "MAP"
 #else
 #define _LogDebug_ //
-#define LN //
 #endif
+
+#define LN "MAP"
 
 MapConf::MapConf(const char* fn) : _fn(fn)
 {
@@ -42,7 +44,7 @@ bool MapConf::load()
 		if (buf[0] == '/' && buf[1] == '/')
 			continue;
 
-		_LogDebug_(LN, "Loaded String: %s", buf.c_str());
+		_LogDebug_("MAP", "Loaded String: %s", buf.c_str());
 		if (buf.find("map: ") != 0)
 			continue;
 

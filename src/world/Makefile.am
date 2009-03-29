@@ -25,5 +25,5 @@ srdgame_worldserver_SOURCES  = worldserver.h \
 				   mapconf.cpp \
 			       main.cpp
 
-srdgame_worldserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lgame -ldatabase -lsample -lpthread -ldl
+srdgame_worldserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lgame -ldatabase -lsample -lpthread -ldl -lz
 srdgame_worldserver_LDFLAGS = -L$(srcdir)/../shared/log -L$(srcdir)/../shared/network -L$(srcdir)/../shared/thread -L$(srcdir)/../shared/config -L$(srcdir)/../shared/packet -L$(srcdir)/../shared/game -L$(srcdir)/../shared/database -L$(srcdir)/../shared/sample

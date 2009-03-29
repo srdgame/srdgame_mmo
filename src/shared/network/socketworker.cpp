@@ -85,7 +85,7 @@ bool SocketWorker::run()
 				/* changing to written state? */
 				if(ptr->is_connected())
 				{
-				//	ptr->post_event(EPOLLOUT);
+			//		ptr->post_event(EPOLLOUT);
 				}
 				else
 				{

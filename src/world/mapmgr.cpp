@@ -4,9 +4,11 @@
 #include "autolock.h"
 #include "typedefs.h"
 #include "mapconf.h"
+#include "romap.h"
 
 using namespace srdgame;
 using namespace std;
+using namespace ro;
 
 #ifndef SOCKET_DEBUG
 #define SOCKET_DEBUG
@@ -22,6 +24,7 @@ using namespace std;
 #define LN "MapMgr"
 
 #define MAP_CONF_FILE_NAME "./data/conf/maps_athena.conf"
+#define RO_MAP_CACHE_FILE "./data/db/map_cache.dat"
 
 MapMgr::MapMgr() : _inter_socket(NULL)
 {
@@ -33,9 +36,17 @@ MapMgr::~MapMgr()
 void MapMgr::load_maps()
 {
 	AutoLock lock(_lock);
+
+	// Start to load romaps.
+	RoMap romap;
+	if (romap.load(RO_MAP_CACHE_FILE))
+	{
+	}
 	/*
 	_maps[1] = new Map("AAAA");
 	_map_ids["AAAA"] = 1;*/
+
+	// Load the configed map for this world server.
 	MapConf mc(MAP_CONF_FILE_NAME);
 	if(mc.load())
 	{
@@ -47,12 +58,13 @@ void MapMgr::load_maps()
 			_maps.insert(pair<int, Map*>(i, new_map));
 			_map_ids.insert(pair<string, int>(maps[i], i));
 		}
-		LogSuccess(LN, "Loaded maps successfuly, count : %d", map_count);
+		LogSuccess(LN, "Loaded map configuration successfuly, count : %d", map_count);
 	}
 	else
 	{
-		LogError(LN, "Could not load maps from file :%s", MAP_CONF_FILE_NAME);
+		LogError(LN, "Could not load map configuration from file :%s", MAP_CONF_FILE_NAME);
 	}
+
 }
 void MapMgr::bind(InterSocket* socket)
 {
@@ -61,9 +73,19 @@ void MapMgr::bind(InterSocket* socket)
 }
 void MapMgr::send_maps()
 {
+	LogDebug("MAP_MGR", "Start to send maps");
 	AutoLock lock(_lock);
 	if (!_inter_socket)
 		return;
+	// Test for really big data.
+	//
+	/*char* d = new char[10000];
+	::memset(d, 0, 10000);
+	_inter_socket->send(d, 10000);
+
+	return;*/
+
+	// end of Test
 	std::map<std::string, int>::iterator ptr = _map_ids.begin();
 
 	WorldMapInfo info;
@@ -76,6 +98,7 @@ void MapMgr::send_maps()
 		info._index = ptr->second;
 		memset(info._name, 0, 64);
 		memcpy(info._name, ptr->first.c_str(), min((int)ptr->first.length(), 64));
+		//usleep(10000);
 		_inter_socket->send_packet(&p);
 	}
 	return;

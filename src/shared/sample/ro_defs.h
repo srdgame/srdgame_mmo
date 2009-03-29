@@ -119,5 +119,6 @@ struct ConnectToMap
 #define MAX_WALK_SPEED 1000
 #define MAX_NAME_LEN 24
 #define MAX_MAP_NAME_LEN 16
+#define MAX_MAP_NAME_LEN_F 12
 }
 #endif

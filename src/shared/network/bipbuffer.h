@@ -15,7 +15,7 @@
 #include "bufferbase.h"
 
 // Define debug
-// #define _BIP_DEBUG_
+#define _BIP_DEBUG_
 
 #ifdef _BIP_DEBUG_
 #include "log.h"
@@ -122,7 +122,12 @@ public:
 				LogDebug("BipBuffer", "Create Region B");
 #endif
 				if (ixa == 0)
+				{
+					ixr = 0;
+					szr = 0;
+					reserved = 0;
 					return NULL;
+				}
 
 				// 获取最小
 				if (ixa < size)
