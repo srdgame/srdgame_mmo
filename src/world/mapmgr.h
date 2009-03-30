@@ -21,6 +21,9 @@ public:
 	void bind(InterSocket* socket);
 	void send_maps();
 
+	Map* get_map(std::string& name);
+	Map* get_map(int index);
+
 protected:
 	void unload_maps();
 protected:

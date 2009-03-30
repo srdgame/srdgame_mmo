@@ -5,6 +5,7 @@
 #include "packetdump.h"
 #include "opcode.h"
 #include "ro_defs.h"
+#include "worldauth.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -117,14 +118,7 @@ void WorldSocket::on_handle(Packet* packet)
 	{
 		case EC_CONNECT_TO_MAP:
 			{
-				if (packet->len <= sizeof(Packet))
-					break;
-				ConnectToMap* c = (ConnectToMap*)packet->param.Data;
-				Packet p;
-				p.op = (ES_CONNECT_TO_MAP);
-				p.len = sizeof(Packet);
-				p.param.Int = c->_account_id;
-				send_packet(&p);
+				WorldAuth::get_singleton().handle_login(this, packet);	
 			}
 			break;
 		default:

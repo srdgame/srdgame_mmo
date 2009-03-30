@@ -42,10 +42,14 @@ public:
 	{
 		ToFunctionPtr ptr = *(_functions + op);
 		if (!ptr)
+		{
+			printf("No function stands for op : %d", op);
 			return 0;
-		printf("Calling the registered entry, OP : %d", op);
+		}
+		printf("Calling the registered entry, OP : %d\n", op);
 		size_t size =  (*ptr)(s._buf, s._packet);
 		op = PUINT16(s._buf, 0);
+		printf("Converted one packet with op: %d\n", op);
 		if (size != _packet_size[op])
 		{
 			printf("size : %d, \t _packet_sizee : %d", (int) size, (int) _packet_size[op]);

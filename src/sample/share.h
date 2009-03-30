@@ -6,12 +6,14 @@
 
 namespace ro
 {
+size_t send_account(char* buf, const Packet* packet);
 // 5: Your game's exe file is not the lastest version.
 // 3: Reject by server.
 //size_t to_send_0x006a(char* buf, const Packet* packet);
 TO_DC(0x006a);
 size_t send_6a_to_disconnect(char* buf, uint8 reason);
 TO_DC(0x0283);
+TO_DC(0x0073); // map auth ok.
 
 }
 

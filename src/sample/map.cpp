@@ -84,7 +84,9 @@ DECLARE(get_char_name_request)
 
 DECLARE(global_message)
 {
-	return 0;
+	const char* text = PCHAR(src, 4);
+	int textlen = PUINT16(src, 2) - 4;
+	return textlen + 4;
 }
 
 DECLARE(map_move)

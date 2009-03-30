@@ -5,6 +5,7 @@
 #include "typedefs.h"
 #include "mapconf.h"
 #include "romap.h"
+#include "rocharinfo.h"
 
 using namespace srdgame;
 using namespace std;
@@ -110,12 +111,20 @@ void MapMgr::send_maps()
 		info._index = ptr->second;
 		memset(info._name, 0, 64);
 		memcpy(info._name, ptr->first.c_str(), min((int)ptr->first.length(), 64));
-		//usleep(10000);
+		usleep(10000);
 		if (!_inter_socket->is_connected())
 			break;
 		_inter_socket->send_packet(&p);
 	}
 	return;
+}
+Map* MapMgr::get_map(std::string& name)
+{
+	return get_map(_map_ids[name]);
+}
+Map* MapMgr::get_map(int index)
+{
+	return _maps[index];
 }
 void MapMgr::unload_maps()
 {

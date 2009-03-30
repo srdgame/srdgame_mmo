@@ -111,6 +111,10 @@ enum ExOpcode
 	EC_CONNECT_TO_MAP = 150,
 	ES_CONNECT_TO_MAP = 151,
 
+	EC_MAP_AUTH	= 155,
+	ES_MAP_AUTH = 156,
+
+
 };
 }
 }

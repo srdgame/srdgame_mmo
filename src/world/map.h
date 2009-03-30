@@ -26,6 +26,7 @@ public:
 
 	void add_npc(Npc* npc);
 	void remove_npc(Npc* npc);
+
 private:
 	std::string _name;
 	std::map<int, Player*> _players;

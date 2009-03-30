@@ -186,6 +186,6 @@ size_t PacketParser::from_ex(Packet& dest, const char* src, size_t size)
 }
 
 size_t PacketParser::to_ex(char* dest, const Packet& src)
-{
+{	
 	return (*_ex_to_func)(dest, &src);
 }

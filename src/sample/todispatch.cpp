@@ -20,6 +20,7 @@ static struct {
 } to_parse_func[]={
 	{to_send_0x006a_, ES_DISCONNECT},
 	{to_send_0x0283_, ES_CONNECT_TO_MAP},
+	{to_send_0x0073_, ES_MAP_AUTH},
 	{NULL, 0},
 };
 

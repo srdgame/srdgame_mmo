@@ -186,7 +186,7 @@ static struct {
 void FromDispatch::init()
 {
 	::memset(_functions, 0, sizeof(FromFunctionPtr) * MAX_FROM_INDEX);
-	::memset(_packet_size, 0, sizeof(size_t) * MAX_FROM_INDEX);
+	::memset(_packet_size, 0, sizeof(int) * MAX_FROM_INDEX);
 	size_t i = 0;
 	while (from_parse_func[i].ptr && from_parse_func[i].name)
 	{
@@ -208,11 +208,12 @@ void FromDispatch::init()
 				_functions[index] = _string_to_function[fields[2]._val];
 				if (_functions[index])
 				{
-					//printf("Message entry has registered! Index(Hex): %s, \t Function: %s\n", fields[0]._val.c_str(), fields[2]._val.c_str());
+					if (index == 243)
+						printf("Message entry has registered! Index(Hex): %s, \t Function: %s \t paccket size : % d\n", fields[0]._val.c_str(), fields[2]._val.c_str(), conversion_cast<int>(fields[1]._val));
 				}
 				else
 				{
-					printf("Message entry has no process function! Index(Hex): %s, \t Function: %s\n", fields[0]._val.c_str(), fields[2]._val.c_str());
+					printf("Message entry has no process function! Index(Hex): %s, \t Function: %s \t paccket size : % d\n", fields[0]._val.c_str(), fields[2]._val.c_str(), conversion_cast<int>(fields[1]._val) );
 				}
 			}
 			else
@@ -223,7 +224,7 @@ void FromDispatch::init()
 		if (fields.size() >= 2)
 		{
 			int index = hex2int(fields[0]._val);
-			_packet_size[index] = conversion_cast<size_t>(fields[1]._val);
+			_packet_size[index] = conversion_cast<int>(fields[1]._val);
 		}
 	}while(db.next());
 }

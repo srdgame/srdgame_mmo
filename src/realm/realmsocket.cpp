@@ -118,10 +118,11 @@ void RealmSocket::on_handle(Packet* packet)
 						info._port = 0;
 						memset(info._map_name, 0, MAX_MAP_NAME_LEN);
 						memcpy(info._map_name, char_info._last_pos._map_name, MAX_MAP_NAME_LEN);
+						strcat(info._map_name, ".gat");
 						// Get world server info;
 						WorldSrvInfo server;
-						_LogDebug_("RealmServer", "Char is now in map : %s", info._map_name);
-						if (RealmMgr::get_singleton().get_server_by_map(string(info._map_name), server))
+						_LogDebug_("RealmServer", "Char is now in map : %s", char_info._last_pos._map_name);
+						if (RealmMgr::get_singleton().get_server_by_map(string(char_info._last_pos._map_name), server))
 						{
 							_LogDebug_("RealmServer", "Got map~!!!!!!!!!!!!!!!!!!!!");
 							info._ip = str2ip(server.ip);
