@@ -204,6 +204,8 @@ int RoSql::get_max_char_id()
 	}
 
 	int max = f[0].get<int>();
+	if (max < 1000)
+		max = 1000;
 	_LogDebug_(LN, "Max char_id is %d", max);
 	res->Delete();
 	return max;
@@ -247,23 +249,28 @@ bool RoSql::load_char(int char_id, RoCharInfo& info, bool load_everything)
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(),
 			RO_CHAR_TB, char_id);
 	if (!res)
+	{
+		//_LogDebug_("RO_SQL", "Failed to query!!!!!!!!!!!!!");
 		return false;
+	}
 
 	size_t count = res->get_row_size();
 	if (count != 1)
 	{
+		//_LogDebug_("RO_SQL", "count is not one, means no invald data");
 		res->Delete();
 		return false;
 	}
-	::memset((char*) &info, 0, sizeof(RoCharInfo));
 	Field * f = res->fetch();
 	if (!f)
 	{
+		//_LogDebug_("RO_SQL", "No data fields~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		res->Delete();
 		return false;
 	}
 	if (fetch_char_info(f, info))
 	{
+		LogSuccess("RO_SQL", "Load char OKKKKKKKKKKKKKKKKKKKKKKKK");
 		return true;
 	}
 	return false;
@@ -378,8 +385,10 @@ bool RoSql::fetch_char_info(Field* f, RoCharInfo& info)
 		return false;*/
 
 	info._account_id = f[0].get<int>();
+	//LogDebug("AAAAAAAAAAAA", f[2].get<string>().c_str());
 	info._slot = f[1].get<int>();
-	info._name = f[2].get<std::string>();
+	info._name = f[2].get<string>();
+	//LogDebug("AAAAAAAAAAAA", info._name.c_str()); // TODO: the name geting is crashing....
 	info._class = f[3].get<int>();
 	info._exp._base_lvl = f[4].get<int>();
 	info._exp._job_lvl = f[5].get<int>();

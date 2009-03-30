@@ -7,6 +7,9 @@
 #include "ro_defs.h"
 #include "rosql.h"
 #include "charmgr.h"
+#include "typedefs.h"
+#include "strlib.h"
+#include "realmmgr.h"
 
 using namespace ro;
 using namespace srdgame;
@@ -27,8 +30,8 @@ RealmSocket::RealmSocket()
 	: RealmSocketBase(/* using the default buffer size */)
 {
 	_inter = false;
-	_dump_in = true;
-	_dump_out = true;
+	_dump_in = false;
+	_dump_out = false;
 }
 
 RealmSocket::~RealmSocket()
@@ -37,7 +40,7 @@ RealmSocket::~RealmSocket()
 	{
 		_worker->shutdown();
 	}
-	
+	clean_chars();	
 }
 void RealmSocket::on_send()
 {
@@ -79,7 +82,7 @@ void RealmSocket::on_handle(Packet* packet)
 				_LogDebug_("RealmServer", "Characters has been loaded, count is : %d, chars : %d", count, chars);
 				for (size_t i = 0; i < count; ++i)
 				{
-					_chars.push_back(chars + i);
+					_chars[chars[i]._slot] = chars[i]._id;
 				}
 				p.op = ES_CHAR_LIST;
 				p.len = sizeof(Packet) + sizeof(CharDataList);
@@ -88,36 +91,55 @@ void RealmSocket::on_handle(Packet* packet)
 				list->_chars = chars;
 				p.param.Data = (char*)list;
 				this->send_packet(&p);
-				//delete [] chars;
+				delete list;
+				delete [] chars;
 				//delete [] p.param.Data;
 			}
 			break;
 		case EC_SELECT_CHAR:
 			{
 				int slot = packet->param.Int;
-				for (size_t i = 0; i < _chars.size(); ++i)
+				bool b_ok = false;
+				_LogDebug_("RealmServer", "Select character!!!!! Slot: %d, \t chars_size : %d", slot, (int) _chars.size());
+				int char_id = _chars[slot];
+				if (char_id != 0)
 				{
-					if (_chars[i]->_slot == slot)
-					{
+					RoCharInfo char_info;
+					if (!CharMgr::get_singleton().load_char_detail(char_id, char_info))
+							break;
+
+						_LogDebug_("RealmServer", "HAS FOUND THE CHAR===============================");
 						Packet p;
 						p.op = ES_SELECT_CHAR;
 						p.len = sizeof(Packet) + sizeof(MapServerInfo);
 						MapServerInfo info;
-						info._account = _chars[i]->_account_id;
+						info._account = _account_id;
 						info._ip = 0;
 						info._port = 0;
 						memset(info._map_name, 0, MAX_MAP_NAME_LEN);
-						memcpy(info._map_name, _chars[i]->_last_pos._map_name, MAX_MAP_NAME_LEN);
-						p.param.Data = (char*) &info;
-						send_packet(&p);
-						break;
-					}
+						memcpy(info._map_name, char_info._last_pos._map_name, MAX_MAP_NAME_LEN);
+						// Get world server info;
+						WorldSrvInfo server;
+						_LogDebug_("RealmServer", "Char is now in map : %s", info._map_name);
+						if (RealmMgr::get_singleton().get_server_by_map(string(info._map_name), server))
+						{
+							_LogDebug_("RealmServer", "Got map~!!!!!!!!!!!!!!!!!!!!");
+							info._ip = str2ip(server.ip);
+							info._port = (uint16)server.port;
+							p.param.Data = (char*) &info;
+							send_packet(&p);
+							b_ok = true;
+							break;
+						}
 				}
-				Packet p;
-				p.op = ES_SELECT_CHAR;
-				p.len = sizeof(Packet);
-				p.param.Int = 1;
-				send_packet(&p);
+				
+				{
+					Packet p;
+					p.op = ES_SELECT_CHAR;
+					p.len = sizeof(Packet);
+					p.param.Int = 1;
+					send_packet(&p);
+				}
 			}
 			break;
 		case EC_CHAR_LIST:
@@ -139,7 +161,7 @@ void RealmSocket::on_handle(Packet* packet)
 				}
 				else
 				{
-					_chars.push_back(char_info);
+					_chars[char_info->_slot] = char_info->_id;
 					Packet p;
 					p.op = ES_CHAR_CREATE;
 					p.len = sizeof(RoCharInfo) + sizeof(Packet);
@@ -168,10 +190,6 @@ void RealmSocket::on_handle(Packet* packet)
 }
 void RealmSocket::clean_chars()
 {
-	for( size_t i = 0; i < _chars.size(); ++i)
-	{
-		RoCharInfo* info = _chars[i];
-		delete info;
-	}
+
 	_chars.clear();
 }

@@ -295,10 +295,13 @@ bool RealmServer::wait_command()
 	{
 		std::vector<std::string> maps;
 		RealmMgr::get_singleton().enum_maps(maps);
+
+		stringstream temp;
 		for (size_t i = 0; i < maps.size(); ++i)
 		{
-			LogSuccess("RealmServer", "Map : %s", maps[i].c_str());
+			temp << maps[i] << "|";
 		}
+		LogSuccess("RealmServer", "Map : %s", temp.str().c_str());
 	}
 	else
 	{

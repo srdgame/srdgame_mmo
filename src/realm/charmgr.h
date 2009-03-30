@@ -3,7 +3,8 @@
 
 #include "singleton.h"
 #include <string>
-//#include "mutex.h"
+#include "mutex.h"
+#include "configfile.h"
 
 namespace ro
 {
@@ -23,8 +24,11 @@ public:
 	ro::RoCharInfo* create_new(ro::CreateCharData* data, int account_id);
 
 	size_t load_chars(int account_id, ro::RoCharInfo*& chars);
+
+	bool load_char_detail(int char_id, ro::RoCharInfo& info);
 private:
 	ro::RoSql* _sql;
+	ConfigFile _config;
 };
 }
 

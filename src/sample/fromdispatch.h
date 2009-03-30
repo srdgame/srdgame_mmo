@@ -40,9 +40,19 @@ public:
 	{
 		FromFunctionPtr ptr = *(_functions + op);
 		if (!ptr)
+		{
+			printf("Could not loopup the function for op : %d", op);
 			return _packet_size[op];
+		}
 		printf("Calling the registered entry, OP : %d", op);
-		return (*ptr)(s._packet, s._buf, s._size);
+		size_t res = (*ptr)(s._packet, s._buf, s._size);
+		if (res != _packet_size[op])
+		{
+			printf("================================================================================\n");
+			printf("================= return value is not same as packet db, res : %d, db : %d", (int)res, (int)_packet_size[op]);
+			printf("================================================================================\n");
+		}
+		return _packet_size[op];
 	}
 private:
 	size_t default_call(Packet* packet, const char* buf, size_t size){return 0;}

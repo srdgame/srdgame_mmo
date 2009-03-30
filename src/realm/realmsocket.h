@@ -3,7 +3,7 @@
 
 #include "realmsocketbase.h"
 #include "packetdefs.h"
-#include "rocharinfo.h"
+#include <map>
 
 namespace srdgame
 {
@@ -31,7 +31,7 @@ public:
 	void clean_chars();
 
 protected:
-	std::vector<ro::RoCharInfo*> _chars;
+	std::map<int, int> _chars;
 	int _account_id;
 };
 }

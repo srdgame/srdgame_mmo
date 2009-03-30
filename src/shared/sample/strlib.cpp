@@ -1,5 +1,6 @@
 #include "strlib.h"
-
+namespace ro
+{
 bool bin2hex(char* out, unsigned char* in, size_t size)
 {
 	char toHex[] = "0123456789abcdef";
@@ -14,4 +15,4 @@ bool bin2hex(char* out, unsigned char* in, size_t size)
 	*out = '\0';
 	return true;
 }
-
+}

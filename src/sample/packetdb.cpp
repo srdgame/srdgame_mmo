@@ -11,7 +11,7 @@ using namespace srdgame;
 
 PacketDB::PacketDB(const char* fn) : _file(fn)
 {
-	printf("Start to load packet db: %s", fn);
+	//printf("Start to load packet db: %s", fn);
 	if (_file.bad())
 	{
 		printf("Could not read the packet db file : %s", fn);
@@ -39,7 +39,7 @@ bool PacketDB::next()
 	_file.getline(_buf, 512);
 	if (!_file.good())
 	{
-		printf("FINISHED\n\n");
+		//printf("FINISHED\n\n");
 		return false;
 	}
 

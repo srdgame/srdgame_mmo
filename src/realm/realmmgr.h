@@ -41,6 +41,8 @@ public:
 	void set_info(RealmSrvInfo& info);
 	RealmSrvInfo& get_info();
 
+	// lookup for world server.
+	bool get_server_by_map(const std::string& map_name, WorldSrvInfo& info);
 protected:
 	std::map<SOCKET, RealmSocketBase*> _servers;
 	std::map<RealmSocketBase*, WorldSrvInfo> _servers_info;

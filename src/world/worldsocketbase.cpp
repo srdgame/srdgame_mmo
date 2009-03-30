@@ -4,6 +4,7 @@
 #include "packetparser.h"
 #include "threadpool.h"
 #include "autolock.h"
+#include "packetdump.h"
 
 using namespace srdgame;
 
@@ -38,6 +39,8 @@ bool WorldSocketBase::send_packet(Packet* packet)
 	else
 	{
 		size = PacketParser::get_singleton().to_ex(sz, *packet);
+		PacketDump::get_singleton().dump("PACKET OUT", sz, size);
+		PacketDump::get_singleton().dump("PACKET OUT", *packet);
 	}
 
 #ifdef SOCKET_DEBUG

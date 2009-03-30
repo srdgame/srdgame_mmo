@@ -119,7 +119,7 @@ public:
 	bool load(const char* fn);
 	void unload();
 
-	bool get_map(const char* name, MapData& data);
+	int get_map(const char* name, MapData& data);
 
 	inline bool is_loaded()
 	{

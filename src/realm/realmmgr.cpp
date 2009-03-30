@@ -27,7 +27,7 @@ void RealmMgr::add_world_server(RealmSocketBase* s)
 {
 	AutoLock lock(_server_lock);
 	RealmSocketBase* org = _servers[s->get_fd()];
-	if (org && org->is_connected())
+	if (org)
 	{
 		LogError("RealmServer", "Two conflict server are registed, id : %d", s->get_fd());
 		//org->close();
@@ -125,4 +125,16 @@ RealmSrvInfo& RealmMgr::get_info()
 {	
 	AutoLock lock(_lock);
 	return this->_info;
+}
+
+bool RealmMgr::get_server_by_map(const std::string& map_name, WorldSrvInfo& info)
+{
+	RealmSocketBase* socket = _map_servers[map_name];
+	if (!socket)
+	{
+		LogDebug("RealmServer", "No server for map : %s and map_server size : %d", map_name.c_str(), _map_servers.size());
+		return false;
+	}
+
+	info = _servers_info[socket];
 }

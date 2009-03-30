@@ -42,15 +42,21 @@ public:
 	{
 		ToFunctionPtr ptr = *(_functions + op);
 		if (!ptr)
-			return _packet_size[op];
+			return 0;
 		printf("Calling the registered entry, OP : %d", op);
-		return (*ptr)(s._buf, s._packet);
+		size_t size =  (*ptr)(s._buf, s._packet);
+		op = PUINT16(s._buf, 0);
+		if (size != _packet_size[op])
+		{
+			printf("size : %d, \t _packet_sizee : %d", (int) size, (int) _packet_size[op]);
+			printf("Incorrect packet making has been found!!!!!!!!!!!!!!!!!!!!!!!");
+		}
+		return _packet_size[op];
 	}
 private:
 	size_t default_call(char* buf, Packet* p){return 0;}
 
 	ToFunctionPtr _functions[MAX_TO_INDEX];
-	std::map<std::string, ToFunctionPtr> _string_to_function;
 	size_t _packet_size[MAX_TO_INDEX];
 };
 }

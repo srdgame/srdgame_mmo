@@ -1,0 +1,16 @@
+// Char defualt stuff.
+
+zeny = 0
+hp_vit_rate = 1
+hp_max = 40
+sp_int_rate = 1
+sp_max = 11
+
+// 
+start_weapon = 1201
+start_armor = 2301
+
+// map
+default_map = new_1-1
+default_pos_x = 53
+default_pos_y = 111

@@ -17,7 +17,7 @@ public:
 	virtual ~Map();
 
 public:
-	void bind(ro::MapData& data);
+	void bind(ro::MapData* data);
 
 public:
 	inline std::string get_name(){ return _name;};

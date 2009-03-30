@@ -66,6 +66,8 @@ enum ExOpcode
 	EC_VERSION = 5, // Provide client version.
 	ES_VERSION = 6, // TODO:
 
+	ES_DISCONNECT = 7,
+
 	// For login
 	EC_LOGIN = 10,
 	ES_LOGIN = 11,

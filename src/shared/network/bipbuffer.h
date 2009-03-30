@@ -15,7 +15,7 @@
 #include "bufferbase.h"
 
 // Define debug
-#define _BIP_DEBUG_
+#undef _BIP_DEBUG_
 
 #ifdef _BIP_DEBUG_
 #include "log.h"
@@ -228,6 +228,31 @@ public:
 	{
 		return sza + szb;
 	}
+	/*
+	inline void arrange()
+	{
+		// Do not arrange it when there is only A reagon, or B is empty.
+		if (ixa == 0 || szb == 0)
+			return;
+		size_t size = 0;
+		char* a_buf = this->get_data(size);
+		if (size == 0)
+			return;
+		char* temp_buf = new char[len];
+		memcpy(temp_buf, a_buf, size);
+#ifdef _BIP_DEBUG_
+		LogDebug("BIPBUFFER", "ARRANGING BUFFER. %s", size);
+#endif
+		memcpy(temp_buf, buf, len - size);
+		ixa = 0;
+		sza = szb + size;
+		ixb = 0;
+		szb = 0;
+		ixr += size;
+		
+		delete [] buf;
+		buf = temp_buf;
+	}*/
 protected:
 	size_t get_a_free()
 	{

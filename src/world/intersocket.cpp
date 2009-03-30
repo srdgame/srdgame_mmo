@@ -46,6 +46,36 @@ void InterSocket::on_rev()
 					// we should quit here.close connection.
 					this->close();
 				}
+				// Ok, we have to do somthing here.
+				if (buf->data_size() > size && size != 0)
+				{
+				//	buf->arrange();
+					_LogDebug_("RealmSocket", "Arranging~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+					char b_data[MAX_PACKET_LEN];
+					size_t o_size = size - index;
+					memset(b_data, 0, MAX_PACKET_LEN);
+					memcpy(b_data, data + index, size - index);
+					index = 0;
+					buf->free(size);
+					data = buf->get_data(size);
+					memcpy(b_data + o_size, data, min(size, MAX_PACKET_LEN - o_size));
+					_LogDebug_("RealmSocket", "o_size : %d, size : %d", o_size, size);
+					_LogDebug_("RealmSocket", "converting bytes : %d", min((size_t)MAX_PACKET_LEN, size + o_size));
+					size_t used_i = _inter ? PacketParser::get_singleton().from_inter(p, b_data , min((size_t)MAX_PACKET_LEN, size + o_size))
+									: PacketParser::get_singleton().from_ex(p, b_data , min((size_t)MAX_PACKET_LEN, size + o_size));
+					if (!used_i)
+					{
+						this->close();
+					}
+					else
+					{
+						// 
+						_LogDebug_("RealmSocket", "We are good to have this to avoid ***");
+						index = used_i - o_size;
+						buf->free(index);
+						continue;
+					}
+				}
 				break;
 			}
 			LogDebug("InterSocket", "One packet received");

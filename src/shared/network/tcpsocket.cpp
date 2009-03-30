@@ -99,6 +99,7 @@ bool TcpSocket::send(const char* data, size_t size)
 {
 	//_LogDebug_("SOCKET", "Sending data : %s", data);
 	//_LogDebug_("SOCKET", "Data size: %d", size);
+
 	size_t r_size = 0;
 	while (size != 0)
 	{
@@ -117,6 +118,28 @@ bool TcpSocket::send(const char* data, size_t size)
 		data += r_size;
         post_event(EPOLLOUT);
 	}
+	/* sigh, it is not caused by send, bug caused by recevie.
+	// OK, Do not use the above method, if you have found your data is really bigger than buffer's size, 
+	// it is time for you to inlarge the buffer.
+	while (true)
+	{
+		_LogDebug_("SOCKET", "Sending..................");
+		_send_buf_lock.lock();
+		size_t r_size;
+		char* buf = _send_buf.reserve(size, r_size);
+		if (r_size < size)
+		{
+			_send_buf_lock.unlock();
+			post_event(EPOLLOUT);
+			usleep(1000);
+			continue;
+		}
+		memcpy(buf, data, size);
+		_send_buf.commit(size);
+		_send_buf_lock.unlock();
+		post_event(EPOLLOUT);
+		break;
+	}*/
 	_LogDebug_("SOCKET", "Write to buffer completed!!!!!!!!!!!!!");
 	return true;
 }

@@ -2,6 +2,7 @@
 #include "log.h"
 #include <cstring>
 #include <cassert>
+#include "strlib.h"
 
 #include "grfio.h"
 
@@ -105,12 +106,12 @@ void RoMap::unload()
 	}
 }
 
-bool RoMap::get_map(const char* name, MapData& data)
+int RoMap::get_map(const char* name, MapData& data)
 {
 	::memset(&data, 0, sizeof(MapData));
 
 	if (!is_loaded())
-		return false;
+		return -1;
 	size_t i = 0;
 	size_t off = sizeof(_header);
 	for (; i < _maps.size(); ++i)
@@ -120,13 +121,14 @@ bool RoMap::get_map(const char* name, MapData& data)
 		off += _maps[i]._len;
 	}
 	if (i >= _maps.size())
-		return false;
+		return -1;
 
 	// Now it is time to load the file.
 	off += sizeof(MapCacheMapInfo);
 	if (off >= _header._file_size)
-		return false;
-
+		return -1;
+	//LogDebug("RO_MAP", "Load map data from offset: %d \t len: %d", off, _maps[i]._len);
+	
 	_file.seekg(off, ios::beg);
 	unsigned char *buf = new unsigned char[_maps[i]._len];
 	memset(buf, 0, _maps[i]._len);
@@ -141,6 +143,16 @@ bool RoMap::get_map(const char* name, MapData& data)
 	{
 		assert(false);
 	}
+	// debug
+	//
+	/*
+	char ch[64];
+	bin2hex(ch, buf, 8);
+	LogDebug("RO_MAP", "Load map data from %s ....", ch);
+	*/
+	//
+	//
+	//
 	decode_zip(buf2, &size, buf, _maps[i]._len);
 
 	for (int xy = 0; xy < size; ++xy)
@@ -149,5 +161,5 @@ bool RoMap::get_map(const char* name, MapData& data)
 	}
 	delete [] buf;
 	delete [] buf2;
-	return true;
+	return i;
 }

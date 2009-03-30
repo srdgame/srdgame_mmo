@@ -31,10 +31,12 @@ MapMgr::MapMgr() : _inter_socket(NULL)
 }
 MapMgr::~MapMgr()
 {
+	unload_maps();
 }
 
 void MapMgr::load_maps()
 {
+	unload_maps();
 	AutoLock lock(_lock);
 
 	// Start to load romaps.
@@ -52,9 +54,19 @@ void MapMgr::load_maps()
 	{
 		vector<string>& maps = mc.get_maps();
 		size_t map_count = maps.size();
+		_maps_data.resize(map_count);
 		for (int i = 0; i < (int)map_count; ++i)
 		{
+			MapData data;
+			int index = romap.get_map(maps[i].c_str(), data);
+			if (-1 == index)
+			{
+				LogError(LN, "Could not load map : %s ", data._name);
+				continue;
+			}
+			_maps_data.push_back(data);
 			Map* new_map = new Map(maps[i]);
+			new_map->bind(&data);
 			_maps.insert(pair<int, Map*>(i, new_map));
 			_map_ids.insert(pair<string, int>(maps[i], i));
 		}
@@ -99,7 +111,28 @@ void MapMgr::send_maps()
 		memset(info._name, 0, 64);
 		memcpy(info._name, ptr->first.c_str(), min((int)ptr->first.length(), 64));
 		//usleep(10000);
+		if (!_inter_socket->is_connected())
+			break;
 		_inter_socket->send_packet(&p);
 	}
 	return;
+}
+void MapMgr::unload_maps()
+{
+	AutoLock lock(_lock);
+	_map_ids.clear();
+	std::map<int, Map*>::iterator ptr = _maps.begin();
+	for (; ptr != _maps.end(); ++ptr)
+	{
+		Map* m = ptr->second;
+		delete m;
+	}
+	_maps.clear();
+	size_t i = 0;
+	for (; i < _maps_data.size(); ++i)
+	{
+		delete [] _maps_data[i]._cells;
+	}
+	_maps_data.clear();
+
 }

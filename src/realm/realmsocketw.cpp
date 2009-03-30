@@ -27,7 +27,7 @@ void RealmInterSocketW::on_connect()
 void RealmInterSocketW::on_close()
 {
 	LogDebug("RealmServer", "connection with world server has been dropdown");
-	//RealmMgr::get_singleton().remove_world_server(this);
+	RealmMgr::get_singleton().remove_world_server(this);
 }
 void RealmInterSocketW::on_handle(Packet* packet)
 {

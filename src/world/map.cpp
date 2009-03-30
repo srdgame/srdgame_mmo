@@ -6,6 +6,7 @@
 
 using namespace srdgame;
 using namespace std;
+using namespace ro;
 
 #ifndef SOCKET_DEBUG
 #define SOCKET_DEBUG
@@ -20,11 +21,17 @@ using namespace std;
 
 #define LN "MAP"
 
-Map::Map(const string& name) : _name (name)
+Map::Map(const string& name) : _name (name), _ro_map(NULL)
 {
 }
 Map::~Map()
 {
+	// Do not delete anything in mapdata, that will be free by mapmgr
+}
+
+void Map::bind(MapData* data)
+{
+	_ro_map = data;
 }
 
 bool Map::add_player(Player* p)
