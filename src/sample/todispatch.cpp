@@ -18,9 +18,13 @@ static struct {
 	ToFunctionPtr ptr;
 	int op;
 } to_parse_func[]={
-	{to_send_0x006a_, ES_DISCONNECT},
-	{to_send_0x0283_, ES_CONNECT_TO_MAP},
-	{to_send_0x0073_, ES_MAP_AUTH},
+	{to_send_0x006a, ES_DISCONNECT},
+	{to_send_0x0283, ES_CONNECT_TO_MAP},
+	{to_send_0x0073, ES_MAP_AUTH},
+	{to_send_0x008e, ES_MESSAGE},
+	{to_send_0x017f, ES_PRIVATE_MSG},
+	{to_send_0x0097, ES_WIS_MESSAGE},
+	{to_send_0x01d7, ES_LOOK_UPDATE},
 	{NULL, 0},
 };
 
@@ -39,9 +43,13 @@ void ToDispatch::init()
 	{
 		std::vector<DBField>& fields = db.fetch();	
 		if (fields.size() >= 2)
-		{
+		{	
 			int index = hex2int(fields[0]._val);
-			_packet_size[index] = conversion_cast<size_t>(fields[1]._val);
+			_packet_size[index] = conversion_cast<int>(fields[1]._val);
+			// debug
+			if (index == 243)
+				printf("TO Message entry has registered! Index(Hex): %s,  \t paccket size : % d\n", fields[0]._val.c_str(), conversion_cast<int>(fields[1]._val));
+
 		}
 	}while(db.next());
 

@@ -48,14 +48,15 @@ public:
 		size_t res = (*ptr)(s._packet, s._buf, s._size);
 		if (res != _packet_size[op])
 		{
-			printf("================================================================================\n");
-			printf("================= return value is not same as packet db, res : %d, db : %d\n", (int)res, _packet_size[op]);
-			printf("================================================================================\n");
 			if (_packet_size[op] == -1)
 			{
 				printf("-1 has been found, use the return value : %d", (int)(res? res : s._size));
 				return res ? res : s._size;
 			}
+			printf("================================================================================\n");
+			printf("================= return value is not same as packet db, res : %d, db : %d\n", (int)res, _packet_size[op]);
+			printf("================================================================================\n");
+
 		}
 		return _packet_size[op];
 	}

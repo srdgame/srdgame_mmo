@@ -48,6 +48,7 @@ bool Map::add_player(Player* p)
 		return false;
 	}
 	_players[p->get_id()] = p;
+	return true;
 }
 
 bool Map::remove_player(Player* p)
@@ -59,6 +60,7 @@ bool Map::remove_player(Player* p)
 		return false;
 	}
 	_players.erase(p->get_id());
+	return true;
 }
 
 void Map::add_npc(Npc* npc)

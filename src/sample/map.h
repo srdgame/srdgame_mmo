@@ -4,7 +4,7 @@
 #include <cstddef>
 #include "defs.h"
 
-#define DECLARE(x) size_t from_##x##_(Packet* dest, const char* src, size_t size)
+#define DECLARE(x) size_t from_##x(Packet* dest, const char* src, size_t size)
 
 namespace ro
 {

@@ -245,6 +245,7 @@ size_t RoSql::load_chars(int account_id, RoCharInfo*& result)
 
 bool RoSql::load_char(int char_id, RoCharInfo& info, bool load_everything)
 {
+	info._id = char_id;
 	std::string sql = "SELECT `account_id`,`char_num`,`name`,`class`,`base_level`,`job_level`,`base_exp`,`job_exp`,`zeny`,`str`,`agi`,`vit`,`int`,`dex`,`luk`,`max_hp`,`hp`,`max_sp`,`sp`,`status_point`,`skill_point`,`option`,`karma`,`manner`,`party_id`,`guild_id`,`pet_id`,`homun_id`,`hair`,`hair_color`,`clothes_color`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom`,`last_map`,`last_x`,`last_y`,`save_map`,`save_x`,`save_y`,`partner_id`,`father`,`mother`,`child`,`fame` FROM `%s` WHERE `char_id`=%d LIMIT 1";
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(),
 			RO_CHAR_TB, char_id);
@@ -337,6 +338,8 @@ bool RoSql::save_char(int char_id, RoCharInfo& info)
 	// Friends
 	// hotkeys
 	//
+	//
+	return true;
 }
 
 bool RoSql::fetch_chars_info(Field* f, RoCharInfo& info)
@@ -423,6 +426,7 @@ bool RoSql::fetch_char_info(Field* f, RoCharInfo& info)
 	info._show._head_middle = f[34].get<int>();
 	info._show._head_bottom = f[35].get<int>();
 	memcpy(info._last_pos._map_name, f[36].get<char*>(), sizeof(info._last_pos._map_name));
+	//LogDebug("ROSQL", "Last map name : %s", info._last_pos._map_name);
 	info._last_pos._x = f[37].get<int>();
 	info._last_pos._y = f[38].get<int>();
 	info._last_pos._z = 0;

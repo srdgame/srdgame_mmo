@@ -25,7 +25,6 @@ public:
 
 protected:
 	bool auth_char(WorldSocket* socket);
-	void reg_to_map(Player* p);
 };
 }
 

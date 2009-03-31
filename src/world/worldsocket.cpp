@@ -6,6 +6,9 @@
 #include "opcode.h"
 #include "ro_defs.h"
 #include "worldauth.h"
+#include <cassert>
+#include "player.h"
+#include "worldmgr.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -14,7 +17,8 @@ using namespace ro;
 #define _LogDebug_ LogDebug
 
 WorldSocket::WorldSocket()
-	: WorldSocketBase(/* using the default buffer size */)
+	: WorldSocketBase(/* using the default buffer size */),
+	_player(NULL)
 {
 }
 
@@ -110,18 +114,42 @@ void WorldSocket::on_connect()
 
 void WorldSocket::on_close()
 {
+	_lock.lock();
+	if (_player)
+	{
+		_player->bind(NULL);
+		WorldMgr::get_singleton().remove_client(_player);
+	}
+	_lock.unlock();
 }
-
+void WorldSocket::bind(Player* p)
+{
+	_lock.lock();
+	_player = p;
+	_lock.unlock();
+}
 void WorldSocket::on_handle(Packet* packet)
 {
 	switch (packet->op)
 	{
 		case EC_CONNECT_TO_MAP:
 			{
+				_lock.lock();
+				if (_player)
+				{
+					_lock.unlock();
+					this->close();
+					break;
+				}
+				_lock.unlock();
 				WorldAuth::get_singleton().handle_login(this, packet);	
 			}
 			break;
 		default:
+			_lock.lock();
+			if (_player)
+				_player->on_handle(packet);
+			_lock.unlock();
 			break;
 	}
 }

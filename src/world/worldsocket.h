@@ -3,13 +3,13 @@
 
 #include "worldsocketbase.h"
 #include "packetdefs.h"
-
+#include "mutex.h"
 
 namespace srdgame
 {
 class WorldWorker;
 struct Packet;
-
+class Player;
 // Handle the communication with game clients.
 class WorldSocket : public WorldSocketBase
 {
@@ -22,10 +22,13 @@ public:
 	virtual void on_connect();
 	virtual void on_close();
 
+	void bind(Player* p);
 public:
 	// Worker will call this to response one packet.
 	virtual void on_handle(Packet* packet);
 protected:
+	Player* _player;
+	Mutex _lock;
 };
 }
 

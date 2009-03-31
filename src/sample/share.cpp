@@ -43,5 +43,47 @@ TO_DC(0x0073)
 	return 11;
 }
 
+TO_DC(0x008e)
+{
+	if (packet->len == sizeof(Packet))
+		return 0;
+
+	PUINT16(buf, 0) = 0x008e;
+	PUINT16(buf, 2) = 5 + packet->len;
+	memcpy(PCHAR(buf, 4), packet->param.Data, packet->len + 1);
+	return 5 + packet->len;
+}
+
+TO_DC(0x017f)
+{
+	PUINT16(buf, 0) = 0x017f;
+	PUINT16(buf, 2) = 5 + packet->len;
+	memcpy(PCHAR(buf, 4), packet->param.Data, packet->len + 1);
+	return 5 + packet->len;
+}
+
+TO_DC(0x0097)
+{
+	WisMessage* msg = (WisMessage*)packet->param.Data;
+	PUINT16(buf, 0) = 0x0097;
+	size_t res = 4 + MAX_NAME_LEN + strlen(msg->_msg) + 1;
+	PUINT16(buf, 2) = res;
+	memcpy(PCHAR(buf, 4), packet->param.Data, res - 4);
+	return res;
+}
+
+TO_DC(0x01d7)
+{
+	RoLookUpdate* update = (RoLookUpdate*)packet->param.Data;
+	PUINT16(buf, 0) = 0x01d7;
+	PUINT32(buf, 2) = update->_account_id;
+	PUINT8(buf, 6) = update->_type;
+	PUINT16(buf, 7) = update->_id1;
+	PUINT16(buf, 9) = update->_id2;
+
+	return 11;
+}
+
+
 }
 

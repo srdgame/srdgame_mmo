@@ -13,9 +13,9 @@
 
 #include "timedefs.h"
 #include "log.h"
-#include "mapmgr.h"
-#include "map.h"
+
 #include "player.h"
+#include "worldmgr.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -57,8 +57,12 @@ void WorldAuth::handle_login(WorldSocket* socket, const Packet* packet)
 
 	if(this->auth_char(socket))
 	{
-		Player * p = new Player(socket, c->_account_id, c->_char_id);
-		reg_to_map(p);
+		Player * p = new Player(c->_account_id, c->_char_id);
+		p->bind(socket);
+
+		// let whole server knows it.
+		WorldMgr::get_singleton().add_client(p);
+
 	}
 	else
 	{
@@ -83,17 +87,4 @@ bool WorldAuth::auth_char(WorldSocket* socket)
 	socket->send_packet(&p);
 	return true;
 }
-void WorldAuth::reg_to_map(Player* p)
-{
-	std::string map_name = p->get_last_map();
-	Map* map = MapMgr::get_singleton().get_map(map_name);
-	if (map->add_player(p))
-	{
-		LogSuccess(LN, "One player has appear to map : %s", p->get_last_map().c_str());
-		p->set_map(map);
-	}
-	else
-	{
-		// TODO:
-	}
-}
+

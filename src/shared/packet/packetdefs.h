@@ -51,6 +51,10 @@ struct Packet
 	{
 		param.Long = 0;
 	}
+	Packet(int op_) : len(sizeof(Packet)), op(op_)
+	{
+		param.Long = 0;
+	}
 	int len; // the length of whole packet.
 	int op; // opcode of this packet.
 	PacketParam param; // the param point or the value of param (if it just one int or less than int.

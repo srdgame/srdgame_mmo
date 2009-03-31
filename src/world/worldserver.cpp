@@ -3,6 +3,7 @@
 #include "log.h"
 #include "network.h"
 #include "threadpool.h"
+#include "databasemgr.h"
 #include <iostream>
 #include <vector>
 #include "typedefs.h"
@@ -82,6 +83,7 @@ bool WorldServer::init_env()
 	init_ro();
 	ThreadPool::get_singleton().init(10);
 	SocketMgr::get_singleton().start_worker();
+	DatabaseMgr::get_singleton().init(_config);
 	//WorldMgr::get_singleton().set_name(_config->get_value<std::string>("NAME"));
 	WorldSrvInfo info;
 
@@ -107,6 +109,7 @@ bool WorldServer::init_env()
 	info.port = _config->get_value<int>("PORT");
 	info.port = info.port == 0 ? 8001 : info.port;
 	info.type = WT_TESTING;
+	WorldMgr::get_singleton().init();
 	WorldMgr::get_singleton().set_info(info);
 
 	// Load maps.
