@@ -77,7 +77,7 @@ void RealmSocket::on_handle(Packet* packet)
 
 				//usleep(10000);
 				// TO send chars.
-				RoCharInfo* chars;
+				RoCharInfoBase* chars;
 				size_t count = CharMgr::get_singleton().load_chars(_account_id, chars);
 				_LogDebug_("RealmServer", "Characters has been loaded, count is : %d, chars : %d", count, chars);
 				for (size_t i = 0; i < count; ++i)
@@ -150,7 +150,7 @@ void RealmSocket::on_handle(Packet* packet)
 				CreateCharData* data = (CreateCharData*)packet->param.Data;
 				if (!data)
 					break;
-				RoCharInfo* char_info = CharMgr::get_singleton().create_new(data, _account_id);
+				RoCharInfoBase* char_info = CharMgr::get_singleton().create_new(data, _account_id);
 				if (!char_info)
 				{
 					Packet p;
@@ -165,7 +165,7 @@ void RealmSocket::on_handle(Packet* packet)
 					_chars[char_info->_slot] = char_info->_id;
 					Packet p;
 					p.op = ES_CHAR_CREATE;
-					p.len = sizeof(RoCharInfo) + sizeof(Packet);
+					p.len = sizeof(RoCharInfoBase) + sizeof(Packet);
 					p.param.Data = (char*)char_info;
 					LogSuccess("RealmServer", "Success to create character with name %s", data->_name);
 					send_packet(&p);

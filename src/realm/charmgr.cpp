@@ -37,8 +37,8 @@ RoCharInfo* CharMgr::create_new(CreateCharData* data, int account_id)
 	if (account_id == 0)
 		return NULL;
 
-	RoCharInfo* info = new RoCharInfo;
-	//memset((char*)info, 0, sizeof(RoCharInfo));
+	RoCharInfo* info = new RoCharInfo();
+	//memset((char*)info, 0, sizeof(RoCharInfoBase));
 	info->_name = string(data->_name);
 	info->_id = _sql->get_max_char_id();
 	info->_account_id = account_id;
@@ -100,7 +100,7 @@ RoCharInfo* CharMgr::create_new(CreateCharData* data, int account_id)
 	_sql->save_char(_sql->get_max_char_id(), *info);
 	return info;
 }
-size_t CharMgr::load_chars(int account_id, RoCharInfo*& chars)
+size_t CharMgr::load_chars(int account_id, RoCharInfoBase*& chars)
 {
 	return _sql->load_chars(account_id, chars);
 	//_LogDebug_(LN, "%s characters have been loaded", count);

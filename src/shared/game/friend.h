@@ -10,8 +10,8 @@ struct FriendInfo
 	}
 	int _account_id;
 	int _char_id;
-	std::string name;
-	std::string nick_name;
+	std::string _name;
+	std::string _nick_name;
 };
 
 #endif

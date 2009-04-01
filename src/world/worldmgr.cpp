@@ -41,27 +41,36 @@ void WorldMgr::init()
 
 void WorldMgr::add_client(Player* s)
 {
-	AutoLock lock(_client_lock);
-	Player* org = _clients[s->get_id()];
-	if (org)
 	{
-		LogError("WorldServer", "Two conflict players are registed, id : %d", s->get_id());
-		delete org;
-		// TODO:
+		// Lock the client only we are accessing the _clients, to make sure, we will not block other players' connection
+		AutoLock lock(_client_lock);
+		Player* org = _clients[s->get_id()];
+		if (org)
+		{
+			LogError("WorldServer", "Two conflict players are registed, id : %d", s->get_id());
+			delete org;
+			// TODO:
+		}
 	}
 
+	// Setup means load all player's information from DB.
 	if (!setup_player(s))
 	{
 		delete s;
 		return;
 	}
+	// Try to register the player to the map.
 	if (!reg_to_map(s))
 	{
 		delete s;
 		return;
 	}
 
-	_clients[s->get_id()] = s;
+	{
+		// Same as above.
+		AutoLock lock(_client_lock);
+		_clients[s->get_id()] = s;
+	}
 
 	game_tips(s);
 }
@@ -118,7 +127,7 @@ bool WorldMgr::reg_to_map(Player* p)
 	}
 	else
 	{
-		// TODO:
+		// TODO:  Now return false, means focus close the connection to reject the connecting.
 		return false;
 	}
 }
@@ -141,14 +150,14 @@ void WorldMgr::game_tips(Player* s)
 	// Time limited.
 	WisMessage msg;
 	sprintf(msg._name, "Server");
-	sprintf(msg._msg, "No time limitation performed on srdgame server");
+	sprintf(msg._msg, "SRD Game server is free to play forever!!!");
 	p.op = ES_WIS_MESSAGE;
 	p.len = sizeof(Packet) + sizeof(WisMessage);
 	p.param.Data = (char*)&msg;
 	s->send_packet(&p);
 
 	// Night message
-	sprintf(msg._msg, "NIGHTLY Message");
+	sprintf(msg._msg, "SRD Game server is free to play forever!!!");
 	s->send_packet(&p);
 
 	// TODO: MOre.

@@ -5,16 +5,18 @@
 #include "gamedefs.h"
 #include "ro_defs.h"
 #include <cstring>
+#include <vector>
 
 using namespace srdgame;
 
 namespace ro
 {
-static const uint16 MaxItemCount = 10; // TODO:
-static const uint8 MaxItemSlotCount = 16;
-static const uint16 MaxSkillCount = 255;
-static const uint16 MaxFriendCount = 255;
-static const uint16 MaxHotKeyCount = 255;
+static const uint16 MaxItemCount = 100; // TODO:
+static const uint16 MaxCartCount = 100;
+static const uint8 MaxSlotCount = 16;
+static const uint16 MaxSkillCount = 1020;
+static const uint16 MaxFriendCount = 40;
+static const uint16 MaxHotKeyCount = 27;
 struct RoCharProp : public NpcProp
 {
 
@@ -27,22 +29,21 @@ struct RoCharExp : public CharExp
 {
 
 };
-struct RoCharItemCard
-{
-};
+
 struct RoCharItem
 {
 	RoCharItem() : _id(0), _type(0), _amount(0), _identify(0), _refine(0), _attrs(0), _expire_time(0)
 	{
 	}
 	int _id; // The unique id?
-	int _type; // The item type
-	int _amount; // Mount?
-	int _identify; // for job?
-	int _refine; 
-	int _attrs;
-	RoCharItemCard _cards[MaxItemSlotCount];
-	int _expire_time;
+	short _type; // The item type
+	short _amount; // Mount?
+	uint16 _equip;
+	char _identify; // for job?
+	char _refine; 
+	char _attrs;
+	short _cards[MaxSlotCount];
+	unsigned int _expire_time;
 };
 struct RoCharSkillInfo : public SkillInfo
 {
@@ -90,10 +91,10 @@ struct RoPosition : public Position
 	}
 	char _map_name[MAX_MAP_NAME_LEN];
 };
-class RoCharInfo : public CharInfo
+class RoCharInfoBase : public CharInfo
 {
 public:
-	RoCharInfo() : _option(0), _party_id(0), _guild_id(0), _pet_id(0), _home_id(0), _mer_id(0), _homun_id(0), _fame(0), _slot(0), _hungry(0)
+	RoCharInfoBase() : _option(0), _party_id(0), _guild_id(0), _pet_id(0), _home_id(0), _mer_id(0), _homun_id(0), _fame(0), _slot(0), _hungry(0)
 	{
 	}
 public:
@@ -101,10 +102,13 @@ public:
 	RoCharProp _prop;
 	RoCharShow _show;
 	RoCharExp _exp;
-	RoCharItem _items[MaxItemCount];
-	RoCharSkillInfo _skills[MaxSkillCount];
-	RoCharFriendInfo _friends[MaxFriendCount];
-	RoCharHotKey _hotkeys[MaxHotKeyCount];
+
+	// Thos information won't be used by load_chars.
+	//RoCharItem _items[MaxItemCount];
+	//RoCharSkillInfo _skills[MaxSkillCount];
+	//RoCharFriendInfo _friends[MaxFriendCount];
+	//RoCharHotKey _hotkeys[MaxHotKeyCount];
+	//
 	// More:
 	int _option;
 	int _party_id;
@@ -125,6 +129,15 @@ public:
 	// Map
 	RoPosition _last_pos;
 	RoPosition _save_pos;
+};
+class RoCharInfo : public RoCharInfoBase
+{
+public:
+	std::vector<RoCharItem> _items;
+	std::vector<RoCharItem> _carts;
+	std::vector<RoCharSkillInfo> _skills;
+	std::vector<RoCharFriendInfo> _friends;
+	std::vector<RoCharHotKey> _hotkeys;
 };
 }
 #endif

@@ -66,6 +66,8 @@ void MapMgr::load_maps()
 				continue;
 			}
 			_maps_data.push_back(data);
+
+			// Since we need to have lazy idea about map contains.
 			Map* new_map = new Map(maps[i]);
 			new_map->bind(&data);
 			_maps.insert(pair<int, Map*>(i, new_map));

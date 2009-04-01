@@ -9,7 +9,7 @@ using namespace srdgame;
 namespace ro
 {
 
-size_t char_to_buf(char* buf, const RoCharInfo* info)
+size_t char_to_buf(char* buf, const RoCharInfoBase* info)
 {
 	if (buf == NULL || info == NULL)
 		return 0;
@@ -58,7 +58,7 @@ size_t char_to_buf(char* buf, const RoCharInfo* info)
 
 }
 
-size_t chars_to_buf(char* buf, const RoCharInfo* infos, size_t num)
+size_t chars_to_buf(char* buf, const RoCharInfoBase* infos, size_t num)
 {
 	size_t len = 0;
 	PUINT16(buf, len) = 0x6b; 		len += 4;// will wirte another 2 bytes later.

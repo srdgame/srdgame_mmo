@@ -102,7 +102,7 @@ struct MapServerInfo
 struct CharDataList
 {
 	int _count;
-	struct RoCharInfo* _chars;
+	struct RoCharInfoBase* _chars;
 };
 struct CreateCharData
 {

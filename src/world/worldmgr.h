@@ -50,7 +50,7 @@ protected:
 	Mutex _lock;
 	WorldSrvInfo _info;
 
-	// SQL
+	// SQL, no need lock since this is no data contains 
 	ro::RoSql* _sql;
 };
 

@@ -6,7 +6,7 @@
 #include "databasemgr.h"
 #include "conversion_cast.h"
 #include "queryresult.h"
-
+#include "metadefs.h"
 using namespace std;
 using namespace ro;
 using namespace srdgame;
@@ -30,6 +30,11 @@ static const string RO_DB_CONF = "ro_db.conf";
 #define RO_ACCOUNT_TB "login"
 #define RO_ACCOUNT_REG_TB "global_reg_value"
 #define RO_CHAR_TB "char"
+#define RO_ITEM_TB "inventory"
+#define RO_CART_TB "cart_inventory"
+#define RO_SKILL_TB "skill"
+#define RO_FRIEND_TB "friends"
+#define RO_HOTKEY_TB "hotkey"
 
 #define MAKE_STRING(x) ((conversion_cast<std::string>(x)).c_str())
 
@@ -211,7 +216,7 @@ int RoSql::get_max_char_id()
 	return max;
 
 }
-size_t RoSql::load_chars(int account_id, RoCharInfo*& result)
+size_t RoSql::load_chars(int account_id, RoCharInfoBase*& result)
 {
 	std::string sql = "SELECT `char_id`,`char_num`,`name`,`class`,`base_level`,`job_level`,`base_exp`,`job_exp`,`zeny`,`str`,`agi`,`vit`,`int`,`dex`,`luk`,`max_hp`,`hp`,`max_sp`,`sp`,`status_point`,`skill_point`,`option`,`karma`,`manner`,`hair`,`hair_color`,`clothes_color`,`weapon`,`shield`,`head_top`,`head_mid`,`head_bottom` FROM `%s` WHERE `account_id`='%d'";
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(),
@@ -225,7 +230,7 @@ size_t RoSql::load_chars(int account_id, RoCharInfo*& result)
 		res->Delete();
 		return 0;
 	}
-	result = new RoCharInfo[count];
+	result = new RoCharInfoBase[count];
 
 	size_t i = 0;
 	for (; i < count; ++i)
@@ -233,7 +238,7 @@ size_t RoSql::load_chars(int account_id, RoCharInfo*& result)
 		Field* f = res->fetch();
 		if (!f)
 			break;
-		RoCharInfo* info =result + i;
+		RoCharInfoBase* info =result + i;
 		info->_account_id = account_id;
 		if (!fetch_chars_info(f, *info))
 			break;
@@ -269,12 +274,40 @@ bool RoSql::load_char(int char_id, RoCharInfo& info, bool load_everything)
 		res->Delete();
 		return false;
 	}
-	if (fetch_char_info(f, info))
+	fetch_char_info(f, info);
+	res->Delete();
+	if (!load_everything)
 	{
-		LogSuccess("RO_SQL", "Load char OKKKKKKKKKKKKKKKKKKKKKKKK");
 		return true;
 	}
-	return false;
+
+	// Or we will load other stuff
+	// Load memory data.
+	
+	// load items.
+	if (!load_items(char_id, info._items))
+		return false;
+
+	// Load cart
+	if (!load_cart(char_id, info._carts))
+		return false;
+
+	// load storage
+	
+	// load skill
+	if (!load_skill(char_id, info._skills))
+		return false;
+
+	// load friends
+	if (!load_friends(char_id, info._friends))
+		return false;
+
+	// load hotkey
+	if (!load_hotkey(char_id, info._hotkeys))
+		return false;
+
+	// We are ok here.
+	return true;
 }
 bool RoSql::save_char(int char_id, RoCharInfo& info)
 {
@@ -342,7 +375,189 @@ bool RoSql::save_char(int char_id, RoCharInfo& info)
 	return true;
 }
 
-bool RoSql::fetch_chars_info(Field* f, RoCharInfo& info)
+bool RoSql::load_items(int char_id, std::vector<RoCharItem>& items)
+{
+	items.clear();
+
+	string sql = "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`";
+	for (int i = 0; i <MaxSlotCount; ++i)
+		sql += ", 'card" + conversion_cast<string>(i) + "'";
+	sql += " FROM `%s` WHERE `char_id`=%d LIMIT %d";
+	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_ITEM_TB, char_id, MaxItemCount);
+
+	if (res == NULL)
+		return false;
+
+	size_t count = res->get_row_size();
+	for (size_t n = 0; n < count; ++n)
+	{
+		Field* f = res->fetch();
+		RoCharItem info;
+		info._id = f[0].get<int>();
+		info._type = f[1].get<short>();
+		info._amount = f[2].get<short>();
+		info._equip = f[3].get<uint16>();
+		info._identify = f[4].get<char>();
+		info._refine = f[5].get<char>();
+		info._attrs = f[6].get<char>();
+		info._expire_time = f[7].get<unsigned int>();
+		items.push_back(info);
+	}
+	res->Delete();
+
+	return true;
+}
+
+bool RoSql::save_items(int char_id, const std::vector<RoCharItem>& items)
+{
+	return true;
+}
+
+bool RoSql::load_mem_data(int char_id, ...)
+{
+	return true;
+}
+bool RoSql::save_mem_data(int char_id, ...)
+{
+	return true;
+}
+
+bool RoSql::load_cart(int char_id, std::vector<RoCharItem>& cart_items)
+{
+	cart_items.clear();
+
+	string sql = "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`";
+	for (int i = 0; i <MaxSlotCount; ++i)
+		sql += ", 'card" + conversion_cast<string>(i) + "'";
+	sql += " FROM `%s` WHERE `char_id`=%d LIMIT %d";
+	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_CART_TB, char_id, MaxCartCount);
+
+	if (res == NULL)
+		return false;
+
+	size_t count = res->get_row_size();
+	for (size_t n = 0; n < count; ++n)
+	{
+		Field* f = res->fetch();
+		RoCharItem info;
+		info._id = f[0].get<int>();
+		info._type = f[1].get<short>();
+		info._amount = f[2].get<short>();
+		info._equip = f[3].get<uint16>();
+		info._identify = f[4].get<char>();
+		info._refine = f[5].get<char>();
+		info._attrs = f[6].get<char>();
+		info._expire_time = f[7].get<unsigned int>();
+		cart_items.push_back(info);
+	}
+	res->Delete();
+
+	return true;
+}
+bool RoSql::save_cart(int char_id, const std::vector<RoCharItem>& cart_items)
+{
+	return true;
+}
+
+bool RoSql::load_storage(int char_id, ...)
+{
+	return true;
+}
+bool RoSql::save_storage(int char_id, ...)
+{
+	return true;
+}
+
+bool RoSql::load_skill(int char_id, std::vector<RoCharSkillInfo>& skills)
+{
+	skills.clear();
+
+	string sql = "SELECT `id`, `lv` FROM `%s` WHERE `char_id`=%d LIMIT %d";
+	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_SKILL_TB, char_id, MaxSkillCount);
+
+	if (res == NULL)
+		return false;
+
+	size_t count = res->get_row_size();
+	for (size_t n = 0; n < count; ++n)
+	{
+		Field* f = res->fetch();
+		RoCharSkillInfo skill;
+		skill._id = f[0].get<int>();
+		skill._lvl = f[1].get<int>();
+		skill._flag = f[2].get<int>();
+
+		skills.push_back(skill);
+	}
+	res->Delete();
+
+	return true;
+}
+bool RoSql::save_skill(int char_id, const std::vector<RoCharSkillInfo>& skills)
+{
+	return true;
+}
+
+bool RoSql::load_friends(int char_id, std::vector<RoCharFriendInfo>& friends)
+{
+	friends.clear();
+
+	string sql = "SELECT c.`account_id`, c.`char_id`, c.`name` FROM `%s` c LEFT JOIN `%s` f ON f.`friend_account` = c.`account_id` AND f.`friend_id` = c.`char_id` WHERE f.`char_id`=%d LIMIT %d";
+	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_CHAR_TB, RO_FRIEND_TB, char_id, MaxFriendCount);
+
+	if (res == NULL)
+		return false;
+
+	size_t count = res->get_row_size();
+	for (size_t n = 0; n < count; ++n)
+	{
+		Field* f = res->fetch();
+		RoCharFriendInfo fr;
+		fr._account_id = f[0].get<int>();
+		fr._char_id = f[1].get<int>();
+		fr._name = f[2].get<string>();
+		fr._nick_name = f[2].get<string>();
+
+		friends.push_back(fr);
+	}
+	res->Delete();
+	return true;
+}
+bool RoSql::save_friends(int char_id, const std::vector<RoCharFriendInfo>& friends)
+{
+	return true;
+}
+
+bool RoSql::load_hotkey(int char_id, std::vector<RoCharHotKey>& keys)
+{
+	keys.clear();
+
+	string sql = "SELECT `hotkey`, `type`, `itemskill_id`, `skill_lvl` FROM `%s` WHERE `char_id`=%d LIMIT %d";
+	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_HOTKEY_TB, char_id, MaxHotKeyCount);
+
+	if (res == NULL)
+		return false;
+
+	size_t count = res->get_row_size();
+	for (size_t n = 0; n < count; ++n)
+	{
+		Field* f = res->fetch();
+		RoCharHotKey key;
+		key._id = f[0].get<int>();
+		key._type = f[1].get<uint16>();
+		key._lvl = f[2].get<uint16>();
+
+		keys.push_back(key);
+	}
+	res->Delete();
+
+	return true;
+}
+bool RoSql::save_hotkey(int char_id, const std::vector<RoCharHotKey>& keys)
+{
+	return true;
+}
+bool RoSql::fetch_chars_info(Field* f, RoCharInfoBase& info)
 {
 	/*if (32 != f->get_field_size())
 		return false;*/

@@ -10,6 +10,8 @@ namespace srdgame
 {
 class Player;
 class Npc;
+
+// This is one lazy map, it won't construct almost data when there is no user.  And the data will be constructed once one player joins it.
 class Map
 {
 public:

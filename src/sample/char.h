@@ -9,8 +9,8 @@
 namespace ro
 {
 
-size_t char_to_buf(char* buf, const RoCharInfo* info);
-size_t chars_to_buf(char* buf, const RoCharInfo* infos, size_t num);
+size_t char_to_buf(char* buf, const RoCharInfoBase* info);
+size_t chars_to_buf(char* buf, const RoCharInfoBase* infos, size_t num);
 
 size_t delete_char_ok(char* buf, const RoCharInfo* info);
 
