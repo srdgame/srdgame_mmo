@@ -30,20 +30,21 @@ struct RoCharExp : public CharExp
 
 };
 
-struct RoCharItem
+struct RoCharItem : public ItemInfo
 {
-	RoCharItem() : _id(0), _type(0), _amount(0), _identify(0), _refine(0), _attrs(0), _expire_time(0)
+	RoCharItem() : _amount(0), _identify(0), _refine(0), _attrs(0)
 	{
 	}
-	int _id; // The unique id?
-	short _type; // The item type
+	//int _id; // The unique id?
+	//short _type; // The item type id
 	short _amount; // Mount?
 	uint16 _equip;
 	char _identify; // for job?
 	char _refine; 
 	char _attrs;
+	char _item_type; // The item type.
 	short _cards[MaxSlotCount];
-	unsigned int _expire_time;
+	//unsigned int _expire_time;
 };
 struct RoCharSkillInfo : public SkillInfo
 {

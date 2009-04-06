@@ -401,6 +401,11 @@ bool RoSql::load_items(int char_id, std::vector<RoCharItem>& items)
 		info._refine = f[5].get<char>();
 		info._attrs = f[6].get<char>();
 		info._expire_time = f[7].get<unsigned int>();
+		// for slots.
+		for (int i = 0; i < MaxSlotCount; ++i)
+		{
+			info._cards[i] = f[7 + i].get<short>();
+		}
 		items.push_back(info);
 	}
 	res->Delete();
@@ -410,6 +415,19 @@ bool RoSql::load_items(int char_id, std::vector<RoCharItem>& items)
 
 bool RoSql::save_items(int char_id, const std::vector<RoCharItem>& items)
 {
+	string sql = "INSERT INTO `%s`(`%s`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`";
+	for (int i = 0; i <MaxSlotCount; ++i)
+		sql += ", 'card" + conversion_cast<string>(i) + "'";
+	sql += ") VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%d', '%u')";
+	for (int i = 0; i < MaxSlotCount; ++i)
+		sql += ", '%d'";
+	sql += ")";
+	size_t count = items.size();
+	for (size_t n = 0; n < count; ++n)
+	{
+		DatabaseMgr::get_singleton().execute(sql.c_str(),
+			RO_ITEM_TB, "char_id", char_id, items[n]._type, items[n]._amount, items[n]._equip, items[n]._identify, items[n]._refine, items[n]._attrs, items[n]._expire_time);
+	}
 	return true;
 }
 

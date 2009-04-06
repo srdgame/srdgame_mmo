@@ -3,8 +3,10 @@
 #include "map.h"
 #include "charinfo.h"
 #include "rocharinfo.h"
+#include "opcode.h"
 
 using namespace srdgame;
+using namespace srdgame::opcode;
 using namespace ro;
 using namespace std;
 
@@ -92,6 +94,16 @@ void Player::update_look()
 void Player::send_friend_list()
 {
 	// TODO:
+	RoCharInfo* ri = (RoCharInfo*)_info;
+	Packet p;
+	p.op = ES_FRIEND_LIST;
+	p.len = sizeof(Packet) + sizeof(RoFriendList);
+	RoFriendList list;
+	list._friends = &(ri->_friends);
+	p.param.Data = (char*)&list;
+	send_packet(&p);
+	// TODO:
+	// send out online friends info.
 }
 
 void Player::on_handle(Packet* p)

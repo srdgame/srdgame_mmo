@@ -3,6 +3,7 @@
 
 //#include "defs.h"
 #include "metadefs.h"
+#include <vector>
 
 //using namespace srdgame;
 // TODO: Replace these defines with configuration file.
@@ -176,6 +177,28 @@ struct RoLookUpdate
 	uint32 _account_id;
 	uint16 _id1;  // if weapon or shield, the _id1 is weapon, id2 is shield
 	uint16 _id2;  // or id2 should be zero.
+};
+struct RoCharFriendInfo;
+struct RoFriendList
+{
+	std::vector<RoCharFriendInfo>* _friends;
+};
+struct RoFriendStatus
+{
+	int _account_id;
+	int _char_id;
+	bool _online;
+};
+class RoCharItem;
+struct RoItemListData
+{
+	RoCharItem* _info;
+	int _equip_type;
+};
+
+struct RoItemList
+{
+	std::vector<RoItemListData> * _items;
 };
 
 }

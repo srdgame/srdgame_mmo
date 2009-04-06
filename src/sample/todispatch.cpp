@@ -25,6 +25,9 @@ static struct {
 	{to_send_0x017f, ES_PRIVATE_MSG},
 	{to_send_0x0097, ES_WIS_MESSAGE},
 	{to_send_0x01d7, ES_LOOK_UPDATE},
+	{to_send_0x0201, ES_FRIEND_LIST},
+	{to_send_0x0206, ES_FRIEND_STATUS},
+	{to_send_0x00a4, ES_EQUIP_ITEM_LIST},
 	{NULL, 0},
 };
 
