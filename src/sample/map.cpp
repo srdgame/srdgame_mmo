@@ -33,6 +33,8 @@ DECLARE(map_connect)
 			return 0;
 			break;
 	}
+	if (size < len)
+		return 0;
 
 	ConnectToMap* ctm = new ConnectToMap();
 	ctm->_ver = op;
@@ -48,6 +50,7 @@ DECLARE(map_connect)
 
 	return len;
 }
+/*
 size_t to_map_connect(char* buf, const Packet* packet)
 {
 	if (packet->param.Char)
@@ -59,18 +62,33 @@ size_t to_map_connect(char* buf, const Packet* packet)
 		PUINT16(buf, 0) = 0x0283;
 		//PUINT(src, 2) = packet
 	}
-}
+}*/
 DECLARE(load_end_ack)
 {
 	return 0;
 }
 DECLARE(tick_send)
 {
-	return 0;
+	if (size < 8)
+		return 0;
+
+	dest->op = EC_TICK_COUNT;
+	dest->len = sizeof(Packet);
+	dest->param.Int = PUINT32(src, 4); // only support version after 2007-02-12.
+	return 4 + 4;
 }
 DECLARE(walk_to_xy)
 {
-	return 0;
+	if (size < 8)
+		return 0;
+
+	dest->op = EC_WALK_TO;
+	dest->len = sizeof(Packet);
+	RoWalkToXY xy;
+	int pos = 5;
+	xy._point._x = (PUINT8(src, pos) * 4) + (PUINT8(src, pos + 1) >> 6);
+	xy._point._y = ((PUINT8(src, pos + 1) & 0x3f) << 4) + (PUINT8(src, pos + 2) >> 4);
+	return 8;
 }
 DECLARE(quit_game)
 {

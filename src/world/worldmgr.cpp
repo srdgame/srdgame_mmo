@@ -56,12 +56,14 @@ void WorldMgr::add_client(Player* s)
 	// Setup means load all player's information from DB.
 	if (!setup_player(s))
 	{
+		LogError("WorlsServer", "Failed to set up players, mostly it is error when query DB");
 		delete s;
 		return;
 	}
 	// Try to register the player to the map.
 	if (!reg_to_map(s))
 	{
+		LogError("WorldServer", "Could not register player to server");
 		delete s;
 		return;
 	}

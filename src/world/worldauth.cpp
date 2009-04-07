@@ -59,6 +59,7 @@ void WorldAuth::handle_login(WorldSocket* socket, const Packet* packet)
 	{
 		Player * p = new Player(c->_account_id, c->_char_id);
 		p->bind(socket);
+		socket->bind(p);
 
 		// let whole server knows it.
 		WorldMgr::get_singleton().add_client(p);

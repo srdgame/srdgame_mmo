@@ -201,5 +201,31 @@ struct RoItemList
 	std::vector<RoItemListData> * _items;
 };
 
+
+struct RoPoint
+{
+	short _x;
+	short _y;
+};
+union RoWalkToXY
+{
+	RoPoint _point;
+	int _int;
+};
+struct RoWalkToXY_OK
+{
+	int _tick;
+	RoPoint _org;
+	RoPoint _to;
+};
+
+struct RoUnitMove
+{
+	int _tick;
+	int _id;
+	RoPoint _org;
+	RoPoint _to;
+};
+
 }
 #endif

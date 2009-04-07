@@ -386,7 +386,7 @@ bool RoSql::load_items(int char_id, std::vector<RoCharItem>& items)
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_ITEM_TB, char_id, MaxItemCount);
 
 	if (res == NULL)
-		return false;
+		return true;
 
 	size_t count = res->get_row_size();
 	for (size_t n = 0; n < count; ++n)
@@ -451,7 +451,7 @@ bool RoSql::load_cart(int char_id, std::vector<RoCharItem>& cart_items)
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_CART_TB, char_id, MaxCartCount);
 
 	if (res == NULL)
-		return false;
+		return true;
 
 	size_t count = res->get_row_size();
 	for (size_t n = 0; n < count; ++n)
@@ -494,7 +494,7 @@ bool RoSql::load_skill(int char_id, std::vector<RoCharSkillInfo>& skills)
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_SKILL_TB, char_id, MaxSkillCount);
 
 	if (res == NULL)
-		return false;
+		return true;
 
 	size_t count = res->get_row_size();
 	for (size_t n = 0; n < count; ++n)
@@ -524,7 +524,7 @@ bool RoSql::load_friends(int char_id, std::vector<RoCharFriendInfo>& friends)
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_CHAR_TB, RO_FRIEND_TB, char_id, MaxFriendCount);
 
 	if (res == NULL)
-		return false;
+		return true;
 
 	size_t count = res->get_row_size();
 	for (size_t n = 0; n < count; ++n)
@@ -554,7 +554,7 @@ bool RoSql::load_hotkey(int char_id, std::vector<RoCharHotKey>& keys)
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_HOTKEY_TB, char_id, MaxHotKeyCount);
 
 	if (res == NULL)
-		return false;
+		return true;;
 
 	size_t count = res->get_row_size();
 	for (size_t n = 0; n < count; ++n)

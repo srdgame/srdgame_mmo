@@ -28,6 +28,9 @@ static struct {
 	{to_send_0x0201, ES_FRIEND_LIST},
 	{to_send_0x0206, ES_FRIEND_STATUS},
 	{to_send_0x00a4, ES_EQUIP_ITEM_LIST},
+	{to_send_0x0087, ES_WALK_TO},
+	{to_send_0x007f, ES_TICK_COUNT},
+	{to_send_0x0086, ES_UNIT_MOVE},
 	{NULL, 0},
 };
 

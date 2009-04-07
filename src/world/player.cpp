@@ -4,6 +4,7 @@
 #include "charinfo.h"
 #include "rocharinfo.h"
 #include "opcode.h"
+#include "timedefs.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -108,8 +109,50 @@ void Player::send_friend_list()
 
 void Player::on_handle(Packet* p)
 {
+	LogDebug("Player", "On Player::on_handle, op : %d", p->op);
+	RoCharInfo* info = (RoCharInfo*)_info;
 	switch (p->op)
 	{
+		case EC_TICK_COUNT:
+			{
+				Packet tick(ES_TICK_COUNT);
+				tick.param.Int = p->param.Int;
+				send_packet(&tick);
+			}
+			break;
+		case EC_WALK_TO:
+			{
+				Packet walk(ES_WALK_TO);
+				RoWalkToXY xy;
+				xy._int = p->param.Int;
+				walk.len = sizeof(Packet) + sizeof(RoWalkToXY_OK);
+				RoWalkToXY_OK ok;
+				ok._tick = gettick();
+				ok._org._x = info->_last_pos._x;
+				ok._org._y = info->_last_pos._y;
+				ok._to = xy._point;
+
+				// save to last_pos.
+				info->_last_pos._x = xy._point._x;
+				info->_last_pos._y = xy._point._y;
+
+				walk.param.Data = (char*) &ok;
+
+				send_packet(&walk);
+
+				RoUnitMove move;
+				move._tick = ok._tick;
+				move._org = ok._org;
+				move._to = ok._to;
+				move._id = info->_id;
+				
+				Packet mp(ES_UNIT_MOVE);
+				mp.len = sizeof(Packet) + sizeof(RoUnitMove);
+				mp.param.Data = (char*)&move;
+				
+				send_packet(&mp);
+			}
+			break;
 		default:
 			break;
 	}

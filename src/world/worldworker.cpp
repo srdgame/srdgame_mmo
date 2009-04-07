@@ -6,11 +6,13 @@
 #include "log.h"
 using namespace srdgame;
 
-//#define _DEBUG_WORKER_
+#define _DEBUG_WORKER_
 
 #ifdef _DEBUG_WORKER_
+#undef _LogDebug_
 #define _LogDebug_ LogDebug
 #else
+#undef _LogDebug_
 #define _LogDebug_ //
 #endif
 
@@ -55,6 +57,7 @@ bool WorldWorker::run()
 		return true;
 	}
 
+	_LogDebug_("WorldServer", "World Worker asking socket to process one packet");
 	handle(&p);
 	
 	return false;

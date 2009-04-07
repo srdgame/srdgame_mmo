@@ -157,5 +157,31 @@ TO_DC(0x00a4)
 	assert(res == count * 20 + 4);
 	return res;
 }
+// Send walk to xy ok
+TO_DC(0x0087)
+{
+	PUINT16(buf, 0) = 0x0087;
+
+	RoWalkToXY_OK* ok = (RoWalkToXY_OK*)packet->param.Data;
+	PUINT16(buf, 2) = ok->_tick;
+	SET_POS2((uint8*)buf, 6, ok->_org._x, ok->_org._y, ok->_to._x, ok->_to._y, 8, 8);
+	return 12;
+}
+
+TO_DC(0x007f)
+{
+	PUINT16(buf, 0) = 0x007f;
+	PUINT32(buf, 2) = packet->param.Int;
+	return 6;
+}
+TO_DC(0x0086)
+{
+	PUINT16(buf, 0) = 0x0086;
+	RoUnitMove* move = (RoUnitMove*)packet->param.Data;
+	PUINT32(buf, 2) = move->_id;
+	SET_POS2((uint8*)buf, 6, move->_org._x, move->_org._y, move->_to._x, move->_to._y, 8, 8);
+	PUINT32(buf, 12) = move->_tick;
+	return 16;
+}
 }
 
