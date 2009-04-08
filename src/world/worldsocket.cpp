@@ -146,7 +146,7 @@ void WorldSocket::on_handle(Packet* packet)
 			}
 			break;
 		default:
-			LogDebug("WorldSocket", "Processing one packet that is need be handled by Player");
+			//LogDebug("WorldSocket", "Processing one packet that is need be handled by Player");
 			_lock.lock();
 			if (_player)
 				_player->on_handle(packet);

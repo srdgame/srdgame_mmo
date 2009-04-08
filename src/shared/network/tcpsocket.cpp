@@ -105,11 +105,11 @@ bool TcpSocket::send(const char* data, size_t size)
 	size_t r_size = 0;
 	while (size != 0)
 	{
-		_LogDebug_("SOCKET", "Sending................");
+	//	_LogDebug_("SOCKET", "Sending................");
 
 		_send_buf_lock.lock();
 		char* buf = _send_buf.reserve(size, r_size);
-		_LogDebug_("SOCKET", "Reserver for buffer size: %d, reserved : %d", size, r_size);
+	//	_LogDebug_("SOCKET", "Reserver for buffer size: %d, reserved : %d", size, r_size);
 		if (r_size == 0)
 			usleep(1000);
 		memcpy(buf, data, r_size);
@@ -142,7 +142,7 @@ bool TcpSocket::send(const char* data, size_t size)
 		post_event(EPOLLOUT);
 		break;
 	}*/
-	_LogDebug_("SOCKET", "Write to buffer completed!!!!!!!!!!!!!");
+//	_LogDebug_("SOCKET", "Write to buffer completed!!!!!!!!!!!!!");
 	return true;
 }
 
@@ -203,7 +203,7 @@ void TcpSocket::read_callback(size_t size)
 	// We have to lock here.
 	AutoLock lock(_rev_buf_lock);
 
-	_LogDebug_("SOCKET", "Start to process data"); 
+//	_LogDebug_("SOCKET", "Start to process data"); 
 	while (true)
 	{
 		// see how many free do we have.
@@ -264,9 +264,9 @@ void TcpSocket::read_callback(size_t size)
 		}
 	}
 
-	_LogDebug_("SOCKET", "Call on_rev()..............");	
+	//_LogDebug_("SOCKET", "Call on_rev()..............");	
 	on_rev();
-	_LogDebug_("SOCKET", "Completed calling on_rev()");
+	//_LogDebug_("SOCKET", "Completed calling on_rev()");
 }
 void TcpSocket::write_callback()
 {

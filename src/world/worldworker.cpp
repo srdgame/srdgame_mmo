@@ -6,7 +6,7 @@
 #include "log.h"
 using namespace srdgame;
 
-#define _DEBUG_WORKER_
+//#define _DEBUG_WORKER_
 
 #ifdef _DEBUG_WORKER_
 #undef _LogDebug_
