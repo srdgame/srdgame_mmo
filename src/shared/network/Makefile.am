@@ -13,4 +13,6 @@ libnetwork_a_SOURCES = network.h\
 		   tcpsocket.cpp \
 		   socketworker.cpp \
 		   socketmgr.cpp \
-		   tcplistensocket.h 
+		   tcplistensocket.h \
+		   socketgc.h \
+		   socketgc.cpp

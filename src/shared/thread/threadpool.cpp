@@ -106,6 +106,7 @@ void ThreadPool::execute(ThreadBase* task)
 	if (!_inited)
 	{
 		LogError("ThreadPool", "Could not use the pool before you have initialized it");
+		delete task;
 		_lock.unlock();
 		return;
 	}

@@ -150,6 +150,8 @@ bool LoginServer::wait_command()
 	std::cin >> str;
 	if (str == "quit")
 	{
+		SocketMgr::get_singleton().close_all();
+		DatabaseMgr::get_singleton().shutdown();
 		ThreadPool::get_singleton().shutdown();
 		return true;
 	}

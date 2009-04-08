@@ -4,6 +4,7 @@
 #include "tcpsocket.h"
 #include "socketmgr.h"
 #include "socketfun.h"
+#include "socketgc.h"
 #include <string>
 #include <errno.h>
 #include "log.h"
@@ -11,7 +12,7 @@
 using namespace srdgame;
 
 #define _SOCKET_DEBUG_
-
+#undef _LogDebug_
 #ifdef _SOCKET_DEBUG_
 #define _LogDebug_ LogDebug
 #else
@@ -87,7 +88,8 @@ bool TcpSocket::close()
 }
 void TcpSocket::_delete()
 {
-	delete this;
+	//delete this;
+	SocketGC::get_singleton().GC(this);
 }
 /*
 bool TcpSocket::is_connectted()

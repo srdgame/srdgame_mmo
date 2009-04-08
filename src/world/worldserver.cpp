@@ -215,6 +215,8 @@ bool WorldServer::wait_command()
 		of.param.Long = 0;
 		if (_realm_socket && _realm_socket->is_connected())
 			_realm_socket->send_packet(&of);
+		SocketMgr::get_singleton().close_all();
+		DatabaseMgr::get_singleton().shutdown();
 		ThreadPool::get_singleton().shutdown();
 		return true;
 	}

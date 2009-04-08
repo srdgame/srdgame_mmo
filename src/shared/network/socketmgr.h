@@ -41,7 +41,7 @@ public:
 		return _count;
 	}
 
-	//  Close all the sockets.
+	//  Close all the sockets.  Call this before you want to quit your app.
 	void close_all();
 
 	void show_info();

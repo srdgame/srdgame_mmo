@@ -29,10 +29,7 @@ LoginSocket::LoginSocket()
 
 LoginSocket::~LoginSocket()
 {
-	if (_worker && _worker->is_running())
-	{
-		_worker->shutdown();
-	}
+
 }
 void LoginSocket::on_send()
 {
@@ -48,6 +45,7 @@ void LoginSocket::on_close()
 
 void LoginSocket::on_handle(Packet* packet)
 {
+	// Lock the worker_lock for save.
 	_LogDebug_("LoginServer", "Handling one new packet its op : %d", packet->op);
 	switch (packet->op)
 	{

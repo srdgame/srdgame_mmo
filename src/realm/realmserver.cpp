@@ -231,6 +231,8 @@ bool RealmServer::wait_command()
 		of.param.Long = 0;
 		if (_login_socket && _login_socket->is_connected())
 			_login_socket->send_packet(&of);
+		SocketMgr::get_singleton().close_all();
+		DatabaseMgr::get_singleton().shutdown();
 		ThreadPool::get_singleton().shutdown();
 		return true;
 	}

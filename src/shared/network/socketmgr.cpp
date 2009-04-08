@@ -35,7 +35,7 @@ SocketMgr::~SocketMgr()
 	close(_epoll_fd);
 	LogDebug("SOCKET", "Closed the epool fd");
 	// Do not call close all, or you will see it is hard to close it... And seems we do not need to close them
-	close_all();
+	//close_all();
 	LogDebug("SOCKET", "CLOSED all the connections");
 }
 
@@ -152,7 +152,7 @@ void SocketMgr::close_all()
 		{
 			Socket* ptr = _fds[i];
 			ptr->_delete();
-		//	_fds[i] = NULL;  the close will remove itself.
+	//		_fds[i] = NULL;  the close will remove itself.
 		}
 	}
 }
