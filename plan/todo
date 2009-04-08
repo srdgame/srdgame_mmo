@@ -1,0 +1,3 @@
+now you could move on the server, but the defect is the path is not been choosed by server.  We need to correct the _last_pos when we received one new move packet or we need to have the updating thread to update it.
+
+And we have to keep the walk path and use it to update the unit's position.
