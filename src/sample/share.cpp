@@ -52,16 +52,18 @@ TO_DC(0x008e)
 
 	PUINT16(buf, 0) = 0x008e;
 	PUINT16(buf, 2) = 5 + packet->len;
-	memcpy(PCHAR(buf, 4), packet->param.Data, packet->len + 1);
-	return 5 + packet->len;
+	size_t len = strlen(packet->param.Data);
+	memcpy(PCHAR(buf, 4), packet->param.Data, len);
+	return 5 + len;
 }
 // Send out private message to client, that show in gray color.
 TO_DC(0x017f)
 {
 	PUINT16(buf, 0) = 0x017f;
 	PUINT16(buf, 2) = 5 + packet->len;
-	memcpy(PCHAR(buf, 4), packet->param.Data, packet->len + 1);
-	return 5 + packet->len;
+	size_t len = strlen(packet->param.Data);
+	memcpy(PCHAR(buf, 4), packet->param.Data, len);
+	return 5 + len;
 }
 // send Wis Message??? 
 TO_DC(0x0097)

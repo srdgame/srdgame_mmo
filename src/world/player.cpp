@@ -113,6 +113,14 @@ void Player::on_handle(Packet* p)
 	RoCharInfo* info = (RoCharInfo*)_info;
 	switch (p->op)
 	{
+		case EC_MESSAGE:
+			{
+				Packet msg(ES_MESSAGE);
+				msg.len = p->len;
+				msg.param.Data = p->param.Data;
+				send_packet(&msg);
+			}
+			break;
 		case EC_TICK_COUNT:
 			{
 				Packet tick(ES_TICK_COUNT);
@@ -125,12 +133,14 @@ void Player::on_handle(Packet* p)
 				Packet walk(ES_WALK_TO);
 				RoWalkToXY xy;
 				xy._int = p->param.Int;
+				LogError("Player", "Want to walk to x : %d, y : %d", xy._point._x, xy._point._y);
 				walk.len = sizeof(Packet) + sizeof(RoWalkToXY_OK);
 				RoWalkToXY_OK ok;
 				ok._tick = gettick();
 				ok._org._x = info->_last_pos._x;
 				ok._org._y = info->_last_pos._y;
 				ok._to = xy._point;
+				LogError("Player", "Let it walk from x: %d, y : %d", ok._org._x, ok._org._y);
 
 				// save to last_pos.
 				info->_last_pos._x = xy._point._x;
@@ -140,7 +150,7 @@ void Player::on_handle(Packet* p)
 
 				send_packet(&walk);
 
-				RoUnitMove move;
+				/*RoUnitMove move;
 				move._tick = ok._tick;
 				move._org = ok._org;
 				move._to = ok._to;
@@ -150,7 +160,7 @@ void Player::on_handle(Packet* p)
 				mp.len = sizeof(Packet) + sizeof(RoUnitMove);
 				mp.param.Data = (char*)&move;
 				
-				send_packet(&mp);
+				send_packet(&mp);*/
 			}
 			break;
 		default:

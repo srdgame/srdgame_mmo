@@ -1,6 +1,8 @@
 #include "map.h"
 #include "share.h"
 #include "ro_defs.h"
+#include <cstring>
+
 
 namespace ro
 {
@@ -88,6 +90,7 @@ DECLARE(walk_to_xy)
 	int pos = 5;
 	xy._point._x = (PUINT8(src, pos) * 4) + (PUINT8(src, pos + 1) >> 6);
 	xy._point._y = ((PUINT8(src, pos + 1) & 0x3f) << 4) + (PUINT8(src, pos + 2) >> 4);
+	dest->param.Int = xy._int;
 	return 8;
 }
 DECLARE(quit_game)
@@ -102,8 +105,15 @@ DECLARE(get_char_name_request)
 
 DECLARE(global_message)
 {
-	const char* text = PCHAR(src, 4);
-	int textlen = PUINT16(src, 2) - 4;
+	size_t textlen = PUINT16(src, 2) - 4;
+	if (size < textlen)
+		return 0;
+
+	dest->op = EC_MESSAGE;
+	dest->len = sizeof(Packet) + textlen;
+	dest->param.Data = new char[textlen];
+	memcpy((char*)dest->param.Data, PCHAR(src, 4), textlen);
+
 	return textlen + 4;
 }
 
