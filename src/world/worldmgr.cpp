@@ -8,6 +8,7 @@
 #include "autolock.h"
 #include "player.h"
 #include "opcode.h"
+#include "worldupdater.h"
 
 #include "ro_defs.h"
 
@@ -27,15 +28,25 @@ using namespace srdgame::opcode;
 #undef LN
 #define LN "WorldServer"
 
-WorldMgr::WorldMgr() : _sql(NULL)
+WorldMgr::WorldMgr() : _inited(false), _updater(NULL), _sql(NULL)
 {
 }
 WorldMgr::~WorldMgr()
 {
+	if(_inited)
+	{
+		delete _updater;
+		delete _sql;
+	}
 }
 
 void WorldMgr::init()
 {
+	AutoLock lock(_lock);
+	if (_inited)
+		return;
+	_inited = true;
+	_updater = new WorldUpdater();
 	_sql = new RoSql();
 }
 
@@ -103,6 +114,10 @@ WorldSrvInfo& WorldMgr::get_info()
 {	
 	AutoLock lock(_lock);
 	return this->_info;
+}
+Updater* WorldMgr::get_updater()
+{
+	return _updater;
 }
 bool WorldMgr::setup_player(Player* p)
 {

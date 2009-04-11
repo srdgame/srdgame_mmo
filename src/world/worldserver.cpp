@@ -8,6 +8,7 @@
 #include <vector>
 #include "typedefs.h"
 #include "worldmgr.h"
+#include "updater.h"
 #include "intersocket.h"
 #include "packetparser.h"
 #include "mapmgr.h"
@@ -114,6 +115,9 @@ bool WorldServer::init_env()
 
 	// Load maps.
 	MapMgr::get_singleton().load_maps();
+
+	// At the end, we start the updater.
+	WorldMgr::get_singleton().get_updater()->start();
 	return true;
 }
 
@@ -215,6 +219,7 @@ bool WorldServer::wait_command()
 		of.param.Long = 0;
 		if (_realm_socket && _realm_socket->is_connected())
 			_realm_socket->send_packet(&of);
+		WorldMgr::get_singleton().get_updater()->stop();
 		SocketMgr::get_singleton().close_all();
 		DatabaseMgr::get_singleton().shutdown();
 		ThreadPool::get_singleton().shutdown();

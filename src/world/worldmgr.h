@@ -15,6 +15,7 @@
 namespace srdgame
 {
 class Player;
+class Updater;
 class WorldMgr : public Singleton < WorldMgr >
 {
 public:
@@ -34,6 +35,7 @@ public:
 	void set_info(WorldSrvInfo& info);
 	WorldSrvInfo& get_info();
 
+	Updater* get_updater();
 protected:
 	bool setup_player(Player* s);
 
@@ -44,11 +46,12 @@ protected:
 protected:
 	// char_id and player object.
 	std::map<int, Player*> _clients;
-	Mutex _server_lock;
 	Mutex _client_lock;
 
 	Mutex _lock;
+	bool _inited;
 	WorldSrvInfo _info;
+	Updater* _updater;
 
 	// SQL, no need lock since this is no data contains 
 	ro::RoSql* _sql;
