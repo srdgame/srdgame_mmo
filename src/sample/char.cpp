@@ -156,7 +156,7 @@ size_t to_select_char_ok(char* dest, const MapServerInfo& info)
 {
 	size_t len = 0;
 	PUINT16(dest, len) = 0x71;					len += 2;
-	PUINT32(dest, len) = info._account; 		len += 4;
+	PUINT32(dest, len) = info._char_id; 		len += 4;
 	memcpy(PCHAR(dest, len), info._map_name, 16); 	len += 16;
 	PUINT32(dest, len) = htonl(info._ip);		len += 4;
 	PUINT16(dest, len) = ntows(htons(info._port));	len += 2;

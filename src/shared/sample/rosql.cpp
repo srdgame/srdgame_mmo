@@ -7,6 +7,8 @@
 #include "conversion_cast.h"
 #include "queryresult.h"
 #include "metadefs.h"
+#include "roitemdb.h"
+
 using namespace std;
 using namespace ro;
 using namespace srdgame;
@@ -399,10 +401,10 @@ bool RoSql::load_items(int char_id, std::vector<RoCharItem>& items)
 		info._id = f[0].get<int>();
 		info._type = f[1].get<short>();
 		info._amount = f[2].get<short>();
-		info._equip = f[3].get<uint16>();
-		info._identify = f[4].get<char>();
-		info._refine = f[5].get<char>();
-		info._attrs = f[6].get<char>();
+		info._equip = f[3].get<short>();
+		info._identify = f[4].get<int>();
+		info._refine = f[5].get<int>();
+		info._attrs = f[6].get<int>();
 		info._expire_time = f[7].get<unsigned int>();
 		// for slots.
 		for (int i = 0; i < MaxSlotCount; ++i)
@@ -410,6 +412,7 @@ bool RoSql::load_items(int char_id, std::vector<RoCharItem>& items)
 			info._cards[i] = f[7 + i].get<short>();
 		}
 		items.push_back(info);
+		res->next();
 	}
 	res->Delete();
 
@@ -470,6 +473,7 @@ bool RoSql::load_cart(int char_id, std::vector<RoCharItem>& cart_items)
 		info._attrs = f[6].get<char>();
 		info._expire_time = f[7].get<unsigned int>();
 		cart_items.push_back(info);
+		res->next();
 	}
 	res->Delete();
 
@@ -509,6 +513,7 @@ bool RoSql::load_skill(int char_id, std::vector<RoCharSkillInfo>& skills)
 		skill._flag = f[2].get<int>();
 
 		skills.push_back(skill);
+		res->next();
 	}
 	res->Delete();
 
@@ -540,6 +545,7 @@ bool RoSql::load_friends(int char_id, std::vector<RoCharFriendInfo>& friends)
 		fr._nick_name = f[2].get<string>();
 
 		friends.push_back(fr);
+		res->next();
 	}
 	res->Delete();
 	return true;
@@ -569,6 +575,7 @@ bool RoSql::load_hotkey(int char_id, std::vector<RoCharHotKey>& keys)
 		key._lvl = f[2].get<uint16>();
 
 		keys.push_back(key);
+		res->next();
 	}
 	res->Delete();
 

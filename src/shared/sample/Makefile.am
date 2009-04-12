@@ -16,6 +16,10 @@ libsample_a_SOURCES = ro_defs.h\
 					  romap.cpp \
 					  grfio.h \
 					  grfio.cpp \
+					  itemdefs.h \
+					  roitemdb.h \
+					  roitemdb.cpp \
+					  itemhelper.h \
 					  rocharinfo.h
 
 #libsample_a_LIBADD = ldatabase

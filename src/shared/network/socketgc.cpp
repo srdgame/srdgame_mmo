@@ -7,9 +7,9 @@
 
 using namespace srdgame;
 
-SocketGC::SocketGC() : _closing(false)
+SocketGC::SocketGC() : _closing(false), _worker(NULL)
 {
-
+	
 }
 SocketGC::~SocketGC()
 {
@@ -17,6 +17,7 @@ SocketGC::~SocketGC()
 	GCData data;
 	while (_data.try_pop(data))
 	{
+		LogSuccess("Socket GC", "Deleteing sockets objects from Destructor");
 		delete data._socket;
 	}
 }
@@ -35,29 +36,40 @@ void SocketGC::GC(Socket* s)
 
 		if (_worker_lock.trylock())
 		{
+			LogSuccess("Socket GC", "Start GC threading");
 			_worker = new GCWorker();
+			_worker_lock.unlock();
 			ThreadPool::get_singleton().execute(_worker);
 		}
 	}
 }
 bool SocketGC::GCWorker::run()
 {
-	GCData data;
-	if (!SocketGC::get_singleton()._data.try_pop(data))
+	static GCData data;
+	static bool b_has = false;
+	//LogDebug("Socket GC", "Running---------------------");
+	if (!b_has)
 	{
-		if (_closing)
+		if (!SocketGC::get_singleton()._data.try_pop(data))
 		{
-			return true;
+			if (_closing)
+			{
+				return true;
+			}
+			//LogDebug("Socket GC", "Sleeping for time----------");
+			usleep(10000);
+			return false;
 		}
-
-		usleep(1000000);
-		return false;
 	}
-	
+	b_has = true;
 	if (data._time > gettick())
+	{
+		//LogDebug("Socket GC", "Next loop for time");
 		return false; // Time is not enough.
+	}
 
-	LogDebug("Socket GC", "Deleting one socket------------------");
+	b_has = false;
+	//LogDebug("Socket GC", "Deleting one socket------------------");
 	delete data._socket;
 	return false;// Process Next data.
 }

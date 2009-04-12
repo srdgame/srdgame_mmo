@@ -1,6 +1,8 @@
 #include "gmsg.h"
 #include "player.h"
 #include "mapmgr.h"
+#include "command.h"
+#include "log.h"
 
 using namespace srdgame;
 using namespace std;
@@ -13,23 +15,33 @@ GMsg::~GMsg()
 }
 void GMsg::send(const char* msg)
 {
-	MSG m(-1, msg, 0);
-	_msgs.push(m);
+	send(-1, msg, 0);
 }
 void GMsg::send(int mid, const char* msg)
 {
-	MSG m(mid, msg, 0);
-	_msgs.push(m);
+	send(mid, msg, 0);
 }
 void GMsg::send(const char* msg, const Player* player)
 {
-	MSG m(-1, msg, player->get_id());
-	_msgs.push(m);
+	send(-1, msg, player);
 }
 void GMsg::send(int mid, const char* msg, const Player* player)
 {
-	MSG m(mid, msg, player->get_id());
-	_msgs.push(m);
+	const char* c_msg = msg;
+	while (*c_msg == ' ')
+	{
+		c_msg++;
+	}
+	LogDebug("GMessage", "Sending : %s", msg);
+	if (*c_msg == '.')
+	{
+		Command::get_singleton().handle(player, c_msg);
+	}
+	else
+	{
+		MSG m(mid, msg, player->get_id());
+		_msgs.push(m);
+	}
 }
 
 long GMsg::notify(long time)

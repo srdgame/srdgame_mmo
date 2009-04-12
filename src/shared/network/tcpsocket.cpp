@@ -28,6 +28,7 @@ TcpSocket::TcpSocket(size_t rev_buf_size, size_t send_buf_size)
 TcpSocket::~TcpSocket()
 {
 	_LogDebug_("SOCKET", "Destructor of TcpSOcket!!!!");
+	//LogSuccess("Socket", "Destructor of TcpSocket!!!!");
 }
 
 bool TcpSocket::connect(const std::string& addr, int port)
@@ -89,6 +90,7 @@ bool TcpSocket::close()
 void TcpSocket::_delete()
 {
 	//delete this;
+	LogError("TCP Socket", "Remove this ====");
 	SocketGC::get_singleton().GC(this);
 }
 /*

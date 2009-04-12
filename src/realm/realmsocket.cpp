@@ -114,7 +114,7 @@ void RealmSocket::on_handle(Packet* packet)
 						p.op = ES_SELECT_CHAR;
 						p.len = sizeof(Packet) + sizeof(MapServerInfo);
 						MapServerInfo info;
-						info._account = _account_id;
+						info._char_id = char_id;
 						info._ip = 0;
 						info._port = 0;
 						memset(info._map_name, 0, MAX_MAP_NAME_LEN);

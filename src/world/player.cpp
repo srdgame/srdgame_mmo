@@ -7,6 +7,8 @@
 #include "opcode.h"
 #include "timedefs.h"
 #include "gmsg.h"
+#include "itemdefs.h"
+#include "itemhelper.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -94,10 +96,51 @@ void Player::send_packet(Packet* p)
 		_socket->send_packet(p);
 	_lock.unlock();
 }
+void Player::add_item(RoCharItem& item)
+{
+	_lock.lock();
+	RoCharInfo * info = (RoCharInfo*)_info;
+	// TODO: check the count.
+	info->_items.push_back(item);
+	_lock.unlock();
+	
+	RoItemData data;
+	if (item._type == 0)
+		data._fail = 1;
+
+	data._index = info->_items.size() - 1;
+	data._id = item._type;
+	data._identify = item._identify;
+	data._equiped_point = item._equip;
+	data._attrs = item._attrs;
+	data._refine = item._refine;
+	const RoDBItem* db = RoItemDB::get_singleton().get_item(item._type);
+	data._equip_point = db->_equip_point;
+	data._type = item._type;
+	data._amount = item._amount;
+	
+	Packet p(ES_ADD_ITEM);
+	p.len = sizeof(Packet) + sizeof(data);
+	p.param.Data = (char*) &data;
+
+	send_packet(&p);
+}
 void Player::update_look()
 {
 	// TODO:
 }
+void Player::update_look(RoLookType type, int val)
+{
+	RoLookUpdate update;
+	update._type = type;
+	update._account_id = _acc_id;//_id;
+	update._id1 = val;
+	update._id2 = 0; // TODO:
+	Packet p(ES_LOOK_UPDATE);
+	p.len = sizeof(Packet) + sizeof(update);
+	p.param.Data = (char*) & update;
+	send_packet(&p);
+};
 void Player::send_friend_list()
 {
 	// TODO:
@@ -112,46 +155,7 @@ void Player::send_friend_list()
 	// TODO:
 	// send out online friends info.
 }
-int isequip2(RoCharItem& data)
-{ 
-	switch(data._item_type) {
-		case IT_WEAPON:
-		case IT_ARMOR:
-		case IT_AMMO:
-			return 1;
-		default:
-			return 0;
-	}
-}
-int isstackable2(RoCharItem& item)
-{
-  switch(item._item_type) {
-	  case IT_WEAPON:
-	  case IT_ARMOR:
-	  case IT_PETEGG:
-	  case IT_PETARMOR:
-		  return 0;
-	  default:
-		  return 1;
-  }
-}
-int equippoint(RoCharItem& item)
-{
-	int ep = 0;
 
-	if (!isequip2(item))
-		return 0; //Not equippable by players.
-	
-	ep = item._equip;
-	// TODO:
-	/*if(sd->inventory_data[n]->look == W_DAGGER	||
-		sd->inventory_data[n]->look == W_1HSWORD ||
-		sd->inventory_data[n]->look == W_1HAXE) {
-		if(ep == EQP_HAND_R && (pc_checkskill(sd,AS_LEFT) > 0 || (sd->class_&MAPID_UPPERMASK) == MAPID_ASSASSIN))
-			return EQP_ARMS;
-	}*/
-	return ep;
-}
 void Player::send_items()
 {
 	LogError("Player", "Send items !!!!!!!!!!!!!!!!");
@@ -163,20 +167,29 @@ void Player::send_items()
 	vector<RoItemListData> list2; 
 	for (size_t i = 0; i < ri->_items.size(); ++i)
 	{
-		if (!isstackable2(ri->_items[i]))
+		// TODO: for pet egg.
+		const RoDBItem* db = RoItemDB::get_singleton().get_item(ri->_items[i]._type);
+		RoItemListData data;
+		//data._info = &(ri->_items[i]);
+		data._id = ri->_items[i]._type;
+		data._type = db->_item_type;
+		data._identify = ri->_items[i]._identify;
+		data._equiped_point = ri->_items[i]._equip;
+		data._attrs = ri->_items[i]._attrs;
+		data._refine = ri->_items[i]._refine;
+		data._amount = ri->_items[i]._amount;
+		if (!isstackable2(db))
 		{
 			// Non-stackable (Equippable)
-			RoItemListData data;
-			data._info = &(ri->_items[i]);
-			data._equip_point = equippoint(ri->_items[i]);
+
+			data._equip_point = equippoint(db);
+
 			LogDebug("Player", "One equippable item added");
 			list.push_back(data);
 		}
 		else
 		{
 			// stackable.
-			RoItemListData data;
-			data._info = &(ri->_items[i]);
 			data._equip_point = -2;
 			LogDebug("Player", "One stackable item added");
 			list.push_back(data);
@@ -199,6 +212,125 @@ void Player::send_items()
 		p.param.Data = (char*) &rl;
 		send_packet(&p);
 	}
+}
+
+void Player::equip_item(short index, short pos)
+{
+	RoCharInfo* info = (RoCharInfo*)_info;
+	
+	RoEquipItemOK ok;
+
+	const RoDBItem* db = RoItemDB::get_singleton().get_item(info->_items[index]._type);
+	if (index < info->_items.size() && db)
+	{
+		ok._index = index;
+		ok._pos = equippoint(db);
+		info->_items[index]._equip = ok._pos; // change
+		ok._ok = 1;
+	}
+	else
+	{
+		ok._index = 0;
+		ok._pos = 0;
+		ok._ok = 0;
+	}
+	Packet packet(ES_EQUIP_ITEM);
+	packet.len = sizeof(Packet) + sizeof(ok);
+	packet.param.Data = (char*)&ok;
+	send_packet(&packet);
+
+	// Update look.
+	if (ok._ok)
+	{
+		// Update look
+		if (ok._pos & EQP_HAND_R)
+		{
+			info->_show._weapon = db->_look;
+			update_look(LOOK_WEAPON, info->_show._weapon);
+		}
+		if (ok._pos & EQP_HEAD_LOW)
+		{
+			info->_show._head_bottom = db->_look;
+			update_look(LOOK_HEAD_BOTTOM, info->_show._head_bottom);
+		}
+		if (ok._pos & EQP_HEAD_MID)
+		{
+			info->_show._head_middle = db->_look;
+			update_look(LOOK_HEAD_MID, db->_look);
+		}
+		if (ok._pos & EQP_HEAD_TOP)
+		{
+			info->_show._head_top = db->_look;
+			update_look(LOOK_HEAD_TOP, db->_look);
+		}
+		if (ok._pos & EQP_HAND_L)
+		{
+			info->_show._shield = db->_look;
+			update_look(LOOK_SHIELD, db->_look);
+		}
+		// TODO: MOre looks
+	}
+	// TODO: Update status.
+}
+
+void Player::unequip_item(short index)
+{
+	RoCharInfo* info = (RoCharInfo*)_info;
+	
+	RoEquipItemOK ok;
+
+	const RoDBItem* db = RoItemDB::get_singleton().get_item(info->_items[index]._type);
+	if (index < info->_items.size() && db)
+	{
+		ok._index = index;
+		ok._pos = equippoint(db);
+		info->_items[index]._equip = ok._pos; // change
+		ok._ok = 1;
+	}
+	else
+	{
+		ok._index = 0;
+		ok._pos = 0;
+		ok._ok = 0;
+	}
+	Packet packet(ES_UNEQUIP_ITEM);
+	packet.len = sizeof(Packet) + sizeof(ok);
+	packet.param.Data = (char*)&ok;
+	send_packet(&packet);
+
+	// Update look.
+	if (ok._ok)
+	{
+		// Update look
+		if (ok._pos & EQP_HAND_R)
+		{
+			info->_show._weapon = 0;
+			update_look(LOOK_WEAPON, info->_show._weapon);
+		}
+		if (ok._pos & EQP_HEAD_LOW)
+		{
+			info->_show._head_bottom = 0;
+			update_look(LOOK_HEAD_BOTTOM, 0);
+		}
+		if (ok._pos & EQP_HEAD_MID)
+		{
+			info->_show._head_middle = 0;
+			update_look(LOOK_HEAD_MID, 0);
+		}
+		if (ok._pos & EQP_HEAD_TOP)
+		{
+			info->_show._head_top = 0;
+			update_look(LOOK_HEAD_TOP, 0);
+		}
+		if (ok._pos & EQP_HAND_L)
+		{
+			info->_show._shield = 0;
+			update_look(LOOK_SHIELD, 0);
+		}
+		// TODO: MOre looks
+
+	}
+	// TODO: Update status.
 }
 
 void Player::on_handle(Packet* p)
@@ -227,7 +359,7 @@ void Player::on_handle(Packet* p)
 				}
 				if (i != m._len)
 				{
-					ch = ch + i;
+					ch = ch + i + 1;
 					if (_map)
 					{
 						GMsg::get_singleton().send(_map->get_id(), ch, this);
@@ -275,6 +407,18 @@ void Player::on_handle(Packet* p)
 				mp.param.Data = (char*)&move;
 				
 				send_packet(&mp);*/
+			}
+			break;
+		case EC_EQUIP_ITEM:
+			{
+				RoEquipItemUnion item;
+				item._long = p->param.Long;
+				equip_item(item._item._index, item._item._pos);
+			}
+			break;
+		case EC_UNEQUIP_ITEM:
+			{
+				unequip_item(p->param.Int);
 			}
 			break;
 		default:

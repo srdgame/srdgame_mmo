@@ -4,6 +4,7 @@
 #include "metadefs.h"
 #include "gamedefs.h"
 #include "ro_defs.h"
+#include "itemdefs.h"
 #include <cstring>
 #include <vector>
 
@@ -11,25 +12,19 @@ using namespace srdgame;
 
 namespace ro
 {
-static const uint16 MaxItemCount = 100; // TODO:
-static const uint16 MaxCartCount = 100;
-static const uint8 MaxSlotCount = 4;
-static const uint16 MaxSkillCount = 1020;
-static const uint16 MaxFriendCount = 40;
-static const uint16 MaxHotKeyCount = 27;
 struct RoCharProp : public NpcProp
 {
 
 };
 struct RoCharShow : public NpcShow
 {
-
+	//int _weapon2;
 };
 struct RoCharExp : public CharExp
 {
 
 };
-struct RoCharItem : public ItemInfo
+/*struct RoCharItem : public ItemInfo
 {
 	RoCharItem() : _amount(0), _identify(0), _refine(0), _attrs(0), _item_type(0)
 	{
@@ -45,7 +40,7 @@ struct RoCharItem : public ItemInfo
 	char _item_type; // The item type. refer to clif.c:1867
 	short _cards[MaxSlotCount];
 	//unsigned int _expire_time;
-};
+};*/ // Moved to itemdefs.h
 struct RoCharSkillInfo : public SkillInfo
 {
 

@@ -73,7 +73,7 @@ bool RoMap::load(const char* fn)
 	LogNotice("RO_MAP", "Start to process map cache, map cout : %d, \t file size : %d", _header._map_count, _header._file_size);
 	_loaded = true;
 	int i = 0;
-	_maps.resize(_header._map_count);
+	_maps.resize(_header._map_count + 10);
 	for (; i < _header._map_count; ++i)
 	{
 		MapCacheMapInfo info;

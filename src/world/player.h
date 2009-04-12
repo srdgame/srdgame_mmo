@@ -3,7 +3,8 @@
 #include <string>
 #include "mutex.h"
 
-//#include "charinfo.h"
+#include "ro_defs.h"
+#include "rocharinfo.h"
 
 namespace srdgame
 {
@@ -32,11 +33,16 @@ public:
 
 	virtual void on_handle(Packet* p);
 
+	// add item.
+	virtual void add_item(ro::RoCharItem& item);
 protected:
 	void update_look();
+	void update_look(ro::RoLookType type, int val);
 	void send_friend_list();
 	void send_items();
 
+	void equip_item(short index, short pos);
+	void unequip_item(short index);
 protected:
 	Mutex _lock;
 	WorldSocket* _socket;

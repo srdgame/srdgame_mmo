@@ -41,6 +41,7 @@ DECLARE(map_connect)
 	ConnectToMap* ctm = new ConnectToMap();
 	ctm->_ver = op;
 	ctm->_account_id = PUINT32(src, index[0]);
+	printf("===================account_id : %d===================", ctm->_account_id);
 	ctm->_char_id = PUINT32(src, index[1]);
 	printf("====================Char_id : %d=====================", ctm->_char_id);
 	ctm->_login_id1 = PUINT32(src, index[2]);
@@ -175,12 +176,21 @@ DECLARE(use_item)
 
 DECLARE(equip_item)
 {
-	return 0;
+	RoEquipItemUnion item;
+	item._item._index = PUINT16(src, 2) - 2;
+	item._item._pos = PUINT16(src, 4);
+	dest->op = EC_EQUIP_ITEM;
+	dest->len = sizeof(Packet);
+	dest->param.Long = item._long;
+	return 6;
 }
 
 DECLARE(unequip_item)
 {
-	return 0;
+	dest->op = EC_UNEQUIP_ITEM;
+	dest->len = sizeof(Packet);
+	dest->param.Short = PINT16(src, 2) - 2;
+	return 4;
 }
 
 DECLARE(npc_clicked)

@@ -32,6 +32,9 @@ static struct {
 	{to_send_0x0087, ES_WALK_TO},
 	{to_send_0x007f, ES_TICK_COUNT},
 	{to_send_0x0086, ES_UNIT_MOVE},
+	{to_send_0x00aa, ES_EQUIP_ITEM},
+	{to_send_0x00ac, ES_UNEQUIP_ITEM},
+	{to_send_0x00a0, ES_ADD_ITEM},
 	{NULL, 0},
 };
 

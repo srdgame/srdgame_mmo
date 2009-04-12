@@ -11,6 +11,7 @@
 #include "worldupdater.h"
 
 #include "ro_defs.h"
+#include "roitemdb.h"
 
 using namespace ro;
 using namespace srdgame;
@@ -48,6 +49,8 @@ void WorldMgr::init()
 	_inited = true;
 	_updater = new WorldUpdater();
 	_sql = new RoSql();
+
+	RoItemDB::get_singleton().init(); // init the item db // need a lot time?
 }
 
 void WorldMgr::add_client(Player* s)

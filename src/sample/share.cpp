@@ -142,6 +142,38 @@ TO_DC(0x0206)
 	return 11;
 }
 
+// Send one item adding
+TO_DC(0x00a0)
+{
+	size_t res = 0;
+	RoItemData* data = (RoItemData*) packet->param.Data;
+
+	if (data->_fail)
+	{
+		data->_id = 0;
+		data->_identify = 0;
+		data->_attrs = 0;
+		data->_refine = 0;
+		data->_equip_point = 0;
+		data->_type = 0;
+	}
+	PUINT16(buf, res) = 0x00a0;	res += 2;
+	PUINT16(buf, res) = data->_index + 2;	res += 2;
+	PUINT16(buf, res) = data->_amount;		res += 2;
+	PUINT16(buf, res) = data->_id;			res += 2;
+	PUINT8(buf, res) = data->_identify;		res += 1;
+	PUINT8(buf, res) = data->_attrs;		res += 1;
+	PUINT8(buf, res) = data->_refine;		res += 1;
+	memset(PCHAR(buf, res), 0, 8);
+	// TODO: for cards;
+	res += 8;
+	PUINT16(buf, res) = data->_equip_point;	res += 2;
+	PUINT8(buf, res) = data->_type;			res += 1;
+	PUINT8(buf, res) = data->_fail;			res += 1;
+
+	return res;
+}
+
 // send equip item list.
 TO_DC(0x00a4)
 {
@@ -158,20 +190,21 @@ TO_DC(0x00a4)
 		PUINT16(buf, res) = i + 2; // for equippable.
 		res += 2;
 		// Item info.
-		PUINT16(buf, res) = (*list->_items)[i]._info->_type;
+		PUINT16(buf, res) = (*list->_items)[i]._id;
 		res += 2;
-		PUINT8(buf, res) = (*list->_items)[i]._info->_item_type;
+		PUINT8(buf, res) = (*list->_items)[i]._type;
 		res += 1;
-		PUINT8(buf, res) = (*list->_items)[i]._info->_identify;
+		PUINT8(buf, res) = (*list->_items)[i]._identify;
 		res += 1;
 		PUINT16(buf, res) = (*list->_items)[i]._equip_point;
 		res += 2;
-		PUINT16(buf, res) = (*list->_items)[i]._info->_equip;
+		PUINT16(buf, res) = (*list->_items)[i]._equiped_point;
 		res += 2;
-		PUINT8(buf, res) = (*list->_items)[i]._info->_attrs;
+		PUINT8(buf, res) = (*list->_items)[i]._attrs;
 		res += 1;
-		PUINT8(buf, res) = (*list->_items)[i]._info->_refine;
+		PUINT8(buf, res) = (*list->_items)[i]._refine;
 		res += 1;
+		memset(PCHAR(buf, res), 0, 8);
 		// TODO: add cards information.
 		res += 8;
 	}
@@ -191,21 +224,22 @@ TO_DC(0x01ee)
 
 	for (size_t i = 0; i < count; ++i)
 	{
-		PUINT16(buf, res) = i + 2; // for equippable.
+		PUINT16(buf, res) = i + 2; //stackable items.
 		res += 2;
 		// Item info.
-		PUINT16(buf, res) = (*list->_items)[i]._info->_type;
+		PUINT16(buf, res) = (*list->_items)[i]._id;
 		res += 2;
-		PUINT8(buf, res) = (*list->_items)[i]._info->_item_type;
+		PUINT8(buf, res) = (*list->_items)[i]._type;
 		res += 1;
-		PUINT8(buf, res) = (*list->_items)[i]._info->_identify;
+		PUINT8(buf, res) = (*list->_items)[i]._identify;
 		res += 1;
-		PUINT16(buf, res) = (*list->_items)[i]._info->_amount;
+		PUINT16(buf, res) = (*list->_items)[i]._amount;
 		res += 2;
-		PUINT16(buf, res) = (*list->_items)[i]._info->_equip == EQP_AMMO ? EQP_AMMO : 0;
+		PUINT16(buf, res) = (*list->_items)[i]._equiped_point == EQP_AMMO ? EQP_AMMO : 0;
 		res += 2;
 
 		// TODO: add cards. 
+		memset(PCHAR(buf, res), 0, 8);
 		res += 8;	
 	}
 
@@ -238,5 +272,24 @@ TO_DC(0x0086)
 	PUINT32(buf, 12) = move->_tick;
 	return 16;
 }
+TO_DC(0x00aa)
+{
+	RoEquipItemOK* ok = (RoEquipItemOK*)packet->param.Data;
+	PUINT16(buf, 0) = 0x00aa;
+	PUINT16(buf, 2) = ok->_index + 2;
+	PUINT16(buf, 4) = ok->_pos;
+	PUINT8(buf, 6) = ok->_ok;
+	return 7;
+}
+TO_DC(0x00ac)
+{
+	RoUnequipItemOK* ok = (RoUnequipItemOK*)packet->param.Data;
+	PUINT16(buf, 0) = 0x00ac;
+	PUINT16(buf, 2) = ok->_index + 2;
+	PUINT16(buf, 4) = ok->_pos;
+	PUINT8(buf, 6) = ok->_ok;
+	return 7;
+}
+
 }
 
