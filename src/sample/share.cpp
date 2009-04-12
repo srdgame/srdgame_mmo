@@ -50,15 +50,34 @@ TO_DC(0x008e)
 	if (packet->len == sizeof(Packet))
 		return 0;
 
+	RoMessage* msg = (RoMessage*)packet->param.Data;
+
 	PUINT16(buf, 0) = 0x008e;
-	size_t len = strlen(packet->param.Data) + 1;
-	PUINT16(buf, 2) = 4 + len;
-	memcpy(PCHAR(buf, 4), packet->param.Data, len);
-	return 4 + len;
+	//size_t len = strlen(packet->param.Data) + 1;
+	//PUINT16(buf, 2) = 4 + len;
+	//memcpy(PCHAR(buf, 4), packet->param.Data, len);
+	//return 4 + len;
+
+	if (msg->_id != 0)
+	{
+		PUINT16(buf, 2) = 4 + msg->_len + 4;
+		PUINT32(buf, 4) = msg->_id;
+		memcpy(PCHAR(buf, 8), msg->_msg, msg->_len);
+		return 4 + 4 + msg->_len;
+	}
+	else
+	{
+		PUINT16(buf, 2) = 4 + msg->_len;
+		memcpy(PCHAR(buf, 4), msg->_msg, msg->_len);
+		return 4 + msg->_len;
+	}
 }
 // Send out private message to client, that show in gray color.
 TO_DC(0x017f)
 {
+	if (packet->len == sizeof(Packet))
+		return 0;
+
 	PUINT16(buf, 0) = 0x017f;
 	size_t len = strlen(packet->param.Data) + 1;
 	PUINT16(buf, 2) = 4 + len;
@@ -133,7 +152,7 @@ TO_DC(0x00a4)
 		return 0;
 
 	PUINT16(buf, res) = 0x00a4;		res += 2;
-	PUINT16(buf, res) = count;		res += 2;
+	PUINT16(buf, res) = count * 20 + 4;		res += 2;
 	for (size_t i = 0; i < count; ++i)
 	{
 		PUINT16(buf, res) = i + 2; // for equippable.
@@ -145,7 +164,7 @@ TO_DC(0x00a4)
 		res += 1;
 		PUINT8(buf, res) = (*list->_items)[i]._info->_identify;
 		res += 1;
-		PUINT16(buf, res) = (*list->_items)[i]._equip_type;
+		PUINT16(buf, res) = (*list->_items)[i]._equip_point;
 		res += 2;
 		PUINT16(buf, res) = (*list->_items)[i]._info->_equip;
 		res += 2;
@@ -157,6 +176,40 @@ TO_DC(0x00a4)
 		res += 8;
 	}
 	assert(res == count * 20 + 4);
+	return res;
+}
+TO_DC(0x01ee)
+{
+	size_t res = 0;
+	RoItemList* list = (RoItemList*) packet->param.Data;
+	size_t count = (*list->_items).size();
+	if (count == 0)
+		return 0;
+
+	PUINT16(buf, res) = 0x01ee;		res += 2;
+	PUINT16(buf, res) = count * 18 + 4;
+
+	for (size_t i = 0; i < count; ++i)
+	{
+		PUINT16(buf, res) = i + 2; // for equippable.
+		res += 2;
+		// Item info.
+		PUINT16(buf, res) = (*list->_items)[i]._info->_type;
+		res += 2;
+		PUINT8(buf, res) = (*list->_items)[i]._info->_item_type;
+		res += 1;
+		PUINT8(buf, res) = (*list->_items)[i]._info->_identify;
+		res += 1;
+		PUINT16(buf, res) = (*list->_items)[i]._info->_amount;
+		res += 2;
+		PUINT16(buf, res) = (*list->_items)[i]._info->_equip == EQP_AMMO ? EQP_AMMO : 0;
+		res += 2;
+
+		// TODO: add cards. 
+		res += 8;	
+	}
+
+	assert(res == count * 18 + 4);
 	return res;
 }
 // Send walk to xy ok

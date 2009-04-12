@@ -154,8 +154,12 @@ void WorldMgr::game_tips(Player* s)
 	char buf[256];
 	sprintf(buf, "SRD Game version : 0.0.1");
 	Packet p(ES_MESSAGE);
-	p.len = sizeof(Packet) + strlen(buf);
-	p.param.Data = buf;
+	RoMessage m;
+	m._len = strlen(buf);
+	m._msg = buf;
+	m._id = 0;
+	p.len = sizeof(Packet) + sizeof(RoMessage);
+	p.param.Data = (char*)&m;
 	s->send_packet(&p);
 
 	// Message of the Day?

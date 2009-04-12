@@ -3,8 +3,10 @@
 #include "map.h"
 #include "charinfo.h"
 #include "rocharinfo.h"
+#include "ro_defs.h"
 #include "opcode.h"
 #include "timedefs.h"
+#include "gmsg.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -27,6 +29,7 @@ Player::~Player()
 
 void Player::set_info(CharInfo* info)
 {
+	LogError("Player", "Set_info~~~~~~~~~~~~~~~");
 	if (info->_id != _id)
 	{
 		LogError("Player", "Seting up incorrect infomation for player. info->id : %d, _id : %d", info->_id, _id);
@@ -40,9 +43,12 @@ void Player::set_info(CharInfo* info)
 
 	// Send friend list.
 	this->send_friend_list();
+
+	// send items
+	this->send_items();
 }
 
-CharInfo* Player::get_info()
+CharInfo* Player::get_info() const
 {
 	return _info;
 }
@@ -67,11 +73,11 @@ bool Player::set_map(Map* map)
 	return true;
 }
 
-int Player::get_id()
+int Player::get_id() const
 {
 	return _id;
 }
-int Player::get_acc_id()
+int Player::get_acc_id() const
 {
 	return _acc_id;
 }
@@ -106,6 +112,94 @@ void Player::send_friend_list()
 	// TODO:
 	// send out online friends info.
 }
+int isequip2(RoCharItem& data)
+{ 
+	switch(data._item_type) {
+		case IT_WEAPON:
+		case IT_ARMOR:
+		case IT_AMMO:
+			return 1;
+		default:
+			return 0;
+	}
+}
+int isstackable2(RoCharItem& item)
+{
+  switch(item._item_type) {
+	  case IT_WEAPON:
+	  case IT_ARMOR:
+	  case IT_PETEGG:
+	  case IT_PETARMOR:
+		  return 0;
+	  default:
+		  return 1;
+  }
+}
+int equippoint(RoCharItem& item)
+{
+	int ep = 0;
+
+	if (!isequip2(item))
+		return 0; //Not equippable by players.
+	
+	ep = item._equip;
+	// TODO:
+	/*if(sd->inventory_data[n]->look == W_DAGGER	||
+		sd->inventory_data[n]->look == W_1HSWORD ||
+		sd->inventory_data[n]->look == W_1HAXE) {
+		if(ep == EQP_HAND_R && (pc_checkskill(sd,AS_LEFT) > 0 || (sd->class_&MAPID_UPPERMASK) == MAPID_ASSASSIN))
+			return EQP_ARMS;
+	}*/
+	return ep;
+}
+void Player::send_items()
+{
+	LogError("Player", "Send items !!!!!!!!!!!!!!!!");
+	RoCharInfo* ri = (RoCharInfo*)_info;
+	if (ri->_items.size() == 0)
+		return;
+
+	vector<RoItemListData> list; // equipable?
+	vector<RoItemListData> list2; 
+	for (size_t i = 0; i < ri->_items.size(); ++i)
+	{
+		if (!isstackable2(ri->_items[i]))
+		{
+			// Non-stackable (Equippable)
+			RoItemListData data;
+			data._info = &(ri->_items[i]);
+			data._equip_point = equippoint(ri->_items[i]);
+			LogDebug("Player", "One equippable item added");
+			list.push_back(data);
+		}
+		else
+		{
+			// stackable.
+			RoItemListData data;
+			data._info = &(ri->_items[i]);
+			data._equip_point = -2;
+			LogDebug("Player", "One stackable item added");
+			list.push_back(data);
+		}
+	}
+	RoItemList rl;
+	if (list.size())
+	{
+		rl._items = &list;
+		Packet p(ES_EQUIP_ITEM_LIST);
+		p.len = sizeof(Packet) + sizeof(rl);
+		p.param.Data = (char*) &rl;
+		send_packet(&p);
+	}
+	if (list2.size())
+	{
+		rl._items = &list2;
+		Packet p(ES_STACKABLE_ITEM_LIST);
+		p.len = sizeof(Packet) + sizeof(rl);
+		p.param.Data = (char*) &rl;
+		send_packet(&p);
+	}
+}
 
 void Player::on_handle(Packet* p)
 {
@@ -115,10 +209,30 @@ void Player::on_handle(Packet* p)
 	{
 		case EC_MESSAGE:
 			{
+				RoMessage m;
+				m._len = p->len - sizeof(Packet);
+				m._msg = p->param.Data;
+				m._id = 0;
 				Packet msg(ES_MESSAGE);
-				msg.len = p->len;
-				msg.param.Data = p->param.Data;
-				send_packet(&msg);
+				msg.len = sizeof(Packet) + sizeof(RoMessage);
+				msg.param.Data = (char*)&m;
+				send_packet(&msg); // send back the message to show it in GUI.
+
+				// Send to other players.
+				const char* ch = m._msg;
+				int i = 0;
+				while (*(ch + i) != ':' && i < m._len)
+				{
+					++i;
+				}
+				if (i != m._len)
+				{
+					ch = ch + i;
+					if (_map)
+					{
+						GMsg::get_singleton().send(_map->get_id(), ch, this);
+					}
+				}
 			}
 			break;
 		case EC_TICK_COUNT:

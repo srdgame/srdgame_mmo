@@ -57,6 +57,7 @@ void WorldAuth::handle_login(WorldSocket* socket, const Packet* packet)
 
 	if(this->auth_char(socket))
 	{
+		LogDebug(LN, "New Player with char_id : %d", c->_char_id);
 		Player * p = new Player(c->_account_id, c->_char_id);
 		p->bind(socket);
 		socket->bind(p);

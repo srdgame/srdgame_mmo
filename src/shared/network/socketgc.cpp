@@ -3,6 +3,7 @@
 #include "timedefs.h"
 #include "threadpool.h"
 #include "socket.h"
+#include "log.h"
 
 using namespace srdgame;
 
@@ -56,6 +57,7 @@ bool SocketGC::GCWorker::run()
 	if (data._time > gettick())
 		return false; // Time is not enough.
 
+	LogDebug("Socket GC", "Deleting one socket------------------");
 	delete data._socket;
 	return false;// Process Next data.
 }

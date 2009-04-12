@@ -15,22 +15,25 @@ class Npc;
 class Map
 {
 public:
-	Map(const std::string& name);
+	Map(const std::string& name, int id);
 	virtual ~Map();
 
 public:
 	void bind(ro::MapData* data);
 
 public:
-	inline std::string get_name(){ return _name;};
+	inline std::string get_name() const { return _name;};
+	inline int get_id() const { return _id;};
 	bool add_player(Player* p);
 	bool remove_player(Player* p);
 
 	void add_npc(Npc* npc);
 	void remove_npc(Npc* npc);
 
+	void send_msg(const std::string& msg, int pid);
 private:
 	std::string _name;
+	int _id;
 	std::map<int, Player*> _players;
 	Mutex _players_lock;
 

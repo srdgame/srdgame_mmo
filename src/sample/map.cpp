@@ -2,7 +2,7 @@
 #include "share.h"
 #include "ro_defs.h"
 #include <cstring>
-
+#include <cstdio>
 
 namespace ro
 {
@@ -42,6 +42,7 @@ DECLARE(map_connect)
 	ctm->_ver = op;
 	ctm->_account_id = PUINT32(src, index[0]);
 	ctm->_char_id = PUINT32(src, index[1]);
+	printf("====================Char_id : %d=====================", ctm->_char_id);
 	ctm->_login_id1 = PUINT32(src, index[2]);
 	ctm->_client_tick = PUINT32(src, index[3]);
 	ctm->_sex = PUINT8(src, index[4]);

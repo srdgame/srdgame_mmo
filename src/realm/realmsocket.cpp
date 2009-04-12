@@ -82,6 +82,7 @@ void RealmSocket::on_handle(Packet* packet)
 				_LogDebug_("RealmServer", "Characters has been loaded, count is : %d, chars : %d", count, chars);
 				for (size_t i = 0; i < count; ++i)
 				{
+					LogError("RealmServer", "Slot : %d , char_id %d", chars[i]._slot, chars[i]._id); 
 					_chars[chars[i]._slot] = chars[i]._id;
 				}
 				p.op = ES_CHAR_LIST;

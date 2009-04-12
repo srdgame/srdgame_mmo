@@ -24,6 +24,8 @@ public:
 	Map* get_map(std::string& name);
 	Map* get_map(int index);
 
+	// for send message.
+	void send_msg(int mid, const std::string& msg, int play_id);
 protected:
 	void unload_maps();
 protected:

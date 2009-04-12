@@ -6,6 +6,9 @@
 #include <vector>
 
 //using namespace srdgame;
+//
+namespace ro
+{
 // TODO: Replace these defines with configuration file.
 #define DEFAULT_WALK_SPEED 150
 #define MIN_WALK_SPEED 0
@@ -36,8 +39,42 @@
 		__p[5]=(uint8)(((sx0)<<4) | ((sy0)&0x0f)); \
 	} while(0)
 
-namespace ro
-{
+
+//Equip position constants
+enum equip_pos {
+	EQP_HEAD_LOW = 0x0001, 
+	EQP_HEAD_MID = 0x0200, //512
+	EQP_HEAD_TOP = 0x0100, //256
+	EQP_HAND_R   = 0x0002,
+	EQP_HAND_L   = 0x0020, //32
+	EQP_ARMOR    = 0x0010, //16
+	EQP_SHOES    = 0x0040, //64
+	EQP_GARMENT  = 0x0004,
+	EQP_ACC_L    = 0x0008,
+	EQP_ACC_R    = 0x0080, //128
+	EQP_AMMO     = 0x8000, //32768
+};
+
+#define EQP_WEAPON EQP_HAND_R
+#define EQP_SHIELD EQP_HAND_L
+#define EQP_ARMS (EQP_HAND_R|EQP_HAND_L)
+#define EQP_HELM (EQP_HEAD_LOW|EQP_HEAD_MID|EQP_HEAD_TOP)
+#define EQP_ACC (EQP_ACC_L|EQP_ACC_R)
+enum item_types {
+	IT_HEALING = 0,
+	IT_UNKNOWN, //1
+	IT_USABLE,  //2
+	IT_ETC,     //3
+	IT_WEAPON,  //4
+	IT_ARMOR,   //5
+	IT_CARD,    //6
+	IT_PETEGG,  //7
+	IT_PETARMOR,//8
+	IT_UNKNOWN2,//9
+	IT_AMMO,    //10
+	IT_DELAYCONSUME,//11
+	IT_MAX 
+};
 // define all the structs.
 //
 struct LoginInfo
@@ -156,6 +193,12 @@ struct WisMessage
 	char _name[MAX_NAME_LEN];
 	char _msg[MAX_MSG_LEN];
 };
+struct RoMessage
+{
+	size_t _len;
+	int _id; // 0 to have no id.
+	const char* _msg;
+};
 
 enum RoLookType
 {
@@ -193,7 +236,7 @@ class RoCharItem;
 struct RoItemListData
 {
 	RoCharItem* _info;
-	int _equip_type;
+	int _equip_point; // refer to pc.c:460
 };
 
 struct RoItemList

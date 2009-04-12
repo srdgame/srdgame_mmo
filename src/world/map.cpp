@@ -3,8 +3,11 @@
 #include "player.h"
 #include "npc.h"
 #include "log.h"
+#include "packetdefs.h"
+#include "opcode.h"
 
 using namespace srdgame;
+using namespace srdgame::opcode;
 using namespace std;
 using namespace ro;
 
@@ -21,7 +24,7 @@ using namespace ro;
 
 #define LN "MAP"
 
-Map::Map(const string& name) : _name (name), _ro_map(NULL)
+Map::Map(const string& name, int id) : _name (name), _id(id), _ro_map(NULL)
 {
 }
 Map::~Map()
@@ -72,4 +75,30 @@ void Map::remove_npc(Npc* npc)
 {
 	AutoLock lock(_npcs_lock);
 	_npcs.erase(npc->get_id());
+}
+
+void Map::send_msg(const string& msg, int pid)
+{
+	AutoLock lock(_players_lock);
+	std::map<int, Player*>::iterator ptr = _players.find(pid);
+	if (ptr == _players.end())
+		return;
+	Packet p(ES_MESSAGE);
+	p.len = sizeof(Packet) + sizeof(RoMessage);
+	RoMessage m;
+	m._id = pid; // Currently the player id is the char_id;
+	m._msg = msg.c_str();
+	m._len = msg.length();
+	p.param.Data = (char*)&m;
+
+	// Send to all user.
+	ptr == _players.begin();
+	for (; ptr != _players.end(); ++ptr)
+	{
+		// Do not send back to the user who is sending out message.
+		if (ptr->second->get_id() == pid)
+			continue;
+
+		ptr->second->send_packet(&p);
+	}
 }

@@ -68,7 +68,7 @@ void MapMgr::load_maps()
 			_maps_data.push_back(data);
 
 			// Since we need to have lazy idea about map contains.
-			Map* new_map = new Map(maps[i]);
+			Map* new_map = new Map(maps[i], i);
 			new_map->bind(&data);
 			_maps.insert(pair<int, Map*>(i, new_map));
 			_map_ids.insert(pair<string, int>(maps[i], i));
@@ -127,6 +127,24 @@ Map* MapMgr::get_map(std::string& name)
 Map* MapMgr::get_map(int index)
 {
 	return _maps[index];
+}
+
+void MapMgr::send_msg(int mid, const string& msg, int pid)
+{
+	AutoLock lock(_lock);
+	if (-1 == mid)
+	{
+		// send to all maps. TODO:
+	}
+	else
+	{
+		Map* map = _maps[mid];
+		if (map)
+		{
+			// send to map.
+			map->send_msg(msg, pid);
+		}
+	}
 }
 void MapMgr::unload_maps()
 {

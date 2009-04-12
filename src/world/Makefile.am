@@ -28,6 +28,8 @@ srdgame_worldserver_SOURCES  = worldserver.h \
 				   worldauth.cpp \
 				   worldupdater.h \
 				   worldupdater.cpp \
+				   gmsg.h \
+				   gmsg.cpp \
 			       main.cpp
 
 srdgame_worldserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lgame -lmysqlclient -ldatabase -lsample -lpthread -ldl -lz -lrt

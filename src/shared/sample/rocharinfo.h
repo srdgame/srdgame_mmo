@@ -13,7 +13,7 @@ namespace ro
 {
 static const uint16 MaxItemCount = 100; // TODO:
 static const uint16 MaxCartCount = 100;
-static const uint8 MaxSlotCount = 16;
+static const uint8 MaxSlotCount = 4;
 static const uint16 MaxSkillCount = 1020;
 static const uint16 MaxFriendCount = 40;
 static const uint16 MaxHotKeyCount = 27;
@@ -29,20 +29,20 @@ struct RoCharExp : public CharExp
 {
 
 };
-
 struct RoCharItem : public ItemInfo
 {
-	RoCharItem() : _amount(0), _identify(0), _refine(0), _attrs(0)
+	RoCharItem() : _amount(0), _identify(0), _refine(0), _attrs(0), _item_type(0)
 	{
+		memset(_cards, 0, sizeof(short) * MaxSlotCount);
 	}
 	//int _id; // The unique id?
 	//short _type; // The item type id
 	short _amount; // Mount?
-	uint16 _equip;
-	char _identify; // for job?
-	char _refine; 
-	char _attrs;
-	char _item_type; // The item type.
+	uint16 _equip; // load from DB
+	char _identify; // for job? // Load from DB.
+	char _refine; // Load from DDB.
+	char _attrs; // Load from DB
+	char _item_type; // The item type. refer to clif.c:1867
 	short _cards[MaxSlotCount];
 	//unsigned int _expire_time;
 };

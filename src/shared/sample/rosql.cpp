@@ -318,16 +318,17 @@ bool RoSql::save_char(int char_id, RoCharInfo& info)
 	}
 	LogNotice("RO", "Saving char info~~~~~~~~~~~~~~~~~~~~~~");
 	// Insert one new row
-	std::string row_sql = "INSERT INTO `%s` (`account_id`, `char_num`, `name`, `zeny`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
+	std::string row_sql = "INSERT INTO `%s` (`char_id`, `account_id`, `char_num`, `name`, `zeny`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
 		"`max_sp`, `sp`, `hair`, `hair_color`, `last_map`, `last_x`, `last_y`, `save_map`, `save_x`, `save_y`) VALUES ("
-		"'%d', '%d', '%s', '%d',  '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d','%d', '%d','%d', '%d', '%s', '%d', '%d', '%s', '%d', '%d')";
+		"'%d', '%d', '%d', '%s', '%d',  '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d','%d', '%d','%d', '%d', '%s', '%d', '%d', '%s', '%d', '%d')";
 	DatabaseMgr::get_singleton().execute(row_sql.c_str(),
-			RO_CHAR_TB, info._account_id, info._slot, info._name.c_str(), info._exp._zeny, info._prop._str, info._prop._agi,
+			RO_CHAR_TB, info._id, info._account_id, info._slot, info._name.c_str(), info._exp._zeny, info._prop._str, info._prop._agi,
 			info._prop._vit, info._prop._int, info._prop._dex, info._prop._luk, info._prop._max_hp, info._prop._cur_hp,
 			info._prop._max_sp, info._prop._cur_sp, info._show._hair_style, info._show._hair_color, info._last_pos._map_name,
 			info._last_pos._x, info._last_pos._y, info._save_pos._map_name, info._save_pos._x, info._save_pos._y);
 
 	// save items.
+	save_items(char_id, info._items);
 	// save card data
 	// save storage data
 	// save char info
@@ -381,13 +382,15 @@ bool RoSql::load_items(int char_id, std::vector<RoCharItem>& items)
 
 	string sql = "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`";
 	for (int i = 0; i <MaxSlotCount; ++i)
-		sql += ", 'card" + conversion_cast<string>(i) + "'";
+		sql += ", `card" + conversion_cast<string>(i) + "`";
 	sql += " FROM `%s` WHERE `char_id`=%d LIMIT %d";
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_ITEM_TB, char_id, MaxItemCount);
 
+	//LogError("RoSql", "AAAAAAAAAAAAAAAAAAAAAAAAA");
 	if (res == NULL)
 		return true;
 
+	//LogError("RoSql", "aaaaaaaaaaaaaaaaaaaaaa");
 	size_t count = res->get_row_size();
 	for (size_t n = 0; n < count; ++n)
 	{
@@ -417,8 +420,8 @@ bool RoSql::save_items(int char_id, const std::vector<RoCharItem>& items)
 {
 	string sql = "INSERT INTO `%s`(`%s`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`";
 	for (int i = 0; i <MaxSlotCount; ++i)
-		sql += ", 'card" + conversion_cast<string>(i) + "'";
-	sql += ") VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%d', '%u')";
+		sql += ", `card" + conversion_cast<string>(i) + "`";
+	sql += ") VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%d', '%u'";
 	for (int i = 0; i < MaxSlotCount; ++i)
 		sql += ", '%d'";
 	sql += ")";
@@ -426,7 +429,7 @@ bool RoSql::save_items(int char_id, const std::vector<RoCharItem>& items)
 	for (size_t n = 0; n < count; ++n)
 	{
 		DatabaseMgr::get_singleton().execute(sql.c_str(),
-			RO_ITEM_TB, "char_id", char_id, items[n]._type, items[n]._amount, items[n]._equip, items[n]._identify, items[n]._refine, items[n]._attrs, items[n]._expire_time);
+			RO_ITEM_TB, "char_id", char_id, items[n]._type, items[n]._amount, items[n]._equip, items[n]._identify, items[n]._refine, items[n]._attrs, items[n]._expire_time, items[n]._cards[0], items[n]._cards[1], items[n]._cards[2], items[n]._cards[3]);
 	}
 	return true;
 }
@@ -446,7 +449,7 @@ bool RoSql::load_cart(int char_id, std::vector<RoCharItem>& cart_items)
 
 	string sql = "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`";
 	for (int i = 0; i <MaxSlotCount; ++i)
-		sql += ", 'card" + conversion_cast<string>(i) + "'";
+		sql += ", `card" + conversion_cast<string>(i) + "`";
 	sql += " FROM `%s` WHERE `char_id`=%d LIMIT %d";
 	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(), RO_CART_TB, char_id, MaxCartCount);
 

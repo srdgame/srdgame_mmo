@@ -23,6 +23,7 @@ TO_DC(0x0201); // send friend list.
 TO_DC(0x0206); // send friend status.
 
 TO_DC(0x00a4); // send equip item list.
+TO_DC(0x01ee); // send stackable item list.
 
 TO_DC(0x0087); // send walk to xy ok.
 TO_DC(0x007f); // send back tickcount;

@@ -46,9 +46,13 @@ bool WorldSocketBase::send_packet(Packet* packet)
 #ifdef SOCKET_DEBUG
 	LogDebug("WorldServer", "Packet length is : %d", size);
 #endif
-	if (size && is_connected())
+	if (is_connected())
 	{
-		return this->send(sz, size);
+		if (size)
+		{
+			return this->send(sz, size);
+		}
+		return true;
 	}
 #ifdef SOCKET_DEBUG
 	LogError("WorldServer", "Socket is't been connected");

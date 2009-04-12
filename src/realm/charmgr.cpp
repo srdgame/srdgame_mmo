@@ -83,10 +83,11 @@ RoCharInfo* CharMgr::create_new(CreateCharData* data, int account_id)
 	info->_prop._cur_hp = info->_prop._max_hp;
 	info->_prop._cur_sp = info->_prop._max_sp;
 
-	info->_items[0]._id = _config.get_value<int>("start_weapon");
+	info->_items.resize(2);
+	info->_items[0]._type = _config.get_value<int>("start_weapon");
 	info->_items[0]._amount = 1;
 	info->_items[0]._identify = 1;
-	info->_items[1]._id = _config.get_value<int>("start_armor");
+	info->_items[1]._type = _config.get_value<int>("start_armor");
 	LogDebug("CHAR_MGR", "Start_weapon : %d, \t start_aramor : %d", info->_items[0]._id, info->_items[1]._id);	
 	info->_items[1]._amount = 1;
 	info->_items[1]._identify = 1;
