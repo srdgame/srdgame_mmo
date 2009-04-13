@@ -23,7 +23,7 @@ size_t char_to_buf(char* buf, const RoCharInfoBase* info)
 	PUINT32(buf, len) = info->_exp._job_lvl;	len += 4;
 	PUINT32(buf, len) = 0;						len += 4;
 	PUINT32(buf, len) = 0;						len += 4;
-	PUINT32(buf, len) = info->_option;				len += 4;
+	PUINT32(buf, len) = info->_status._option;				len += 4;
 	PUINT32(buf, len) = info->_prop._karma;		len += 4;
 	PUINT32(buf, len) = info->_prop._manner;		len += 4;
 	PUINT16(buf, len) = info->_exp._prop_point; 	len += 2;
@@ -34,7 +34,7 @@ size_t char_to_buf(char* buf, const RoCharInfoBase* info)
 	PUINT16(buf, len) = DEFAULT_WALK_SPEED;		len += 2;
 	PUINT16(buf, len) = info->_class;				len += 2;
 	PUINT16(buf, len) = info->_show._hair_style;			len += 2;
-	PUINT16(buf, len) = info->_option & 0x20 ? 0 : info->_show._weapon;	len += 2; // when the weapon is sent and your option is riding, the client crashes on login!?
+	PUINT16(buf, len) = info->_status._option & 0x20 ? 0 : info->_show._weapon;	len += 2; // when the weapon is sent and your option is riding, the client crashes on login!?
 	PUINT16(buf, len) = info->_exp._base_lvl;		len += 2;
 	PUINT16(buf, len) = info->_exp._skill_point;	len += 2;
 	PUINT16(buf, len) = info->_show._head_bottom;	len += 2;

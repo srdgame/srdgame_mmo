@@ -323,6 +323,7 @@ struct RoItemData : public RoItemListData
 
 struct RoItemList
 {
+	int _start_index;
 	std::vector<RoItemListData> * _items;
 };
 
@@ -402,6 +403,31 @@ struct RoMannerChangeUpdate // 0x01ab
 	int _id; // the account_id when it is used for player.
 	StatusP _status; // == SP_MANNER
 	int _val;
+};
+
+enum RoActionType
+{
+	AT_DAMAGE = 0x00, // Damage
+	AT_PICK_UP_ITEM = 0x01, // Pick up item.
+	AT_SIT_DOWN = 0x02, // sit down
+	AT_STAND_UP = 0x03, // stand up
+	AT_RA_DAMAGE = 0x04, // reflected/absorbed damage.
+	AT_DOUBLE_ATTACK = 0x08, // double attack
+	AT_NO_FLINCH = 0x09, // don't display flinch animation
+	AT_CRITICAL_HIT = 0x0a,  // critical hit
+	AT_LUCKY_DODGE = 0x0b, // locky dodge.
+};
+struct RoActionData
+{
+	int _src_id;
+	int _dst_id;
+	int _tick_count;
+	int _src_delay;
+	int _dst_delay;
+	int _div;
+	RoActionType _type;
+	int _damage;
+	int _damage2;
 };
 }
 #endif

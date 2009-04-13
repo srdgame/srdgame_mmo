@@ -348,7 +348,7 @@ bool RoSql::save_char(int char_id, RoCharInfo& info)
 			info._exp._base_exp, info._exp._job_exp, info._exp._zeny,
 			info._prop._max_hp, info._prop._cur_hp, info._prop._max_sp, info._prop._cur_sp, info._exp._prop_point, info._exp._skill_point,
 			info._prop._str, info._prop._agi, info._prop._vit, info._prop._int, info._prop._dex, info._prop._luk,
-			info._option, info._party_id, info._guild_id, info._pet_id, info._homun_id,
+			info._status._option, info._party_id, info._guild_id, info._pet_id, info._homun_id,
 			info._show._weapon, info._show._shield, info._show._head_top, info._show._head_middle, info._show._head_bottom,
 			info._last_pos._map_name, info._last_pos._x, info._last_pos._y, info._save_pos._map_name, info._save_pos._x, info._save_pos._y,
 			info._account_id, info._id);
@@ -611,7 +611,7 @@ bool RoSql::fetch_chars_info(Field* f, RoCharInfoBase& info)
 	info._prop._cur_sp = f[18].get<int>();
 	info._exp._prop_point = f[19].get<int>();
 	info._exp._skill_point = f[20].get<int>();
-	info._option = f[21].get<int>();
+	info._status._option = f[21].get<int>();
 	info._prop._karma = f[22].get<int>();
 	info._prop._manner = f[23].get<int>();
 	info._show._hair_style = f[24].get<int>();
@@ -653,7 +653,7 @@ bool RoSql::fetch_char_info(Field* f, RoCharInfo& info)
 	info._prop._cur_sp = f[18].get<int>();
 	info._exp._prop_point = f[19].get<int>();
 	info._exp._skill_point = f[20].get<int>();
-	info._option = f[21].get<int>();
+	info._status._option = f[21].get<int>();
 	info._prop._karma = f[22].get<int>();
 	info._prop._manner = f[23].get<int>();
 	info._party_id = f[24].get<int>();

@@ -148,28 +148,28 @@ TO_DC(0x00a0)
 	size_t res = 0;
 	RoItemData* data = (RoItemData*) packet->param.Data;
 
-	if (data->_fail)
+	if (>_fail)
 	{
-		data->_id = 0;
-		data->_identify = 0;
-		data->_attrs = 0;
-		data->_refine = 0;
-		data->_equip_point = 0;
-		data->_type = 0;
+		>_id = 0;
+		>_identify = 0;
+		>_attrs = 0;
+		>_refine = 0;
+		>_equip_point = 0;
+		>_type = 0;
 	}
 	PUINT16(buf, res) = 0x00a0;	res += 2;
-	PUINT16(buf, res) = data->_index + 2;	res += 2;
-	PUINT16(buf, res) = data->_amount;		res += 2;
-	PUINT16(buf, res) = data->_id;			res += 2;
-	PUINT8(buf, res) = data->_identify;		res += 1;
-	PUINT8(buf, res) = data->_attrs;		res += 1;
-	PUINT8(buf, res) = data->_refine;		res += 1;
+	PUINT16(buf, res) = _index + 2;	res += 2;
+	PUINT16(buf, res) = _amount;		res += 2;
+	PUINT16(buf, res) = _id;			res += 2;
+	PUINT8(buf, res) = _identify;		res += 1;
+	PUINT8(buf, res) = _attrs;		res += 1;
+	PUINT8(buf, res) = _refine;		res += 1;
 	memset(PCHAR(buf, res), 0, 8);
 	// TODO: for cards;
 	res += 8;
-	PUINT16(buf, res) = data->_equip_point;	res += 2;
-	PUINT8(buf, res) = data->_type;			res += 1;
-	PUINT8(buf, res) = data->_fail;			res += 1;
+	PUINT16(buf, res) = _equip_point;	res += 2;
+	PUINT8(buf, res) = _type;			res += 1;
+	PUINT8(buf, res) = _fail;			res += 1;
 
 	return res;
 }
@@ -298,15 +298,15 @@ TO_DC(0x008a)
 	size_t res = 0;
 
 	PUINT16(buf, res) = 0x008a;			res += 2;
-	PUINT32(buf, res) = data->_src_id;	res += 4;
-	PUINT32(buf, res) = data->_dst_id;	res += 4;
-	PUINT32(buf, res) = data->_tick_count;	res += 4;
-	PUINT32(buf, res) = data->_src_delay;	res += 4;
-	PUINT32(buf, res) = data->_dst_delay;	res += 4;
-	PUINT16(buf, res) = data->_damage; res += 2; // TODO: for div
-	PUINT16(buf, res) = data->_div;	res += 2;
-	PUINT8(buf, res) = data->_type;	res += 1;
-	PUINT16(buf, res) = data->_damage2; res + 2;
+	PUINT32(buf, res) = _src_id;	res += 4;
+	PUINT32(buf, res) = _dst_id;	res += 4;
+	PUINT32(buf, res) = _tick_count;	res += 4;
+	PUINT32(buf, res) = _src_delay;	res += 4;
+	PUINT32(buf, res) = _dst_delay;	res += 4;
+	PUINT16(buf, res) = _damage; res += 2; // TODO: for div
+	PUINT16(buf, res) = _div;	res += 2;
+	PUINT8(buf, res) = _type;	res += 1;
+	PUINT16(buf, res) = _damage2; res + 2;
 
 	return res; // 29
 }
@@ -328,15 +328,15 @@ TO_DC(0x007c) // clif.c:747
 	PUINT16(buf, res) = info->_class;	res += 2;
 	PUINT16(buf, res) = info->_show._shield;	res += 2;
 	PUINT16(buf, res) = info->_show._head_top;		res += 2;
-	PUINT16(buf, res) = info->_show._head_middle;		res += 2;
+	PUINT16(buf, res) = info->_show._head_mid;		res += 2;
 	// TODO:
 	PUINT16(buf, res) = info->_show._hair_color;		res += 2;
-	PUINT16(buf, res) = info->_show._clothes_color;	res += 2;
+	PUINT16(buf, res) = info->_show._cloth_color;	res += 2;
 	PUINT16(buf, res) = info->_status._head_dir;		res += 2;
 	PUINT8(buf, res) = 0; // karma
 	res += 1;
 	PUINT8(buf, res) = info->_show._sex;	res += 1;
-	SET_POS((uint8*)buf, res, info->_last_pos._x, info->_last_pos._y, info->_status._head_dir);	res += 3;
+	SET_POS(buf, res, info->_last_pos._x, info->_last_pos._y, info->_status._head_dir);	res += 3;
 	PUINT8(buf, res) = 0;		res += 1;
 	PUINT8(buf, res) = 0;		res += 1;
 	// totally 42;
@@ -364,10 +364,10 @@ TO_DC(0x0078) // Player standing
 	PUINT16(buf, res) = info->_show._shield;		res += 2;
 	PUINT16(buf, res) = info->_show._head_bottom;	res += 2;
 	PUINT16(buf, res) = info->_show._head_top;		res += 2;
-	PUINT16(buf, res) = info->_show._head_middle;		res += 2;
+	PUINT16(buf, res) = info->_show._head_mid;		res += 2;
 	// TODO:
 	PUINT16(buf, res) = info->_show._hair_color;	res += 2;
-	PUINT16(buf, res) = info->_show._clothes_color;	res += 2;
+	PUINT16(buf, res) = info->_show._cloth_color;	res += 2;
 	PUINT16(buf, res) = info->_status._head_dir;	res += 2;
 	PUINT32(buf, res) = 0; res += 4;// TODO:
 	PUINT16(buf, res) = 0;	res += 2; //TODO:
@@ -375,11 +375,11 @@ TO_DC(0x0078) // Player standing
 	PUINT16(buf, res) = info->_status._skill_state;	res += 2;
 	PUINT8(buf, res) = info->_prop._karma;	res += 1;
 	PUINT8(buf, res) = info->_show._sex;	res += 1;
-	SET_POS((uint8*)buf, res, info->_last_pos._x, info->_last_pos._y,  info->_status._head_dir);	res += 3;
+	SET_POS(buf, res, info->_last_pos._x, info->_last_pos._y,  info->_status._head_dir);	res += 3;
 	PUINT8(buf, res) = 5;	res += 1;
 	PUINT8(buf, res) = 5;	res += 1;
-	PUINT8(buf, res) = info->_status._state.dead_sit;	res += 1;
-	PUINT16(buf, res) = info->_exp._base_lvl;
+	PUINT8(buf, res) = info->_status._state._dead_sit;	res += 1;
+	PUINT16(buf, res) = info->_prop->_base_lvl;
 
 	assert(res == 55);
 	return res;
@@ -387,7 +387,7 @@ TO_DC(0x0078) // Player standing
 
 TO_DC(0x022b) // spawning new mob.  // clif.c:770
 {
-	RoCharInfoBase* info = (RoCharInfoBase*) packet->param.Data;
+	RoUnitData* data = (RoUnitData*) packet->param.Data;
 	size_t res = 0;
 
 	PUINT16(buf, res) = 0x022b;		res += 2;
@@ -403,10 +403,10 @@ TO_DC(0x022b) // spawning new mob.  // clif.c:770
 	PUINT16(buf, res) = info->_show._shield;		res += 2;
 	PUINT16(buf, res) = info->_show._head_bottom;	res += 2;
 	PUINT16(buf, res) = info->_show._head_top;		res += 2;
-	PUINT16(buf, res) = info->_show._head_middle;		res += 2;
+	PUINT16(buf, res) = info->_show._head_mid;		res += 2;
 	// TODO:
 	PUINT16(buf, res) = info->_show._hair_color;		res += 2;
-	PUINT16(buf, res) = info->_show._clothes_color;	res += 2;
+	PUINT16(buf, res) = info->_show._cloth_color;	res += 2;
 	PUINT16(buf, res) = info->_status._head_dir;		res += 2;
 
 	// TODO:
@@ -417,17 +417,17 @@ TO_DC(0x022b) // spawning new mob.  // clif.c:770
 	PUINT16(buf, res) = info->_status._skill_state;	res += 2;
 	PUINT8(buf, res) = info->_prop._karma;	res += 1;
 	PUINT8(buf, res) = info->_show._sex;		res += 1;
-	SET_POS((uint8*)buf, res, info->_last_pos._x, info->_last_pos._y, info->_status._head_dir);		res += 3;
+	SET_POS(buf, res, info->_last_pos._x, info->_last_pos._y, info->_status._head_dir);		res += 3;
 	PUINT8(buf, res) = 5; res += 1; // TODO:
 	PUINT8(buf, res) = 5; res += 1; // TODO:
-	PUINT16(buf, res) = info->_exp._base_lvl;	res += 2;
+	PUINT16(buf, res) = info->_prop._base_lvl;	res += 2;
 	assert(res = 57);
 
 	return res;
 }
 TO_DC(0x022a) // mob standing
 {
-	RoCharInfoBase* info = (RoCharInfoBase*) packet->param.Data;
+	RoUnitData* data = (RoUnitData*) packet->param.Data;
 	size_t res = 0;
 
 	PUINT16(buf, res) = 0x022b;		res += 2;
@@ -437,29 +437,6 @@ TO_DC(0x022a) // mob standing
 	PUINT16(buf, res) = info->_status._health_state;	res += 2;
 	PUINT32(buf, res) = info->_status._option;			res += 2; // why??
 	PUINT16(buf, res) = info->_status._option;			res += 2;
-	PUINT16(buf, res) = info->_class;					res += 2;
-	PUINT16(buf, res) = info->_show._hair_style;		res += 2;
-	PUINT16(buf, res) = info->_show._weapon;			res += 2;
-	PUINT16(buf, res) = info->_show._shield;			res += 2;
-	PUINT16(buf, res) = info->_show._head_bottom;		res += 2;
-	PUINT16(buf, res) = info->_show._head_top;			res += 2;
-	PUINT16(buf, res) = info->_show._head_middle;			res += 2;
-	// TODO:
-	PUINT32(buf, res) = 0;	res += 4;	//TODO:
-	PUINT16(buf, res) = 0;	res += 2;	// TODO:
-	PUINT16(buf, res) = info->_prop._manner;	res += 2;
-	PUINT32(buf, res) = info->_status._skill_state;		res += 2; // Why??
-	PUINT16(buf, res) = info->_status._skill_state;		res += 2;
-	PUINT16(buf, res) = info->_prop._karma;				res += 2;
-	PUINT16(buf, res) = info->_show._sex;				res += 2;
-	SET_POS((uint8*)buf, res, info->_last_pos._x, info->_last_pos._y, info->_status._head_dir);		res += 3;
-	PUINT8(buf, res) = 5;		res += 1;
-	PUINT8(buf, res) = 5;		res += 1;
-	PUINT8(buf, res) = info->_status._state.dead_sit;		res += 1;
-	PUINT16(buf, res) = info->_exp._base_lvl;			res += 2;
-
-	assert(res == 57);
-	return res;
 }
 }
 

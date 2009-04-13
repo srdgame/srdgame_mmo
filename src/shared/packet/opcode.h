@@ -144,6 +144,8 @@ enum ExOpcode
 	ES_UNEQUIP_ITEM = 233,
 
 	ES_ADD_ITEM = 241,
+
+	ES_UNIT_ACTION = 300,
 };
 }
 }

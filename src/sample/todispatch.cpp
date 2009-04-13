@@ -35,6 +35,7 @@ static struct {
 	{to_send_0x00aa, ES_EQUIP_ITEM},
 	{to_send_0x00ac, ES_UNEQUIP_ITEM},
 	{to_send_0x00a0, ES_ADD_ITEM},
+	{to_send_0x008a, ES_UNIT_ACTION},
 	{NULL, 0},
 };
 

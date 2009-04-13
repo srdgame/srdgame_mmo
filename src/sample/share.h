@@ -32,6 +32,7 @@ TO_DC(0x0086); // send unit move.
 TO_DC(0x00aa); // equip result.
 TO_DC(0x00ac); // unequip result.
 
+TO_DC(0x008a); // Actions and Attack damage.
 }
 
 #endif

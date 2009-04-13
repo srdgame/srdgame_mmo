@@ -116,7 +116,7 @@ void Player::add_item(RoCharItem& item)
 	data._refine = item._refine;
 	const RoDBItem* db = RoItemDB::get_singleton().get_item(item._type);
 	data._equip_point = db->_equip_point;
-	data._type = item._type;
+	data._type = db->_item_type;
 	data._amount = item._amount;
 	
 	Packet p(ES_ADD_ITEM);
@@ -124,6 +124,19 @@ void Player::add_item(RoCharItem& item)
 	p.param.Data = (char*) &data;
 
 	send_packet(&p);
+	// tell client to add the item.
+	// Action
+	RoActionData adata;
+	memset(&adata, 0, sizeof(adata));
+	adata._type = AT_PICK_UP_ITEM;
+	adata._src_id = _acc_id;
+	adata._dst_id = item._id;
+	p.op = ES_UNIT_ACTION;
+	p.len = sizeof(Packet) + sizeof(adata);
+	p.param.Data = (char*)&adata;
+	send_packet(&p);
+	//
+	//send_items();
 }
 void Player::update_look()
 {

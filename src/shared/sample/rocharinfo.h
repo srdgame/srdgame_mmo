@@ -4,6 +4,7 @@
 #include "metadefs.h"
 #include "gamedefs.h"
 #include "ro_defs.h"
+#include "rounitstatus.h"
 #include "itemdefs.h"
 #include <cstring>
 #include <vector>
@@ -90,7 +91,7 @@ struct RoPosition : public Position
 class RoCharInfoBase : public CharInfo
 {
 public:
-	RoCharInfoBase() : _option(0), _party_id(0), _guild_id(0), _pet_id(0), _home_id(0), _mer_id(0), _homun_id(0), _fame(0), _slot(0), _hungry(0)
+	RoCharInfoBase() : _party_id(0), _guild_id(0), _pet_id(0), _home_id(0), _mer_id(0), _homun_id(0), _fame(0), _slot(0), _hungry(0)
 	{
 	}
 public:
@@ -98,6 +99,7 @@ public:
 	RoCharProp _prop;
 	RoCharShow _show;
 	RoCharExp _exp;
+	RoUnitStatus _status;
 
 	// Thos information won't be used by load_chars.
 	//RoCharItem _items[MaxItemCount];
@@ -106,7 +108,7 @@ public:
 	//RoCharHotKey _hotkeys[MaxHotKeyCount];
 	//
 	// More:
-	int _option;
+	// int _option; // moved to _status;
 	int _party_id;
 	int _guild_id;
 	int _pet_id;
