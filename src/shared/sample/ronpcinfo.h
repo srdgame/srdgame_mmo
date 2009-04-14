@@ -2,7 +2,7 @@
 
 namespace ro
 {
-struct RoMobInfo : public RoCharInfoBase
+struct RoNpcInfo : public RoCharInfoBase
 {
 };
 }

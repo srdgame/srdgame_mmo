@@ -33,8 +33,8 @@ public:
 	virtual void pause();
 	virtual void stop();
 
-	virtual void add(NObject* obj);
-	virtual void remove(NObject* obj);
+	virtual void add(Waitor* w);
+	virtual void remove(Waitor* w);
 
 private:
 	void update(); // called by thread,
@@ -44,14 +44,14 @@ private:
 	{
 		PQueue() : _delay(0){}
 		int _delay;
-		FastQueue<NObject*>* _queue;
+		FastQueue<Waitor*>* _queue;
 	};
 	PQueue _queues[NP_COUNT];
 	
 	int _doing;
-	FastQueue<NObject*> * _new_queue;
+	FastQueue<Waitor*> * _new_queue;
 	
-	std::map<NObject*, bool> _removing;
+	std::map<Waitor*, bool> _removing;
 	Thread* _thread;
 	bool _pause;
 	Mutex _lock;

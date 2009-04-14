@@ -1,6 +1,6 @@
 #ifndef SPAWN_H_
 #define SPAWN_H_
-#include "nobject.h"
+#include "waitor.h"
 
 namespace srdgame
 {
@@ -17,7 +17,7 @@ struct SpawnInfo
 	SpawnType _type;
 };
 
-class SpawnObject : public NObject
+class Spawner : public Waitor
 {
 };
 }

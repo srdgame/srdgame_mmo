@@ -317,27 +317,29 @@ TO_DC(0x007c) // clif.c:747
 	size_t res = 0;
 
 	PUINT16(buf, res) = 0x007c;		res += 2;
+
+	PUINT8(buf, res) = 0;			res += 1;
 	PUINT32(buf, res) = info->_id;	res += 4;
 	PUINT16(buf, res) = info->_status._speed;	res += 2;
-	PUINT16(buf, res) = info->_status._body_state;	res += 2;
+	PUINT16(buf, res) = info->_status._body_state;	res += 2; //11
 	PUINT16(buf, res) = info->_status._health_state; res += 2;
 	PUINT16(buf, res) = info->_status._option;	res += 2;
 	PUINT16(buf, res) = info->_show._hair_style;	res += 2;
 	PUINT16(buf, res) = info->_show._weapon; 	res += 2;
-	PUINT16(buf, res) = info->_show._head_bottom;	res += 2;
+	PUINT16(buf, res) = info->_show._head_bottom;	res += 2; //21
 	PUINT16(buf, res) = info->_class;	res += 2;
 	PUINT16(buf, res) = info->_show._shield;	res += 2;
 	PUINT16(buf, res) = info->_show._head_top;		res += 2;
 	PUINT16(buf, res) = info->_show._head_middle;		res += 2;
 	// TODO:
-	PUINT16(buf, res) = info->_show._hair_color;		res += 2;
+	PUINT16(buf, res) = info->_show._hair_color;		res += 2; //31
 	PUINT16(buf, res) = info->_show._clothes_color;	res += 2;
 	PUINT16(buf, res) = info->_status._head_dir;		res += 2;
 	PUINT8(buf, res) = 0; // karma
 	res += 1;
 	PUINT8(buf, res) = info->_show._sex;	res += 1;
 	SET_POS((uint8*)buf, res, info->_last_pos._x, info->_last_pos._y, info->_status._head_dir);	res += 3;
-	PUINT8(buf, res) = 0;		res += 1;
+	PUINT8(buf, res) = 0;		res += 1; // 41
 	PUINT8(buf, res) = 0;		res += 1;
 	// totally 42;
 	assert(res == 42);
@@ -355,31 +357,31 @@ TO_DC(0x0078) // Player standing
 	PUINT8(buf, res) = 0;			res += 1;
 	PUINT32(buf, res) = info->_id;	res += 4;
 	PUINT16(buf, res) = info->_status._speed;	res += 2;
-	PUINT16(buf, res) = info->_status._body_state;	res += 2;
+	PUINT16(buf, res) = info->_status._body_state;	res += 2;  // 11
 	PUINT16(buf, res) = info->_status._health_state;	res += 2;
 	PUINT16(buf, res) = info->_status._option;		res += 2;
 	PUINT16(buf, res) = info->_class;		res += 2;
 	PUINT16(buf, res) = info->_show._hair_style;	res += 2;
-	PUINT16(buf, res) = info->_show._weapon;		res += 2;
+	PUINT16(buf, res) = info->_show._weapon;		res += 2; //21
 	PUINT16(buf, res) = info->_show._shield;		res += 2;
 	PUINT16(buf, res) = info->_show._head_bottom;	res += 2;
 	PUINT16(buf, res) = info->_show._head_top;		res += 2;
 	PUINT16(buf, res) = info->_show._head_middle;		res += 2;
 	// TODO:
-	PUINT16(buf, res) = info->_show._hair_color;	res += 2;
+	PUINT16(buf, res) = info->_show._hair_color;	res += 2; // 31
 	PUINT16(buf, res) = info->_show._clothes_color;	res += 2;
 	PUINT16(buf, res) = info->_status._head_dir;	res += 2;
 	PUINT32(buf, res) = 0; res += 4;// TODO:
-	PUINT16(buf, res) = 0;	res += 2; //TODO:
+	PUINT16(buf, res) = 0;	res += 2; //TODO: 					//41
 	PUINT16(buf, res) = info->_prop._manner;	res += 2;
 	PUINT16(buf, res) = info->_status._skill_state;	res += 2;
 	PUINT8(buf, res) = info->_prop._karma;	res += 1;
 	PUINT8(buf, res) = info->_show._sex;	res += 1;
 	SET_POS((uint8*)buf, res, info->_last_pos._x, info->_last_pos._y,  info->_status._head_dir);	res += 3;
-	PUINT8(buf, res) = 5;	res += 1;
+	PUINT8(buf, res) = 5;	res += 1; 						// 51
 	PUINT8(buf, res) = 5;	res += 1;
 	PUINT8(buf, res) = info->_status._state.dead_sit;	res += 1;
-	PUINT16(buf, res) = info->_exp._base_lvl;
+	PUINT16(buf, res) = info->_exp._base_lvl;			res += 2;
 
 	assert(res == 55);
 	return res;
@@ -393,35 +395,34 @@ TO_DC(0x022b) // spawning new mob.  // clif.c:770
 	PUINT16(buf, res) = 0x022b;		res += 2;
 	PUINT32(buf, res) = info->_id;	res += 4;
 	PUINT16(buf, res) = info->_status._speed;	res += 2;
-	PUINT16(buf, res) = info->_status._body_state;	res += 2;
-	PUINT16(buf, res) = info->_status._health_state;	res += 2;
-	PUINT32(buf, res) = info->_status._option;		res += 2; // why?
-	PUINT16(buf, res) = info->_status._option;		res += 2;
+	PUINT16(buf, res) = info->_status._body_state;	res += 2; //10
+	PUINT16(buf, res) = info->_status._health_state;	res += 2; 
+	PUINT32(buf, res) = info->_status._option;		res += 4;
 	PUINT16(buf, res) = info->_class;		res += 2;
-	PUINT16(buf, res) = info->_show._hair_style;	res += 2;
+	PUINT16(buf, res) = info->_show._hair_style;	res += 2; // 20
 	PUINT16(buf, res) = info->_show._weapon;		res += 2;
 	PUINT16(buf, res) = info->_show._shield;		res += 2;
 	PUINT16(buf, res) = info->_show._head_bottom;	res += 2;
 	PUINT16(buf, res) = info->_show._head_top;		res += 2;
-	PUINT16(buf, res) = info->_show._head_middle;		res += 2;
-	// TODO:
+	PUINT16(buf, res) = info->_show._head_middle;		res += 2; // 30
+	// TODO:  There is difference about BL_NPC && _class == FLAG_CLASS.
 	PUINT16(buf, res) = info->_show._hair_color;		res += 2;
 	PUINT16(buf, res) = info->_show._clothes_color;	res += 2;
 	PUINT16(buf, res) = info->_status._head_dir;		res += 2;
 
-	// TODO:
-	PUINT32(buf, res) = 0;		res += 4;
-	PUINT16(buf, res) = 0;		res += 2;
+	// TODO: Below are clif_visual_guild_id() and clif_visual_emblem_id
+	PUINT32(buf, res) = 0;		res += 4;					// 40
+	PUINT16(buf, res) = 0;		res += 2; 
 	PUINT16(buf, res) = info->_prop._manner;	res += 2;
 	PUINT32(buf, res) = info->_status._skill_state;	res += 2; // why?
 	PUINT16(buf, res) = info->_status._skill_state;	res += 2;
 	PUINT8(buf, res) = info->_prop._karma;	res += 1;
-	PUINT8(buf, res) = info->_show._sex;		res += 1;
+	PUINT8(buf, res) = info->_show._sex;		res += 1; // 50
 	SET_POS((uint8*)buf, res, info->_last_pos._x, info->_last_pos._y, info->_status._head_dir);		res += 3;
 	PUINT8(buf, res) = 5; res += 1; // TODO:
 	PUINT8(buf, res) = 5; res += 1; // TODO:
 	PUINT16(buf, res) = info->_exp._base_lvl;	res += 2;
-	assert(res = 57);
+	assert(res == 57);
 
 	return res;
 }
@@ -430,35 +431,36 @@ TO_DC(0x022a) // mob standing
 	RoCharInfoBase* info = (RoCharInfoBase*) packet->param.Data;
 	size_t res = 0;
 
-	PUINT16(buf, res) = 0x022b;		res += 2;
+	PUINT16(buf, res) = 0x022a;		res += 2;
 	PUINT32(buf, res) = info->_id;	res += 4;
 	PUINT16(buf, res) = info->_status._speed;	res += 2;
-	PUINT16(buf, res) = info->_status._body_state;		res += 2;
+	PUINT16(buf, res) = info->_status._body_state;		res += 2; //10
 	PUINT16(buf, res) = info->_status._health_state;	res += 2;
-	PUINT32(buf, res) = info->_status._option;			res += 2; // why??
-	PUINT16(buf, res) = info->_status._option;			res += 2;
+	PUINT32(buf, res) = info->_status._option;			res += 4; 
 	PUINT16(buf, res) = info->_class;					res += 2;
-	PUINT16(buf, res) = info->_show._hair_style;		res += 2;
+	PUINT16(buf, res) = info->_show._hair_style;		res += 2; // 20
 	PUINT16(buf, res) = info->_show._weapon;			res += 2;
 	PUINT16(buf, res) = info->_show._shield;			res += 2;
 	PUINT16(buf, res) = info->_show._head_bottom;		res += 2;
 	PUINT16(buf, res) = info->_show._head_top;			res += 2;
-	PUINT16(buf, res) = info->_show._head_middle;			res += 2;
-	// TODO:
-	PUINT32(buf, res) = 0;	res += 4;	//TODO:
-	PUINT16(buf, res) = 0;	res += 2;	// TODO:
+	PUINT16(buf, res) = info->_show._head_middle;			res += 2; //30
+	// TODO: The BL_NPC && FLAG_CLASS
+	PUINT16(buf, res) = info->_show._hair_color;		res += 2;
+	PUINT16(buf, res) = info->_show._clothes_color;		res += 2;
+	PUINT16(buf, res) = info->_status._head_dir;			res += 2;
+	PUINT32(buf, res) = 0;	res += 4;	//TODO:clif_visual_guild_id;  // 40
+	PUINT16(buf, res) = 0;	res += 2;	// TODO:clif_visual_emblem_id 
 	PUINT16(buf, res) = info->_prop._manner;	res += 2;
-	PUINT32(buf, res) = info->_status._skill_state;		res += 2; // Why??
-	PUINT16(buf, res) = info->_status._skill_state;		res += 2;
-	PUINT16(buf, res) = info->_prop._karma;				res += 2;
-	PUINT16(buf, res) = info->_show._sex;				res += 2;
+	PUINT32(buf, res) = info->_status._skill_state;		res += 4;
+	PUINT8(buf, res) = info->_prop._karma;				res += 1;
+	PUINT8(buf, res) = info->_show._sex;				res += 1; //50
 	SET_POS((uint8*)buf, res, info->_last_pos._x, info->_last_pos._y, info->_status._head_dir);		res += 3;
 	PUINT8(buf, res) = 5;		res += 1;
 	PUINT8(buf, res) = 5;		res += 1;
 	PUINT8(buf, res) = info->_status._state.dead_sit;		res += 1;
 	PUINT16(buf, res) = info->_exp._base_lvl;			res += 2;
 
-	assert(res == 57);
+	assert(res == 58);
 	return res;
 }
 }

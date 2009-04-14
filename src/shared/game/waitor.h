@@ -1,7 +1,6 @@
-#ifndef N_OBJECT_H_
-#define N_OBJECT_H_
+#ifndef U_WAITOR_H_
+#define U_WAITOR_H_
 
-#include "object.h"
 
 namespace srdgame
 {
@@ -16,10 +15,10 @@ enum NPriority
 	NP_COUNT,
 };
 
-class NObject : public Object
+class Waitor
 {
 public:
-	virtual ~NObject(){}
+	virtual ~Waitor(){}
 
 public:
 	// Notified, return next needed notify time.  Normally this will be checked just as prefer not what will exactly happen.

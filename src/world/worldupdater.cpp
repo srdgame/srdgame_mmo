@@ -35,7 +35,7 @@ WorldUpdater::WorldUpdater() : _doing (-1), _new_queue(NULL), _pause (false)
 {
 	for (int i = 0; i < NP_COUNT; ++i)
 	{
-		_queues[i]._queue = new FastQueue<NObject*>();
+		_queues[i]._queue = new FastQueue<Waitor*>();
 	}
 }
 WorldUpdater::~WorldUpdater()
@@ -67,18 +67,18 @@ void WorldUpdater::stop()
 	}
 }
 
-void WorldUpdater::add(NObject* obj)
+void WorldUpdater::add(Waitor* w)
 {
 	AutoLock lock(_lock);
-	if (obj->get_priority() > NP_COUNT)
+	if (w->get_priority() > NP_COUNT)
 		return;
-	_queues[obj->get_priority()]._queue->push(obj);
+	_queues[w->get_priority()]._queue->push(w);
 
 }
-void WorldUpdater::remove(NObject* obj)
+void WorldUpdater::remove(Waitor* w)
 {
 	AutoLock lock(_lock);
-	_removing.insert(make_pair< NObject*, bool >(obj, true));
+	_removing.insert(make_pair< Waitor*, bool >(w, true));
 }
 
 void WorldUpdater::update()
@@ -93,23 +93,23 @@ void WorldUpdater::update()
 	{
 		return;
 	}
-	NObject* obj;
-	if (_queues[_doing]._queue->try_pop(obj))
+	Waitor* w;
+	if (_queues[_doing]._queue->try_pop(w))
 	{
-		if (_removing.find(obj) != _removing.end())
-			return;// Remove the object.
+		if (_removing.find(w) != _removing.end())
+			return;// Remove the wect.
 
-		obj->notify(gettick());
+		w->notify(gettick());
 
 		// adjust the priority.
-		int pri = obj->get_priority();
+		int pri = w->get_priority();
 		if (_doing == pri)
 		{
-			_new_queue->push(obj);
+			_new_queue->push(w);
 		}
 		else
 		{
-			_queues[pri]._queue->push(obj);
+			_queues[pri]._queue->push(w);
 		}
 	}
 	else
@@ -142,7 +142,7 @@ void WorldUpdater::select()
 	}
 	if (_doing != -1)
 	{
-		_new_queue = new FastQueue<NObject*>();
+		_new_queue = new FastQueue<Waitor*>();
 	}
 }
 

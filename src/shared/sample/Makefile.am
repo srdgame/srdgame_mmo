@@ -20,7 +20,9 @@ libsample_a_SOURCES = ro_defs.h\
 					  roitemdb.h \
 					  roitemdb.cpp \
 					  itemhelper.h \
-					  rocharinfo.h
+					  rocharinfo.h \
+					  romobinfo.h \
+					  ronpcinfo.h
 
 #libsample_a_LIBADD = ldatabase
 #libsample_a_LDFLAGS = -L$(srcdir)/../shared/database

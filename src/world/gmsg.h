@@ -3,7 +3,7 @@
 
 #include "singleton.h"
 #include "fastqueue.h"
-#include "nobject.h"
+#include "waitor.h"
 
 #include <string>
 
@@ -12,7 +12,7 @@
 namespace srdgame
 {
 class Player;
-class GMsg : public Singleton < GMsg >, public NObject
+class GMsg : public Singleton < GMsg >, public Waitor
 {
 public:
 	GMsg();
@@ -24,7 +24,6 @@ public:
 
 	virtual long notify(long time);
 	virtual NPriority get_priority() {return NP_HAVE_TO;};
-	virtual Position* get_pos()	{return NULL;}; 
 private:
 	struct MSG
 	{

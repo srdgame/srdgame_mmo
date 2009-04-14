@@ -35,8 +35,8 @@ struct NpcShow
 	int _head_top;
 	int _head_middle;
 	int _head_bottom;
-	int _weapon;
-	int _shield;
+	int _weapon;	// right hand?
+	int _shield;	// left hand?
 	bool _show_equid;
 };
 
