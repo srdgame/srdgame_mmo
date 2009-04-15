@@ -1,1 +1,4 @@
+// 2009-4-15
 
+The class Player/Mob/Npc are all the controller of the objects.
+The class PlayerObject/MobObject/NpcObject are the objects which is really meaning ful for server.

@@ -34,6 +34,7 @@ Map::~Map()
 
 void Map::bind(MapData* data)
 {
+	AutoLock lock(_lock);
 	_ro_map = data;
 }
 
@@ -64,17 +65,6 @@ bool Map::remove_player(Player* p)
 	}
 	_players.erase(p->get_id());
 	return true;
-}
-
-void Map::add_npc(Npc* npc)
-{
-	AutoLock lock(_npcs_lock);
-	_npcs[npc->get_id()] = npc;
-}
-void Map::remove_npc(Npc* npc)
-{
-	AutoLock lock(_npcs_lock);
-	_npcs.erase(npc->get_id());
 }
 
 void Map::send_msg(const string& msg, int pid)

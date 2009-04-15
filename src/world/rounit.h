@@ -1,27 +1,41 @@
-#ifndef NPC_OBJECT_H_
-#define NPC_OBJECT_H_
+#ifndef RO_UNIT_H_
+#define RO_UNIT_H_
 
-#include "rounit.h"
-#include "npc.h"
+#include "unit.h"
+#include "rocharinfo.h"
+
+using ro::RoPosition;
 
 namespace srdgame
 {
-class NpcObject : public RoUnit
+class RoUnit : public Unit
 {
 public:
-	NpcObject(Npc& npc);
-	virtual ~NpcObject();
+	RoUnit(int id);
+	virtual ~RoUnit();
 
 public:
 	// Notified, return next needed notify time.  Normally this will be checked just as prefer not what will exactly happen.
 	virtual long notify(long time);
+	virtual NPriority get_priority()
+	{
+		return _pri;
+	}
 
 	virtual bool move_to(Position* pos, Object* by = NULL);
 	virtual bool clicked(Object* by);
 	virtual bool attacked(Object* by);
 
+	virtual Position* get_pos()
+	{
+		return &_pos;
+	}
+
 private:
-	Npc& _npc;
+	RoPosition _pos;
+	NPriority _pri;
+	long _time;
+	Object* _by;
 };
 }
 

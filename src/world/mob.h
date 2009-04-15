@@ -7,6 +7,8 @@ namespace srdgame
 {
 class Mob : public Npc
 {
+public:
+	Mob();
 };
 }
 

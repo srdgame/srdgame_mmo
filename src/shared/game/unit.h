@@ -8,7 +8,7 @@
 #include "object.h"
 
 
-using namespace srdgame
+namespace srdgame
 {
 class Unit : public Waitor, public Object
 {

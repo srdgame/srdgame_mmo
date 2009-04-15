@@ -1,7 +1,6 @@
 #ifndef OBJECT_H_
 #define OBJECT_H_
 
-
 namespace srdgame
 {
 
@@ -13,7 +12,7 @@ public:
 	};
 
 public:
-	virtual bool move_to(Position* pos, Object* by = NULL){return false;}
+	virtual bool move_to(Position* pos, Object* by){return false;}
 	virtual bool clicked(Object* by){return false;}
 	virtual bool attacked(Object* by){return false;}
 

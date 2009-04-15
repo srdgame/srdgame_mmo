@@ -5,6 +5,7 @@
 #include <string>
 #include "mutex.h"
 #include "romap.h"
+#include "unitmgr.h"
 
 namespace srdgame
 {
@@ -27,8 +28,7 @@ public:
 	bool add_player(Player* p);
 	bool remove_player(Player* p);
 
-	void add_npc(Npc* npc);
-	void remove_npc(Npc* npc);
+	inline UnitMgr& get_unit_mgr() { return _mgr; }
 
 	void send_msg(const std::string& msg, int pid);
 private:
@@ -37,10 +37,9 @@ private:
 	std::map<int, Player*> _players;
 	Mutex _players_lock;
 
-	std::map<int, Npc*> _npcs;
-	Mutex _npcs_lock;
-
-	ro::MapData* _ro_map;
+	ro::MapData* _ro_map; // read only?
+	UnitMgr _mgr;
+	Mutex _lock;
 };
 }
 

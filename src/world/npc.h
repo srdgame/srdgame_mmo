@@ -1,15 +1,24 @@
 #ifndef NPC_H_
 #define NPC_H_
 
+#include "rocharinfo.h"
+
+using ro::RoCharInfoBase;
+
 namespace srdgame
 {
-struct NpcInfo;
 class Npc
 {
 public:
+	Npc();
 	virtual ~Npc();
-	virtual NpcInfo* get_info() = 0;
-	virtual int get_id() = 0;
+	int get_id()
+	{
+		return _id;
+	}
+protected:
+	int _id;
+	RoCharInfoBase _info;
 };
 }
 

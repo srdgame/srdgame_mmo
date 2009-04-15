@@ -1,16 +1,34 @@
-#ifndef OBJ_FACTOR_H_
-#define OBJ_FACTOR_H_
+#ifndef SPAWNER_H_
+#define SPAWNER_H_
 
-#include "singleton.h"
-#include "player.h"
+#include "rounit.h"
+#include "rocharinfo.h"
+
+using ro::RoPosition;
+
+#include <string>
 
 namespace srdgame
 {
-
-class ObjFactor : public Singleton < ObjFactor >
+struct SpawnerInfo
 {
-public:
+	int _unit_id;
+	std::string _map;
+	long _time;
+};
+class Spawner : public RoUnit
+{
+	class SpawnerMgr;
+protected:
+	Spawner(const SpawnerInfo& info, const RoPosition& pos);
+	~Spawner();
 	
+	long notify(long time);
+
+	bool save(const char* root_dir);
+	bool load(const char* fn);
+private:
+	SpawnerInfo _info;
 };
 }
 

@@ -107,7 +107,7 @@ void WorldUpdater::update()
 		{
 			_new_queue->push(w);
 		}
-		else
+		else if (pri != NP_REMOVE_ME)
 		{
 			_queues[pri]._queue->push(w);
 		}

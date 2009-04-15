@@ -6,6 +6,7 @@ namespace srdgame
 {
 enum NPriority
 {
+	NP_REMOVE_ME = -1, // Remove the event after processed it.
 	NP_NOTHING = 0, // Even you do not notify, it still ok.
 	NP_CAN_IGNORE, // Even you do not notify, it still ok for a while, but not always.
 	NP_MAY_GOOD, // You may notify it, and it makes good stuff.

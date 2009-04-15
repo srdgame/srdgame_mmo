@@ -15,9 +15,23 @@ srdgame_worldserver_SOURCES  = worldserver.h \
 			       worldworker.cpp \
 			       worldmgr.h \
 			       worldmgr.cpp \
+				   rounit.h \
+				   rounit.cpp \
+				   npcid.h \
+				   npcid.cpp \
 				   npc.h \
+				   npc.cpp \
+				   npcobject.h \
+				   npcobject.cpp \
 				   player.h \
 				   player.cpp \
+				   playerobject.h \
+				   playerobject.cpp \
+				   mob.h \
+				   mob.cpp \
+				   mobobject.h \
+				   mobobject.cpp \
+				   spawner.h \
 				   map.h \
 				   map.cpp \
 				   mapmgr.h \
@@ -32,6 +46,8 @@ srdgame_worldserver_SOURCES  = worldserver.h \
 				   gmsg.cpp \
 				   command.h \
 				   command.cpp \
+				   unitmgr.h \
+				   unitmgr.cpp \
 			       main.cpp
 
 srdgame_worldserver_LDADD = -llog -lnetwork -lthread -lconfig -lpacket -lgame -lmysqlclient -ldatabase -lsample -lpthread -ldl -lz -lrt
