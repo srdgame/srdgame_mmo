@@ -3,6 +3,7 @@
 
 #include "singleton.h"
 #include <list>
+#include <string>
 
 // Only used to maintains the spawners.  Load and save them.
 namespace srdgame
@@ -13,13 +14,19 @@ public:
 	SpawnerMgr();
 	~SpawnerMgr();
 
-	void load(const char* root_dir, const char* index_fn);
+	void load(const std::string& root_dir, const std::string& index_fn);
 	void unload();
+	void save();
+	void refresh(int id);
 
 	void add(const SpawnInfo& info);
 protected:
 
-	std::list<Spawner> _spawners;
+	bool _inited;
+	std::string _root_dir;
+	std::string _index_fn;
+	std::list<Spawner*> _spawners;
+	Mutex _lock;
 };
 };
 

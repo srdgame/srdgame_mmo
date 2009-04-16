@@ -12,6 +12,7 @@ namespace srdgame
 {
 struct SpawnerInfo
 {
+	int _id;
 	int _unit_id;
 	std::string _map;
 	long _time;
