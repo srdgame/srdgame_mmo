@@ -1,0 +1,15 @@
+# Npc test.
+
+name = Athena
+type = NPC
+id = 103
+
+#postion info
+map = new_1-1
+pos_x = 55
+pos_y = 111
+
+#spawn info
+time = 10000
+count = 1
+script = test.lua

@@ -17,6 +17,7 @@ class Player
 {
 public:
 	Player(int acc_id, int id);
+	// Will be deleted by WorldMgr, triggered by WorldSocket::on_close();
 	virtual ~Player();
 	
 	virtual void set_info(CharInfo* info);

@@ -38,8 +38,10 @@ public:
 	Updater* get_updater();
 protected:
 	bool setup_player(Player* s);
+	void save_player(Player* s);
 
 	bool reg_to_map(Player* p);
+	void remove_from_map(Player* p);
 	
 	void game_tips(Player* s);
 

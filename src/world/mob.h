@@ -5,10 +5,14 @@
 
 namespace srdgame
 {
+class Spawner;
 class Mob : public Npc
 {
+	friend class MobObject;
 public:
-	Mob();
+	Mob(Spawner* sp);
+	// will be deleted by Spawner.
+	virtual ~Mob();
 };
 }
 

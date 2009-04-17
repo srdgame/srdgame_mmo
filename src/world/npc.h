@@ -7,10 +7,16 @@ using ro::RoCharInfoBase;
 
 namespace srdgame
 {
+class Spawner;
+class NpcObject;
+class RoUnit;
 class Npc
 {
+	friend class NpcObject;
 public:
-	Npc();
+	Npc(Spawner* sp);
+
+	// Will be deleted by Spawner.
 	virtual ~Npc();
 	int get_id()
 	{
@@ -19,6 +25,8 @@ public:
 protected:
 	int _id;
 	RoCharInfoBase _info;
+	Spawner* _sp;
+	RoUnit* _obj;
 };
 }
 

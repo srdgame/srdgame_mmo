@@ -12,6 +12,7 @@ class RoUnit : public Unit
 {
 public:
 	RoUnit(int id);
+	// Will be deleted by who?  At last UnitMgr will delete all in its destructor.
 	virtual ~RoUnit();
 
 public:
@@ -31,7 +32,7 @@ public:
 		return &_pos;
 	}
 
-private:
+protected:
 	RoPosition _pos;
 	NPriority _pri;
 	long _time;

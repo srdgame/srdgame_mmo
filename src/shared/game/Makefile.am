@@ -18,5 +18,4 @@ libgame_a_SOURCES = auction.h \
 					gamedefs.h \
 					party.h \
 					quest.h \
-					spawn.h \
 					unit.h

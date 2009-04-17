@@ -120,7 +120,7 @@ void MapMgr::send_maps()
 	}
 	return;
 }
-Map* MapMgr::get_map(std::string& name)
+Map* MapMgr::get_map(const std::string& name)
 {
 	return get_map(_map_ids[name]);
 }

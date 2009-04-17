@@ -21,6 +21,7 @@ Player::Player(int acc_id, int id) : _socket(NULL), _acc_id(acc_id), _id(id), _i
 }
 Player::~Player()
 {
+	// Will be deleted by WorldMgr
 	_lock.lock();
 	_socket->bind(NULL);
 	_socket->close();

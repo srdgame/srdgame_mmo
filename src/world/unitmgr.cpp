@@ -9,6 +9,7 @@ UnitMgr::UnitMgr()
 
 UnitMgr::~UnitMgr()
 {
+
 }
 
 int UnitMgr::get_count()

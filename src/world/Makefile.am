@@ -32,6 +32,9 @@ srdgame_worldserver_SOURCES  = worldserver.h \
 				   mobobject.h \
 				   mobobject.cpp \
 				   spawner.h \
+				   spawner.cpp \
+				   spawnermgr.h \
+				   spawnermgr.cpp \
 				   map.h \
 				   map.cpp \
 				   mapmgr.h \

@@ -4,10 +4,12 @@ using namespace srdgame;
 
 NpcObject::NpcObject(Npc& npc) : RoUnit(npc.get_id()), _npc(npc)
 {
+	_npc._obj = this;
 }
 
 NpcObject::~NpcObject()
 {
+	_npc._obj = NULL;
 }
 
 long NpcObject::notify(long time)

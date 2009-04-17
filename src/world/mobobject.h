@@ -10,7 +10,7 @@ class MobObject : public RoUnit
 {
 public:
 	MobObject(Mob& mob);
-	virtual ~MobObject();
+	virtual ~MobObject(); // Will be deleted by Npc
 
 private:
 	Mob _mob;

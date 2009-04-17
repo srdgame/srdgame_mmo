@@ -24,10 +24,7 @@ WorldSocket::WorldSocket()
 
 WorldSocket::~WorldSocket()
 {
-	if (_worker && _worker->is_running())
-	{
-		_worker->shutdown();
-	}
+
 }
 
 void WorldSocket::on_rev()
@@ -119,6 +116,7 @@ void WorldSocket::on_close()
 	{
 		_player->bind(NULL);
 		WorldMgr::get_singleton().remove_client(_player);
+		// The _player has been delete during the remove_client;
 	}
 	_lock.unlock();
 }

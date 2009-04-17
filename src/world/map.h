@@ -11,7 +11,7 @@ namespace srdgame
 {
 class Player;
 class Npc;
-
+struct Packet;
 // This is one lazy map, it won't construct almost data when there is no user.  And the data will be constructed once one player joins it.
 class Map
 {
@@ -28,9 +28,13 @@ public:
 	bool add_player(Player* p);
 	bool remove_player(Player* p);
 
-	inline UnitMgr& get_unit_mgr() { return _mgr; }
+	//inline UnitMgr& get_unit_mgr() { return _mgr; }
+	void add_unit(RoUnit* unit);
+	void remove_unit(RoUnit* unit);
 
-	void send_msg(const std::string& msg, int pid);
+	void send_msg(const std::string& msg, int from_id);
+protected:
+	void send_packet(Packet* p, int from_id = 0, bool skip_self = false);
 private:
 	std::string _name;
 	int _id;

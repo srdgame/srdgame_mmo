@@ -17,6 +17,10 @@ public:
 	void add(RoUnit* unit);
 	void remove(RoUnit* unit);
 
+	RoUnit* get_unit(int id)
+	{
+		return _units[id];
+	}
 protected:
 	std::map<int, RoUnit*> _units;	
 };

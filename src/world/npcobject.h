@@ -10,7 +10,7 @@ class NpcObject : public RoUnit
 {
 public:
 	NpcObject(Npc& npc);
-	virtual ~NpcObject();
+	virtual ~NpcObject(); // will be deleted by Npc
 
 public:
 	// Notified, return next needed notify time.  Normally this will be checked just as prefer not what will exactly happen.

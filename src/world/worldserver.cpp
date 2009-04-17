@@ -8,6 +8,7 @@
 #include <vector>
 #include "typedefs.h"
 #include "worldmgr.h"
+#include "spawnermgr.h"
 #include "updater.h"
 #include "intersocket.h"
 #include "packetparser.h"
@@ -116,6 +117,10 @@ bool WorldServer::init_env()
 	// Load maps.
 	MapMgr::get_singleton().load_maps();
 
+	// init spawners.
+	string s_smf = _config->get_value<std::string>("SPAWNER_CONF");
+	SpawnerMgr::get_singleton().load("./data", s_smf.c_str());
+
 	// At the end, we start the updater.
 	WorldMgr::get_singleton().get_updater()->start();
 	return true;
@@ -219,8 +224,9 @@ bool WorldServer::wait_command()
 		of.param.Long = 0;
 		if (_realm_socket && _realm_socket->is_connected())
 			_realm_socket->send_packet(&of);
-		WorldMgr::get_singleton().get_updater()->stop();
-		SocketMgr::get_singleton().close_all();
+		WorldMgr::get_singleton().get_updater()->stop(); // stop updater first.
+		SpawnerMgr::get_singleton().unload(); // unload will cause all the spanwers deleted, all the Npc Mob been deleted.  So the RoUnits will be deleted.
+		SocketMgr::get_singleton().close_all(); // close connections will cause all the Player been deleted.
 		DatabaseMgr::get_singleton().shutdown();
 		ThreadPool::get_singleton().shutdown();
 		return true;

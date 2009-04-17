@@ -66,29 +66,41 @@ bool Map::remove_player(Player* p)
 	_players.erase(p->get_id());
 	return true;
 }
-
-void Map::send_msg(const string& msg, int pid)
+void Map::add_unit(RoUnit* unit)
+{
+	AutoLock lock(_lock);
+	_mgr.add(unit);
+}
+void Map::remove_unit(RoUnit* unit)
+{
+	AutoLock lock(_lock);
+	_mgr.remove(unit);
+}
+void Map::send_msg(const string& msg, int from_id)
 {
 	AutoLock lock(_players_lock);
-	std::map<int, Player*>::iterator ptr = _players.find(pid);
+	std::map<int, Player*>::iterator ptr = _players.find(from_id);
 	if (ptr == _players.end())
 		return;
 	Packet p(ES_MESSAGE);
 	p.len = sizeof(Packet) + sizeof(RoMessage);
 	RoMessage m;
-	m._id = pid; // Currently the player id is the char_id;
+	m._id = from_id; // Currently the player id is the char_id;
 	m._msg = msg.c_str();
 	m._len = msg.length();
 	p.param.Data = (char*)&m;
-
+	send_packet(&p, from_id, true);
+}
+void Map::send_packet(Packet* p, int from_id, bool skip_self)
+{
 	// Send to all user.
-	ptr == _players.begin();
+	std::map<int, Player*>::iterator ptr = _players.begin();
 	for (; ptr != _players.end(); ++ptr)
 	{
 		// Do not send back to the user who is sending out message.
-		if (ptr->second->get_id() == pid)
+		if (skip_self && ptr->second->get_id() == from_id)
 			continue;
 
-		ptr->second->send_packet(&p);
+		ptr->second->send_packet(p);
 	}
 }

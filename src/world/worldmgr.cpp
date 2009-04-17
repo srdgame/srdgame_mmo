@@ -92,7 +92,11 @@ void WorldMgr::add_client(Player* s)
 }
 void WorldMgr::remove_client(Player* s)
 {
+	if (!s)
+		return;
 	AutoLock lock(_client_lock);
+	save_player(s);
+	remove_from_map(s);
 	delete s;
 	_clients.erase(s->get_id());
 }
@@ -135,6 +139,13 @@ bool WorldMgr::setup_player(Player* p)
 	}
 	return res;
 }
+void WorldMgr::save_player(Player* p)
+{
+	if (!_sql)
+		return;
+	_sql->save_char(p->get_id(), *((RoCharInfo*)p->get_info()));
+
+}
 bool WorldMgr::reg_to_map(Player* p)
 {
 	std::string map_name = p->get_last_map();
@@ -149,6 +160,15 @@ bool WorldMgr::reg_to_map(Player* p)
 	{
 		// TODO:  Now return false, means focus close the connection to reject the connecting.
 		return false;
+	}
+}
+void WorldMgr::remove_from_map(Player* p)
+{
+	std::string map_name = p->get_last_map();
+	Map* map = MapMgr::get_singleton().get_map(map_name);
+	if (map)
+	{
+		map->remove_player(p);
 	}
 }
 void WorldMgr::game_tips(Player* s)

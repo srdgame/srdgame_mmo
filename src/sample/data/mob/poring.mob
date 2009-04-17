@@ -1,0 +1,15 @@
+# Poring test.
+
+name = poring
+type = MOB
+id = 1002
+
+#postion info
+map = new_1-1
+pos_x = 51
+pos_y = 111
+
+#spawn info
+time = 10000
+count = 1
+script = poring.lua
