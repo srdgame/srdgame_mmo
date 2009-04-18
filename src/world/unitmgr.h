@@ -3,6 +3,7 @@
 
 #include "rounit.h"
 #include <map>
+#include <vector>
 
 namespace srdgame
 {
@@ -21,6 +22,7 @@ public:
 	{
 		return _units[id];
 	}
+	void get_all(std::vector<RoUnit*>& units);
 protected:
 	std::map<int, RoUnit*> _units;	
 };

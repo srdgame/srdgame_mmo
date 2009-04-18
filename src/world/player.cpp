@@ -9,6 +9,7 @@
 #include "gmsg.h"
 #include "itemdefs.h"
 #include "itemhelper.h"
+#include "worldmgr.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -23,8 +24,11 @@ Player::~Player()
 {
 	// Will be deleted by WorldMgr
 	_lock.lock();
-	_socket->bind(NULL);
-	_socket->close();
+	if (_socket)
+	{
+		_socket->bind(NULL);
+		_socket->close();
+	}
 	delete _info;
 	_info = NULL;
 	_lock.unlock();
@@ -43,7 +47,9 @@ void Player::set_info(CharInfo* info)
 	delete _info;
 	_info = info;
 	_lock.unlock();
-
+}
+void Player::load_end_ack()
+{
 	// Send friend list.
 	this->send_friend_list();
 
@@ -229,7 +235,7 @@ void Player::send_items()
 }
 
 void Player::equip_item(short index, short pos)
-{
+{	
 	RoCharInfo* info = (RoCharInfo*)_info;
 	
 	RoEquipItemOK ok;
@@ -241,6 +247,16 @@ void Player::equip_item(short index, short pos)
 		ok._pos = equippoint(db);
 		info->_items[index]._equip = ok._pos; // change
 		ok._ok = 1;
+		
+		// Unequip item if it has.
+		// TODO: Improve this.
+		for (size_t i = 0; i < info->_items.size(); ++i)
+		{
+			if (info->_items[i]._equip = ok._pos && i != index)
+			{
+				unequip_item(index);
+			}
+		}
 	}
 	else
 	{
@@ -353,6 +369,12 @@ void Player::on_handle(Packet* p)
 	RoCharInfo* info = (RoCharInfo*)_info;
 	switch (p->op)
 	{
+		case EC_LOAD_END_ACK:
+			{
+				WorldMgr::get_singleton().active_client(this);
+				this->load_end_ack();
+				break;
+			}
 		case EC_MESSAGE:
 			{
 				RoMessage m;
@@ -435,6 +457,24 @@ void Player::on_handle(Packet* p)
 				unequip_item(p->param.Int);
 			}
 			break;
+		case EC_GUILD_CHECK_MASTER:
+			{
+				Packet mc(ES_GUILD_CHECK_MASTER);
+				mc.param.Bool = false;
+				send_packet(&mc);
+			}break;
+		case EC_REQUEST_CHAR_NAME:
+			{
+				_map->request_char_name(this, p->param.Int);
+			}
+			break;
+		case EC_QUIT_GAME:
+			{
+				// TODO:
+				Packet quit(ES_QUIT_GAME);
+				quit.param.Int = 0;
+				send_packet(&quit);
+			}
 		default:
 			break;
 	}

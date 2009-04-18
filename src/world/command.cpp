@@ -100,6 +100,9 @@ void Command::spawn_mob(const Map* map, int x, int y, const string& name)
 }
 void Command::add_item(const Player* p, int item_id, int quantity)
 {
+	if (item_id > RoItemDB::get_singleton().get_max_id())
+		return;
+
 	LogError("Command", "Adding Item : id - %d \t quantity - %d", item_id, quantity);
 	const RoDBItem* db = RoItemDB::get_singleton().get_item(item_id);
 	if (db)

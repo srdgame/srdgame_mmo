@@ -310,7 +310,7 @@ TO_DC(0x008a)
 
 	return res; // 29
 }
-// Spawning new player
+// Spawning new mob/npc
 TO_DC(0x007c) // clif.c:747
 {
 	RoCharInfoBase* info = (RoCharInfoBase*) packet->param.Data;
@@ -327,7 +327,7 @@ TO_DC(0x007c) // clif.c:747
 	PUINT16(buf, res) = info->_show._hair_style;	res += 2;
 	PUINT16(buf, res) = info->_show._weapon; 	res += 2;
 	PUINT16(buf, res) = info->_show._head_bottom;	res += 2; //21
-	PUINT16(buf, res) = info->_class;	res += 2;
+	PUINT16(buf, res) = info->_show._class;	res += 2;
 	PUINT16(buf, res) = info->_show._shield;	res += 2;
 	PUINT16(buf, res) = info->_show._head_top;		res += 2;
 	PUINT16(buf, res) = info->_show._head_middle;		res += 2;
@@ -346,7 +346,7 @@ TO_DC(0x007c) // clif.c:747
 	return res;
 }
 
-TO_DC(0x0078) // Player standing
+TO_DC(0x0078) // mob/npc standing
 {
 	RoCharInfoBase* info = (RoCharInfoBase*)packet->param.Data;
 	size_t res = 0;
@@ -360,7 +360,7 @@ TO_DC(0x0078) // Player standing
 	PUINT16(buf, res) = info->_status._body_state;	res += 2;  // 11
 	PUINT16(buf, res) = info->_status._health_state;	res += 2;
 	PUINT16(buf, res) = info->_status._option;		res += 2;
-	PUINT16(buf, res) = info->_class;		res += 2;
+	PUINT16(buf, res) = info->_show._class;		res += 2;
 	PUINT16(buf, res) = info->_show._hair_style;	res += 2;
 	PUINT16(buf, res) = info->_show._weapon;		res += 2; //21
 	PUINT16(buf, res) = info->_show._shield;		res += 2;
@@ -387,7 +387,7 @@ TO_DC(0x0078) // Player standing
 	return res;
 }
 
-TO_DC(0x022b) // spawning new mob.  // clif.c:770
+TO_DC(0x022b) // spawning new player  // clif.c:770
 {
 	RoCharInfoBase* info = (RoCharInfoBase*) packet->param.Data;
 	size_t res = 0;
@@ -398,7 +398,7 @@ TO_DC(0x022b) // spawning new mob.  // clif.c:770
 	PUINT16(buf, res) = info->_status._body_state;	res += 2; //10
 	PUINT16(buf, res) = info->_status._health_state;	res += 2; 
 	PUINT32(buf, res) = info->_status._option;		res += 4;
-	PUINT16(buf, res) = info->_class;		res += 2;
+	PUINT16(buf, res) = info->_show._class;		res += 2;
 	PUINT16(buf, res) = info->_show._hair_style;	res += 2; // 20
 	PUINT16(buf, res) = info->_show._weapon;		res += 2;
 	PUINT16(buf, res) = info->_show._shield;		res += 2;
@@ -426,7 +426,7 @@ TO_DC(0x022b) // spawning new mob.  // clif.c:770
 
 	return res;
 }
-TO_DC(0x022a) // mob standing
+TO_DC(0x022a) // player standing
 {
 	RoCharInfoBase* info = (RoCharInfoBase*) packet->param.Data;
 	size_t res = 0;
@@ -437,7 +437,7 @@ TO_DC(0x022a) // mob standing
 	PUINT16(buf, res) = info->_status._body_state;		res += 2; //10
 	PUINT16(buf, res) = info->_status._health_state;	res += 2;
 	PUINT32(buf, res) = info->_status._option;			res += 4; 
-	PUINT16(buf, res) = info->_class;					res += 2;
+	PUINT16(buf, res) = info->_show._class;					res += 2;
 	PUINT16(buf, res) = info->_show._hair_style;		res += 2; // 20
 	PUINT16(buf, res) = info->_show._weapon;			res += 2;
 	PUINT16(buf, res) = info->_show._shield;			res += 2;
@@ -462,6 +462,47 @@ TO_DC(0x022a) // mob standing
 
 	assert(res == 58);
 	return res;
+}
+TO_DC(0x0080) // Disappear one unit.
+{
+	RoUnitDisappear * d = (RoUnitDisappear*)(packet->param.Data);
+	PUINT16(buf, 0) = 0x0080;
+	PUINT32(buf, 2) = d->_id;
+	PUINT8(buf, 6) = d->_type;
+	return 7;
+}
+TO_DC(0x014e) // send whether the player is the master of GUILD
+{
+	PUINT16(buf, 0) = 0x014e;
+	PUINT32(buf, 2) = packet->param.Bool ? 0xd7 : 0x57;
+	return 6;
+}
+TO_DC(0x0095) // send char name
+{
+	RoRequestCharName* name = (RoRequestCharName*)(packet->param.Data);
+	PUINT16(buf, 0) = 0x0095;
+	PUINT32(buf, 2) = name->_id;
+	memcpy(PCHAR(buf, 6), name->_name, MAX_NAME_LEN);
+
+	return 30;
+}
+TO_DC(0x0195) // send char name ex
+{
+	RoRequestCharNameEx* name = (RoRequestCharNameEx*)(packet->param.Data);
+	PUINT16(buf, 0) = 0x0095;
+	PUINT32(buf, 2) = name->_id;
+	memcpy(PCHAR(buf, 6), name->_name, MAX_NAME_LEN);
+	memcpy(PCHAR(buf, 30), name->_name_1, MAX_NAME_LEN);
+	memcpy(PCHAR(buf, 54), name->_name_2, MAX_NAME_LEN);
+	memcpy(PCHAR(buf, 78), name->_name_3, MAX_NAME_LEN);
+
+	return 102;
+}
+TO_DC(0x018b) // send ack for quit game.
+{
+	PUINT16(buf, 0) = 0x018b;
+	PUINT16(buf, 2) = packet->param.Int;
+	return 4;
 }
 }
 

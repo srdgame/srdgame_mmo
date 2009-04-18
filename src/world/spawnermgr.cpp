@@ -5,9 +5,16 @@
 #include <cassert>
 #include "autolock.h"
 #include "conversion_cast.h"
+#include "log.h"
+#include "worldmgr.h"
+#include "mapmgr.h"
+#include "map.h"
+#include "updater.h"
 
 using namespace srdgame;
 using namespace std;
+
+#define LN "SpawnMGR"
 
 SpawnerMgr::SpawnerMgr() : _inited(false)
 {
@@ -15,6 +22,7 @@ SpawnerMgr::SpawnerMgr() : _inited(false)
 
 SpawnerMgr::~SpawnerMgr()
 {
+
 	// you must unload it mannualy
 	assert(_inited == false);
 }
@@ -31,7 +39,10 @@ void SpawnerMgr::load(const string& root_dir, const string& index_fn)
 	ifstream file(index_fn.c_str());
 
 	if (!file.good())
+	{
+		LogError(LN, "Could not open spaners conf : %s", index_fn.c_str());
 		return;
+	}
 
 	_inited = true;
 
@@ -53,22 +64,29 @@ void SpawnerMgr::load(const string& root_dir, const string& index_fn)
 		if (buf[i] == '#')
 			continue; //commented.
 
+		LogDebug(LN, "Processing %s", buf.c_str());
+		LogDebug(LN, "start from : %d", i);
 		if (buf[i] == '[')
 		{
 			SMF_Node node;
-			int j = buf.find(i, ']');
+			int j = buf.find(']', i);
 			if (j == buf.npos)
+			{
+				LogDebug(LN, "Can not found ]");
 				continue;
+			}
 
-			node._index = conversion_cast<unsigned int>(buf.substr(i, j));
+			node._index = conversion_cast<unsigned int>(buf.substr(i + 1, j));
 			if (read_node(file, node))
 			{
 				// load spawner.
 				int id = 0 - node._index;
 				if(_smf_nodes.find(id) == _smf_nodes.end())
 				{
-					Spawner* s = new Spawner(id);	
-					s->load(node._file_name);
+					Spawner* s = new Spawner(id);
+					string path = root_dir + "/";
+					path += node._file_name;
+					s->load(path);
 					// TODO:
 					_spawners.push_back(s);
 					_smf_nodes.insert(make_pair<int, SMF_Node>(id, node));
@@ -79,11 +97,27 @@ void SpawnerMgr::load(const string& root_dir, const string& index_fn)
 				}
 			}
 		}
+		else
+		{
+			LogError(LN, "Incorrect formate found!!");
+		}
 	}
+	Updater* updater = WorldMgr::get_singleton().get_updater();
+	MapMgr* map_mgr = MapMgr::get_instance();
+	for (std::list<Spawner*>::iterator ptr = _spawners.begin(); ptr != _spawners.end(); ++ptr)
+	{
+		Map* map = map_mgr->get_map((*ptr)->get_spawn_info()._map);
+		if (!map)
+			continue;
+		map->add_unit(*ptr);
+		updater->add(*ptr);
+	}
+	LogSuccess(LN, "Loaded spawner conf successful, count : %u", _smf_nodes.size());
 }
 
 bool SpawnerMgr::read_node(ifstream& file, SMF_Node& node)
 {
+	LogDebug(LN, "Loading one node [index: %d]", node._index);
 	node._name = "";
 	node._file_name = "";
 	string buf;
@@ -119,6 +153,7 @@ bool SpawnerMgr::read_node(ifstream& file, SMF_Node& node)
 			if (i == buf.size())
 				continue;
 			node._name = buf.substr(i);
+			LogDebug(LN, "Get node name : %s", node._name.c_str());
 		}
 		else if (buf.substr(0, i).find("file") != buf.npos)
 		{
@@ -129,6 +164,7 @@ bool SpawnerMgr::read_node(ifstream& file, SMF_Node& node)
 			if (i == buf.size())
 				continue;
 			node._file_name = buf.substr(i);
+			LogDebug(LN, "Get spawner file name : %s", node._file_name.c_str());
 		}
 		else
 		{
@@ -140,14 +176,24 @@ bool SpawnerMgr::read_node(ifstream& file, SMF_Node& node)
 
 void SpawnerMgr::unload()
 {
+	LogError(LN, "Unloading the spawner conf");
 	_lock.lock();
 	std::list<Spawner*>::iterator ptr = _spawners.begin();
+	Updater* updater = WorldMgr::get_singleton().get_updater();
+	MapMgr* map_mgr = MapMgr::get_instance();
 	for (; ptr != _spawners.end(); ++ptr)
 	{
+		Map* map = (*ptr)->get_map();//map_mgr->get_map((*ptr)->get_spawn_info()._map);
+		if (map)
+		{
+			map->remove_unit(*ptr);
+		}
+		updater->remove(*ptr);
 		delete (*ptr);
 	}
 	_spawners.clear();
 	_smf_nodes.clear();
+	_inited = false;
 	_lock.unlock();
 }
 

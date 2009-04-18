@@ -19,6 +19,8 @@ namespace ro
 #define MAX_MSG_LEN 1024
 #define MAX_ITEM_NAME_LEN 50
 
+#define NPC_JOB_CLASS 45
+
 static const uint16 MaxItemCount = 100; // TODO:
 static const uint16 MaxCartCount = 100;
 static const uint8 MaxSlotCount = 4;
@@ -162,7 +164,7 @@ enum item_types {
 //
 struct LoginInfo
 {
-	char name[24];
+	char name[MAX_NAME_LEN];
 	char pass[32];
 	uint8 crypto_type;
 	uint8 client_type;
@@ -218,7 +220,7 @@ struct MapServerInfo
 	uint32 _char_id;
 	uint32 _ip;
 	uint16 _port;
-	char _map_name[16];
+	char _map_name[MAX_MAP_NAME_LEN];
 };
 struct CharDataList
 {
@@ -227,7 +229,7 @@ struct CharDataList
 };
 struct CreateCharData
 {
-	char _name[24];
+	char _name[MAX_NAME_LEN];
 	uint8 _str;
 	uint8 _agi;
 	uint8 _vit;
@@ -248,7 +250,7 @@ struct CharRenameData
 {
 	uint32 _id;
 	uint32 _char_id;
-	char _new_name[24];
+	char _new_name[MAX_NAME_LEN];
 };
 
 // For Map server
@@ -428,6 +430,36 @@ struct RoActionData
 	RoActionType _type;
 	int _damage;
 	int _damage2;
+};
+enum DisappearType
+{
+	DT_DIED = 0x01, // died
+	DT_RESPAWN = 0x02, // respawned
+	DT_GONE = 0x03, // teleported / logged out
+};
+struct RoUnitDisappear
+{
+	int _id;
+	DisappearType _type;
+};
+enum GuildRequestInfoType
+{
+	GRIT_BASIC_INFO_AND_ALLIANCE_INFO = 0,
+	GRIT_POSITION_NAME_LIST_AND_MEMBER_LIST = 1,
+	GRIT_POSITTON_NAME_LIST_AND_POSITION_INFO_LIST = 2,
+	GRIT_SKILL_INFO = 3,
+	GRIT_EXPULSION_LIST = 4,
+};
+struct RoRequestCharName
+{
+	int _id;
+	char _name[MAX_NAME_LEN]; // 6
+};
+struct RoRequestCharNameEx : public RoRequestCharName
+{
+	char _name_1[MAX_NAME_LEN]; // 30
+	char _name_2[MAX_NAME_LEN];// 54 -
+	char _name_3[MAX_NAME_LEN];// 78
 };
 }
 #endif

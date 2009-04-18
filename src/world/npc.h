@@ -18,12 +18,13 @@ public:
 
 	// Will be deleted by Spawner.
 	virtual ~Npc();
-	int get_id()
+
+	inline int get_id()
 	{
-		return _id;
+		return _info._id;
 	}
+
 protected:
-	int _id;
 	RoCharInfoBase _info;
 	Spawner* _sp;
 	RoUnit* _obj;

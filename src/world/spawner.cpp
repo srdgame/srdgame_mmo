@@ -5,6 +5,7 @@
 #include "npc.h"
 #include "mob.h"
 #include <fstream>
+#include "log.h"
 
 #define NPC_TYPE "NPC"
 #define MOB_TYPE "MOB"
@@ -112,6 +113,7 @@ bool Spawner::load(const std::string& fn)
 	}
 	else
 	{
+		LogError("Spawner", "Unknow spawner type found : %s", file.get_value<char*>(SP_TYPE));
 		return false;
 	}
 	_info._name = file.get_value<string>(SP_NAME);
@@ -122,6 +124,7 @@ bool Spawner::load(const std::string& fn)
 	_info._time = file.get_value<long>(SP_TIME);
 	_info._count = file.get_value<unsigned int>(SP_COUNT);
 	_info._script = file.get_value<string>(SP_SCRIPT);
+	LogDebug("Spawner", "Finished to load one spawner[ name:%s\tid:%d\tmap:%s]", _info._name.c_str(), _info._id, _info._map.c_str());
 	return true;
 }
 

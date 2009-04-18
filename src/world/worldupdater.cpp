@@ -2,6 +2,7 @@
 #include "timedefs.h"
 #include "autolock.h"
 #include "threadpool.h"
+#include "log.h"
 
 using namespace srdgame;
 using namespace std;
@@ -17,6 +18,7 @@ bool WorldUpdater::Thread::run()
 {
 	if (_closing)
 		return true;
+//	LogDebug("Updater", "In thread RUN!!!!!!!!!!!");
 	_owner->update();
 	return false;
 }
@@ -31,7 +33,7 @@ bool WorldUpdater::Thread::is_running()
 {
 	return !_closing;
 }
-WorldUpdater::WorldUpdater() : _doing (-1), _new_queue(NULL), _pause (false)
+WorldUpdater::WorldUpdater() : _doing (-1), _last_select_time(0), _new_queue(NULL), _pause (false)
 {
 	for (int i = 0; i < NP_COUNT; ++i)
 	{
@@ -91,6 +93,7 @@ void WorldUpdater::update()
 
 	if (_doing == -1)
 	{
+		//LogDebug("Updater", "No selection");
 		return;
 	}
 	Waitor* w;
@@ -99,6 +102,7 @@ void WorldUpdater::update()
 		if (_removing.find(w) != _removing.end())
 			return;// Remove the wect.
 
+		//LogDebug("Updater", "Update one!!!");
 		w->notify(gettick());
 
 		// adjust the priority.
@@ -119,6 +123,7 @@ void WorldUpdater::update()
 		_queues[_doing]._queue = _new_queue;
 		_queues[_doing]._delay = 0;
 		_new_queue = NULL;
+		_doing = -1;
 	}
 }
 
@@ -128,18 +133,26 @@ void WorldUpdater::select()
 		return;
 	assert(_new_queue == NULL);
 	int delay = 0;
+	int now_time = gettick();
 	for (int i = 0; i < NP_COUNT; i++)
 	{
 		if (_queues[i]._queue->get_size() == 0)
+		{
 			continue;
+		}
 
+		// Update delay.
+		_queues[i]._delay += now_time - _last_select_time;
+
+		//LogDebug("Updater", "trying to select one");
 		int i_delay = _queues[i]._delay * (NP_COUNT - i);
-		if (i_delay > delay)
+		if (i_delay >= delay)
 		{
 			delay = i_delay;
 			_doing = i;
 		}
 	}
+	_last_select_time = now_time;
 	if (_doing != -1)
 	{
 		_new_queue = new FastQueue<Waitor*>();

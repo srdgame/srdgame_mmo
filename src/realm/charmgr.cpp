@@ -53,8 +53,8 @@ RoCharInfo* CharMgr::create_new(CreateCharData* data, int account_id)
 	info->_show._hair_style = data->_hair_style;
 
 	// TODO: more default stuff
-	info->_show._class = 0;
-	info->_class = 0;
+	info->_show._class = 0; // JOB_NOVICE
+	info->_class = 0; // JOB_NOVICE
 	info->_exp._base_lvl = 1;
 	info->_exp._job_lvl = 1;
 	info->_exp._base_exp = 0;

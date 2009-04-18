@@ -48,9 +48,13 @@ public:
 	bool save(const std::string& fn);
 	bool load(const std::string& fn);
 
-	inline const SpawnerInfo& get_info()
+	inline const SpawnerInfo& get_spawn_info()
 	{
 		return _info;
+	}
+	RoCharInfoBase* get_info()
+	{
+		return NULL;
 	}
 protected:
 	SpawnerInfo _info;

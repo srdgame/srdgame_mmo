@@ -118,7 +118,8 @@ bool WorldServer::init_env()
 	MapMgr::get_singleton().load_maps();
 
 	// init spawners.
-	string s_smf = _config->get_value<std::string>("SPAWNER_CONF");
+	string s_smf = _config->get_value<std::string>("SPAWN_CONF");
+	string s_root = _config->get_value<std::string>("DATA_ROOT");
 	SpawnerMgr::get_singleton().load("./data", s_smf.c_str());
 
 	// At the end, we start the updater.

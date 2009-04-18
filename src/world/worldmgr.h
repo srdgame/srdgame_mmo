@@ -27,6 +27,7 @@ public:
 	void enum_world_servers(std::vector<WorldSrvInfo>& info);
 
 	void add_client(Player* s);
+	void active_client(Player* s);
 	void remove_client(Player* s);
 
 	// world server attributes.
@@ -39,6 +40,7 @@ public:
 protected:
 	bool setup_player(Player* s);
 	void save_player(Player* s);
+	void kick_player(Player* s, int reason);
 
 	bool reg_to_map(Player* p);
 	void remove_from_map(Player* p);

@@ -2,7 +2,7 @@
 
 using namespace srdgame;
 
-RoUnit::RoUnit(int id) : Unit(id), _pri(NP_NOTHING), _time(0), _by(NULL)
+RoUnit::RoUnit(int id) : Unit(id), _pri(NP_NOTHING), _time(0), _by(NULL), _map(NULL)
 {
 }
 

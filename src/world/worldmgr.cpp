@@ -71,14 +71,17 @@ void WorldMgr::add_client(Player* s)
 	if (!setup_player(s))
 	{
 		LogError("WorlsServer", "Failed to set up players, mostly it is error when query DB");
-		delete s;
-		return;
+		kick_player(s, 6);	
 	}
+
+}
+void WorldMgr::active_client(Player* s)
+{
 	// Try to register the player to the map.
 	if (!reg_to_map(s))
 	{
 		LogError("WorldServer", "Could not register player to server");
-		delete s;
+		kick_player(s, 6);	
 		return;
 	}
 
@@ -97,8 +100,8 @@ void WorldMgr::remove_client(Player* s)
 	AutoLock lock(_client_lock);
 	save_player(s);
 	remove_from_map(s);
-	delete s;
 	_clients.erase(s->get_id());
+	delete s;
 }
 
 void WorldMgr::set_name(std::string name)
@@ -145,6 +148,12 @@ void WorldMgr::save_player(Player* p)
 		return;
 	_sql->save_char(p->get_id(), *((RoCharInfo*)p->get_info()));
 
+}
+void WorldMgr::kick_player(Player* player, int reason)
+{
+	Packet p(ES_DISCONNECT);
+	p.param.Int = reason;
+	player->send_packet(&p);
 }
 bool WorldMgr::reg_to_map(Player* p)
 {

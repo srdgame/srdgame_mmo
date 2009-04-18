@@ -84,7 +84,7 @@ bool WorldAuth::auth_char(WorldSocket* socket)
 	ok->_tick_count = gettick();
 	ok->_x = 53;
 	ok->_y = 111;
-	ok->_dir = 6;
+	ok->_dir = 4;
 	p.param.Data = (char*)ok;
 	socket->send_packet(&p);
 	return true;

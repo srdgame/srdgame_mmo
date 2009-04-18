@@ -2,7 +2,7 @@
 
 using namespace srdgame;
 
-int NpcId::_cur_id = 100000000;
+int NpcId::_cur_id = MIN_NPC_ID;
 
 /*int NpcId::generated()
 {

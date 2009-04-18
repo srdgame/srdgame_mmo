@@ -49,6 +49,7 @@ private:
 	PQueue _queues[NP_COUNT];
 	
 	int _doing;
+	int _last_select_time;
 	FastQueue<Waitor*> * _new_queue;
 	
 	std::map<Waitor*, bool> _removing;

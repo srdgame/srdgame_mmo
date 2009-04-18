@@ -35,7 +35,15 @@ static struct {
 	{to_send_0x00aa, ES_EQUIP_ITEM},
 	{to_send_0x00ac, ES_UNEQUIP_ITEM},
 	{to_send_0x00a0, ES_ADD_ITEM},
+	{to_send_0x007c, ES_NEW_MOB},
+	{to_send_0x0078, ES_MOB_INFO},
+	{to_send_0x022b, ES_NEW_PLAYER},
+	{to_send_0x022a, ES_PLAYER_INFO},
 	{to_send_0x008a, ES_UNIT_ACTION},
+	{to_send_0x0080, ES_UNIT_DISAPPEAR},
+	{to_send_0x0095, ES_REQUEST_CHAR_NAME},
+	{to_send_0x0195, ES_REQUEST_CHAR_NAME_EX},
+	{to_send_0x018b, ES_QUIT_GAME},
 	{NULL, 0},
 };
 

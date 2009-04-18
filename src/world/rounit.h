@@ -5,9 +5,11 @@
 #include "rocharinfo.h"
 
 using ro::RoPosition;
+using ro::RoCharInfoBase;
 
 namespace srdgame
 {
+class Map;
 class RoUnit : public Unit
 {
 public:
@@ -31,12 +33,21 @@ public:
 	{
 		return &_pos;
 	}
-
+	virtual RoCharInfoBase* get_info() = 0;
+	inline void set_map(Map* map)
+	{
+		_map = map;
+	}
+	inline Map* get_map()
+	{
+		return _map;
+	}
 protected:
 	RoPosition _pos;
 	NPriority _pri;
 	long _time;
 	Object* _by;
+	Map* _map;
 };
 }
 

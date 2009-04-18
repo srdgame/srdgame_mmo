@@ -32,7 +32,21 @@ TO_DC(0x0086); // send unit move.
 TO_DC(0x00aa); // equip result.
 TO_DC(0x00ac); // unequip result.
 
+TO_DC(0x007c); // spawn new mob/npc.
+TO_DC(0x0078); // mob/npc/ standing.
+TO_DC(0x022b); // spawn new player.
+TO_DC(0x022a); // player standing
+
 TO_DC(0x008a); // Actions and Attack damage.
+
+TO_DC(0x0080); // clear unit. disappear.
+
+TO_DC(0x014e); // TO say whether the player is the master of Guild.
+
+TO_DC(0x0095); // Send name.
+TO_DC(0x0195); // Send name ex
+
+TO_DC(0x018b); // ack for quit game.
 }
 
 #endif

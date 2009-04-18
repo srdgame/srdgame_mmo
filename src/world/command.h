@@ -36,6 +36,7 @@ public:
 private:
 	void spawn_mob(const Map* map, int x, int y, int mob_id);
 	void spawn_mob(const Map* map, int x, int y, const std::string& name);
+	void spawn_npc(const Map* map, int x, int y, int class_id, const std::string& name);
 	void add_item(const Player* p, int item_id, int quantity);
 	void add_item(const Player* p, const std::string& name, int quantity);
 };

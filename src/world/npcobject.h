@@ -20,6 +20,10 @@ public:
 	virtual bool clicked(Object* by);
 	virtual bool attacked(Object* by);
 
+	virtual RoCharInfoBase* get_info()
+	{
+		return &_npc._info;
+	}
 private:
 	Npc& _npc;
 };

@@ -5,8 +5,11 @@ namespace ro
 {
 struct RoUnitStatus
 {
-	RoUnitStatus() : _option(0), _skill_state(0), _body_state(0), _health_state(0), _speed(0)
+	RoUnitStatus() : _option(0), _skill_state(0), _body_state(0), _health_state(0), _speed(0), _head_dir(4)
 	{
+		_state.active = 0;
+		_state.menu_or_input = 0;
+		_state.dead_sit = 0;
 	}
 	int _option;
 	int _skill_state; // opt3

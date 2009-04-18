@@ -4,6 +4,7 @@
 #include "itemdefs.h"
 #include "singleton.h"
 #include <cassert>
+
 namespace srdgame
 {
 struct Field;
@@ -29,6 +30,10 @@ public:
 		assert(_items != NULL);
 		assert(_max_id > id);
 		return _items + id;
+	}
+	inline short get_max_id()
+	{
+		return _max_id;
 	}
 protected:
 	bool fetch_item(srdgame::Field* f);

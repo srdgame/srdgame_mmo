@@ -69,7 +69,10 @@ size_t to_map_connect(char* buf, const Packet* packet)
 }*/
 DECLARE(load_end_ack)
 {
-	return 0;
+	dest->op = EC_LOAD_END_ACK;
+	dest->len = sizeof(Packet);
+	dest->param.Long = 0;
+	return 2;
 }
 DECLARE(tick_send)
 {
@@ -97,12 +100,18 @@ DECLARE(walk_to_xy)
 }
 DECLARE(quit_game)
 {
-	return 0;
+	dest->op = EC_QUIT_GAME;
+	dest->len = sizeof(Packet);
+	dest->param.Int = PUINT16(src, 2);
+	return 4;
 }
 
 DECLARE(get_char_name_request)
 {
-	return 0;
+	dest->op = EC_REQUEST_CHAR_NAME;
+	dest->len = sizeof(Packet);
+	dest->param.Int = PUINT32(src, 7);
+	return 11;
 }
 
 DECLARE(global_message)
@@ -515,12 +524,18 @@ DECLARE(create_guild)
 
 DECLARE(guild_check_master)
 {
-	return 0;
+	dest->op = EC_GUILD_CHECK_MASTER;
+	dest->len = sizeof(Packet);
+	dest->param.Long = 0;
+	return 2;
 }
 
 DECLARE(guild_request_info)
 {
-	return 0;
+	dest->op = EC_GUILD_REQUEST_INFO;
+	dest->len = sizeof(Packet);
+	dest->param.Int = PUINT32(src, 2);
+	return 6;
 }
 
 DECLARE(guild_change_position_info)
