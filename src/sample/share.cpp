@@ -306,7 +306,7 @@ TO_DC(0x008a)
 	PUINT16(buf, res) = data->_damage; res += 2; // TODO: for div
 	PUINT16(buf, res) = data->_div;	res += 2;
 	PUINT8(buf, res) = data->_type;	res += 1;
-	PUINT16(buf, res) = data->_damage2; res + 2;
+	PUINT16(buf, res) = data->_damage2; res += 2;
 
 	return res; // 29
 }
@@ -503,6 +503,17 @@ TO_DC(0x018b) // send ack for quit game.
 	PUINT16(buf, 0) = 0x018b;
 	PUINT16(buf, 2) = packet->param.Int;
 	return 4;
+}
+TO_DC(0x009c)
+{
+	RoChangedDir *dir = (RoChangedDir*)packet->param.Data;
+
+	PUINT16(buf, 0) = 0x009c;
+	PUINT32(buf, 2) = dir->_id;
+	PUINT16(buf, 6) = dir->_head_dir;
+	PUINT8(buf, 8) = dir->_dir;
+
+	return 9;
 }
 }
 

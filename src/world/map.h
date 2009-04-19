@@ -35,9 +35,10 @@ public:
 	void send_msg(const std::string& msg, int from_id);
 
 	void request_char_name(Player* p, int id);
-protected:
+	
 	void send_packet(Packet* p, int from_id = 0, bool skip_self = false);
 
+protected:
 	void send_all_units(Player* p);
 private:
 	std::string _name;

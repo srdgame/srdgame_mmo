@@ -311,6 +311,35 @@ bool RoSql::load_char(int char_id, RoCharInfo& info, bool load_everything)
 	// We are ok here.
 	return true;
 }
+char to_char(int i)
+{
+	return (i <= 9) ? '0' + i : 'A' + (i - 10);
+}
+void out_name(const string& name)
+{
+		char sz[32];
+		memset(sz, 0, 32);
+		for (size_t a = 0; a < name.size(); ++a)
+		{
+			char c = name[a];
+			sz[2*a] = to_char(c >> 4);
+			sz[2*a + 1] = to_char(c & 0x0f);
+		}
+		LogError("AAAAAAAAAAAA", "Saving Name : %s", sz);
+}
+void out_name(const char * name)
+{
+	char sz[32];
+		memset(sz, 0, 32);
+		for (size_t a = 0; a < strlen(name); ++a)
+		{
+			char c = name[a];
+			sz[2*a] = to_char(c >> 4);
+			sz[2*a + 1] = to_char(c & 0x0f);
+		}
+		LogError("AAAAAAAAAAAA", "Saving Name : %s", sz);
+
+}
 bool RoSql::save_char(int char_id, RoCharInfo& info)
 {
 	if (char_id != info._id)
@@ -319,18 +348,54 @@ bool RoSql::save_char(int char_id, RoCharInfo& info)
 		return false;
 	}
 	LogNotice("RO", "Saving char info~~~~~~~~~~~~~~~~~~~~~~");
+
+	bool have = false;
+
+	std::string sql = "SELECT `account_id` FROM `%s` WHERE `char_id`=%d LIMIT 1";
+	QueryResult* res = DatabaseMgr::get_singleton().query(sql.c_str(),
+			RO_CHAR_TB, char_id);
+	if (res)
+	{
+		if (res->get_row_size() != 0 )
+		{
+		//_LogDebug_("RO_SQL", "count is not one, means no invald data");
+			res->Delete();
+			have = true;
+		}
+	}
+
 	// Insert one new row
-	std::string row_sql = "INSERT INTO `%s` (`char_id`, `account_id`, `char_num`, `name`, `zeny`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
+	std::string row_sql;
+	if (!have)
+	{
+		/*out_name(info._name);
+		info._name = "下阿";
+		char name[MAX_NAME_LEN];
+		memset(name, 0, MAX_NAME_LEN);
+		memcpy(name, info._name.c_str(), info._name.length());*/
+		row_sql = "INSERT INTO `%s` (`char_id`, `account_id`, `char_num`, `name`, `zeny`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `max_hp`, `hp`,"
 		"`max_sp`, `sp`, `hair`, `hair_color`, `last_map`, `last_x`, `last_y`, `save_map`, `save_x`, `save_y`) VALUES ("
 		"'%d', '%d', '%d', '%s', '%d',  '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d','%d', '%d','%d', '%d', '%s', '%d', '%d', '%s', '%d', '%d')";
-	DatabaseMgr::get_singleton().execute(row_sql.c_str(),
-			RO_CHAR_TB, info._id, info._account_id, info._slot, info._name.c_str(), info._exp._zeny, info._prop._str, info._prop._agi,
-			info._prop._vit, info._prop._int, info._prop._dex, info._prop._luk, info._prop._max_hp, info._prop._cur_hp,
-			info._prop._max_sp, info._prop._cur_sp, info._show._hair_style, info._show._hair_color, info._last_pos._map_name,
-			info._last_pos._x, info._last_pos._y, info._save_pos._map_name, info._save_pos._x, info._save_pos._y);
+		DatabaseMgr::get_singleton().execute(row_sql.c_str(),
+				RO_CHAR_TB, info._id, info._account_id, info._slot, info._name.c_str(), info._exp._zeny, info._prop._str, info._prop._agi,
+				info._prop._vit, info._prop._int, info._prop._dex, info._prop._luk, info._prop._max_hp, info._prop._cur_hp,
+				info._prop._max_sp, info._prop._cur_sp, info._show._hair_style, info._show._hair_color, info._last_pos._map_name,
+				info._last_pos._x, info._last_pos._y, info._save_pos._map_name, info._save_pos._x, info._save_pos._y);
+	}
+	else
+	{
+		row_sql = "UPDATE `%s` SET `zeny` = '%d', `str` = '%d', `agi` = '%d', `vit` = '%d', `int` = '%d', `dex` = '%d', `luk` = '%d', `max_hp` = '%d', `hp` = '%d',"
+		"`max_sp` = '%d', `sp` = '%d', `hair` = '%d', `hair_color` = '%d', `last_map` = '%s', `last_x` = '%d', `last_y` = '%d', `save_map` = '%s', `save_x` = '%d', `save_y` = '%d'"
+		"WHERE `account_id` = '%d' AND `char_id` = '%d'";
+		DatabaseMgr::get_singleton().execute(row_sql.c_str(), RO_CHAR_TB, info._exp._zeny, info._prop._str, info._prop._agi,
+				info._prop._vit, info._prop._int, info._prop._dex, info._prop._luk, info._prop._max_hp, info._prop._cur_hp,
+				info._prop._max_sp, info._prop._cur_sp, info._show._hair_style, info._show._hair_color, info._last_pos._map_name,
+				info._last_pos._x, info._last_pos._y, info._save_pos._map_name, info._save_pos._x, info._save_pos._y, info._account_id, info._id);
+	}
+
 
 	// save items.
-	save_items(char_id, info._items);
+	// save_items(char_id, info._items);
 	// save card data
 	// save storage data
 	// save char info
@@ -593,6 +658,11 @@ bool RoSql::fetch_chars_info(Field* f, RoCharInfoBase& info)
 	info._id = f[0].get<int>();
 	info._slot = f[1].get<int>();
 	info._name = f[2].get<std::string>();
+	/*out_name(info._name);
+	char name[MAX_NAME_LEN];
+	memset(name, 0, MAX_NAME_LEN);
+	memcpy(name, f[2].get<char*>(), strlen(f[2].get<char*>()));
+	out_name(name);*/
 	info._class = f[3].get<int>();
 	info._exp._base_lvl = f[4].get<int>();
 	info._exp._job_lvl = f[5].get<int>();

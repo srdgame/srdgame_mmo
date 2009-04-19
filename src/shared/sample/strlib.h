@@ -11,6 +11,8 @@
 #include <signal.h>
 #include <netdb.h>
 #include <cstring>
+#include <string>
+#include <cstdlib>
 #include "metadefs.h"
 
 //using namespace srdgame;
@@ -60,5 +62,24 @@ inline uint16 ntows(uint16 netshort)
 {
 	return ((netshort & 0xFF) << 8) | ((netshort & 0xFF00) >> 8);
 }
+/*
+inline std::string WCharToString(const char * str)
+{
+	char buf[4096];
+	memset(buf, 0, 4096);
+	wcstombs(buf, (wchar_t*)str, 4096);
+	buf[4095] = '\0';
+	return std::string(buf);
+}
+inline size_t StringToWChar(char* buf, const std::string& str, size_t max)
+{
+	wchar_t buf2[4096];
+	memset(buf2, 0, 4096);
+	memset(buf, 0, max);
+	size_t re = mbstowcs(buf2, str.c_str(), 4096);
+	memcpy(buf, buf2, max);
+	buf[max - 1] = '\0';
+	return re;
+}*/
 }
 #endif

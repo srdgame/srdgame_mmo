@@ -8,6 +8,7 @@
 #include "npcid.h"
 #include "npcobject.h"
 #include "mobobject.h"
+#include  "strlib.h"
 
 using namespace srdgame;
 using namespace srdgame::opcode;
@@ -102,6 +103,8 @@ void Map::send_msg(const string& msg, int from_id)
 	p.len = sizeof(Packet) + sizeof(RoMessage);
 	RoMessage m;
 	m._id = from_id; // Currently the player id is the char_id;
+	//char buf[4096];
+	//StringToWChar(buf, msg, 4096);
 	m._msg = msg.c_str();
 	m._len = msg.length();
 	p.param.Data = (char*)&m;
@@ -109,6 +112,7 @@ void Map::send_msg(const string& msg, int from_id)
 }
 void Map::request_char_name(Player* p, int id)
 {
+	char buf[4096];
 	if (NpcId::is_npc(id))
 	{
 		RoUnit* unit = _mgr.get_unit(id);
@@ -123,6 +127,7 @@ void Map::request_char_name(Player* p, int id)
 			RoRequestCharName name;
 			memset(&name, 0, sizeof(name));
 			name._id = id;
+			//StringToWChar(name._name, unit->get_info()->_name, MAX_NAME_LEN);
 			memcpy(name._name, unit->get_info()->_name.c_str(), MAX_NAME_LEN);
 			packet.len = sizeof(Packet) + sizeof(name);
 			packet.param.Data = (char*) &name;
@@ -134,6 +139,7 @@ void Map::request_char_name(Player* p, int id)
 			RoRequestCharNameEx name;
 			memset(&name, 0, sizeof(name));
 			name._id = id;
+			//StringToWChar(name._name, unit->get_info()->_name, MAX_NAME_LEN);
 			memcpy(name._name, unit->get_info()->_name.c_str(), MAX_NAME_LEN);
 			packet.len =sizeof(packet) + sizeof(name);
 			packet.param.Data = (char*)&name;

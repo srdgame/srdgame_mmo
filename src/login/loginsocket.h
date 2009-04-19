@@ -3,8 +3,9 @@
 
 #include "loginsocketbase.h"
 #include "packetdefs.h"
-
-
+#include "userinfo.h"
+#include "rouser.h"
+using ro::RoUser;
 namespace srdgame
 {
 class LoginWorker;
@@ -23,6 +24,7 @@ public:
 	virtual void on_connect();
 	virtual void on_close();
 
+	UserInfoEx<RoUser>* _info;
 public:
 	// Worker will call this to response one packet.
 	virtual void on_handle(Packet* packet);

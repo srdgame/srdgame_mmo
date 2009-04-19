@@ -63,7 +63,8 @@ void LoginAuth::handle_login(LoginSocket* socket, const Packet* packet)
 	{
 		create = true;
 	}
-	if (login_info->name[++index] == 'F' && login_info->name[index] == '_')
+	index = strlen(login_info->name) - 1;
+	if (login_info->name[index] == 'F' && login_info->name[--index] == '_')
 	{
 		female = true;
 		create = true;
@@ -71,7 +72,7 @@ void LoginAuth::handle_login(LoginSocket* socket, const Packet* packet)
 
 	if (create)
 	{
-		login_info->name[index--] = '\0';
+		login_info->name[index] = '\0';
 		login_info->name[index] = '\0';
 		LogNotice(LN, "New account are creating, name: %s  \t pass: %s", login_info->name, login_info->pass);
 		create = this->create_new_account(login_info, female);
@@ -110,6 +111,7 @@ void LoginAuth::handle_login(LoginSocket* socket, const Packet* packet)
 
 	if (!login_failed)
 	{
+		socket->_info = (UserInfoEx<RoUser>*)user_info;
 		lead_to_realm(socket);
 	}
 }
@@ -144,10 +146,10 @@ void LoginAuth::lead_to_realm(LoginSocket* socket)
 	// Send server list.
 	ServerListHeader header;
 	header.ip = str2ip(socket->get_remote_ip().c_str());
-	header.account = 1000;
+	header.account = socket->_info->_id;
 	header.id1 = rand(); // Not used I guess.
 	header.id2 = rand(); // Not used I guess.
-	header.sex = 'F';
+	header.sex = socket->_info->_ex._sex ? 'F' : 'M';
 	header.server_count = (uint32)size; // Only one now, it is fake.
 
 
@@ -173,6 +175,7 @@ void LoginAuth::lead_to_realm(LoginSocket* socket)
 	listp.len = sizeof(Packet) + sizeof(header) + sizeof(ServerInfo);
 	listp.param.Data = buf;
 
+	AccountMgr::get_singleton().release_user(socket->_info->_id);
 	socket->send_packet(&listp);
 }
 

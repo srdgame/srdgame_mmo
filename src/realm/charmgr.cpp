@@ -2,6 +2,7 @@
 #include "ro_defs.h"
 #include "rosql.h"
 #include "log.h"
+#include "strlib.h"
 
 using namespace std;
 using namespace ro;
@@ -39,7 +40,10 @@ RoCharInfo* CharMgr::create_new(CreateCharData* data, int account_id)
 
 	RoCharInfo* info = new RoCharInfo();
 	//memset((char*)info, 0, sizeof(RoCharInfoBase));
+	//info->_name = WCharToString(data->_name);
 	info->_name = string(data->_name);
+	//info->_name = "天阿";
+	LogDebug("AAAAAAAAAAAAAAA", "name: %s  \t %s", data->_name, info->_name.c_str());
 	info->_id = _sql->get_max_char_id();
 	info->_account_id = account_id;
 	info->_prop._str = data->_str;

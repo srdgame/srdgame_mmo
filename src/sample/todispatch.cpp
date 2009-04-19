@@ -44,6 +44,7 @@ static struct {
 	{to_send_0x0095, ES_REQUEST_CHAR_NAME},
 	{to_send_0x0195, ES_REQUEST_CHAR_NAME_EX},
 	{to_send_0x018b, ES_QUIT_GAME},
+	{to_send_0x009c, ES_CHANGE_DIR},
 	{NULL, 0},
 };
 

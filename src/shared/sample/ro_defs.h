@@ -5,6 +5,10 @@
 #include "metadefs.h"
 #include <vector>
 
+/***************************************
+ * Do not use std::string, please only use the char[]
+ * ***************************************/
+
 //using namespace srdgame;
 //
 namespace ro
@@ -460,6 +464,22 @@ struct RoRequestCharNameEx : public RoRequestCharName
 	char _name_1[MAX_NAME_LEN]; // 30
 	char _name_2[MAX_NAME_LEN];// 54 -
 	char _name_3[MAX_NAME_LEN];// 78
+};
+struct RoChangeDir
+{
+	char _head_dir;
+	char _dir;
+};
+union RoChangeDirUnion
+{
+	long _long;
+	RoChangeDir _dir;
+};
+struct RoChangedDir
+{
+	int _id; // account_id;
+	int _head_dir; // 0 if it is not player.
+	int _dir; // dir;
 };
 }
 #endif

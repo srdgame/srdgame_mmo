@@ -30,8 +30,8 @@ RealmSocket::RealmSocket()
 	: RealmSocketBase(/* using the default buffer size */)
 {
 	_inter = false;
-	_dump_in = false;
-	_dump_out = false;
+	_dump_in = true;
+	_dump_out = true;
 }
 
 RealmSocket::~RealmSocket()
@@ -77,12 +77,12 @@ void RealmSocket::on_handle(Packet* packet)
 
 				//usleep(10000);
 				// TO send chars.
-				RoCharInfoBase* chars;
+				RoCharInfoBase* chars = NULL;
 				size_t count = CharMgr::get_singleton().load_chars(_account_id, chars);
 				_LogDebug_("RealmServer", "Characters has been loaded, count is : %d, chars : %d", count, chars);
 				for (size_t i = 0; i < count; ++i)
 				{
-					LogError("RealmServer", "Slot : %d , char_id %d", chars[i]._slot, chars[i]._id); 
+					LogError("RealmServer", "Slot : %d , char_id %d, char_name : %s", chars[i]._slot, chars[i]._id, chars[i]._name.c_str()); 
 					_chars[chars[i]._slot] = chars[i]._id;
 				}
 				p.op = ES_CHAR_LIST;

@@ -60,9 +60,13 @@ bool MySQLDatabase::open(const DatabaseInfo& info)
 		conn = mysql_init(NULL);
 		if (!conn)
 			continue;
-		if (mysql_options(conn, MYSQL_SET_CHARSET_NAME, "utf8"))
+		/*if (mysql_options(conn, MYSQL_SET_CHARSET_NAME, "utf8"))
 		{
 			LogError(DB_NAME, "Could not set character set to be utf8");
+		}*/
+		if (mysql_options(conn, MYSQL_SET_CHARSET_NAME, "latin1"))
+		{
+			LogError(DB_NAME, "Could not set character set to be latin1");
 		}
 
 		if (mysql_options(conn, MYSQL_OPT_RECONNECT, "true"))
@@ -76,6 +80,10 @@ bool MySQLDatabase::open(const DatabaseInfo& info)
 			LogError(DB_NAME, "Connection failed due to: `%s`", mysql_error( conn ) );
 			mysql_close(conn);
 			return false;
+		}
+		if (mysql_options(real_conn, MYSQL_SET_CHARSET_NAME, "utf8"))
+		{
+			LogError(DB_NAME, "Could not set character set to be utf8, in real connection");
 		}
 
 		MySQLConn* new_conn = new MySQLConn;

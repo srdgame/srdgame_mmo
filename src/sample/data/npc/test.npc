@@ -1,8 +1,8 @@
 # Npc test.
 
-name = Athena
+name = жпнд
 type = NPC
-id = 766
+id = 756
 
 #postion info
 map = new_1-1

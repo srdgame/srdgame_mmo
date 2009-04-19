@@ -5,6 +5,7 @@
 
 using namespace srdgame;
 using namespace ro;
+using namespace std;
 
 AccountMgr::AccountMgr() : _max_id(0)
 {
@@ -13,6 +14,7 @@ AccountMgr::AccountMgr() : _max_id(0)
 
 AccountMgr::~AccountMgr()
 {
+	_users.clear();
 	delete _sql;
 }
 
@@ -59,5 +61,9 @@ UserInfo* AccountMgr::load_user(long id)
 	}
 	
 	return info;
+}
+void AccountMgr::release_user(long id)
+{
+	_users.erase(id);
 }
 

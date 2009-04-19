@@ -142,6 +142,8 @@ enum ExOpcode
 	EC_WALK_TO = 200,
 	ES_WALK_TO = 201,
 	ES_UNIT_MOVE = 203,
+	EC_CHANGE_DIR = 204,
+	ES_CHANGE_DIR = 205, // send to others.
 
 	EC_EQUIP_ITEM = 230,
 	ES_EQUIP_ITEM = 231,

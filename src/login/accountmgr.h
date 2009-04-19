@@ -27,7 +27,6 @@ public:
 	UserInfo* load_user(std::string name);
 	UserInfo* load_user(long id);
 
-	void release_user(std::string name);
 	void release_user(long id);
 
 protected:

@@ -182,7 +182,7 @@ size_t from_create_char(CreateCharData& data, const char* buf, size_t src_len)
 	/*assert(sizeof(CreateCharData) == 35);
 	::memcpy(data._name, src, 35); // Just copy it :-).
 	*/
-	memcpy(data._name, PCHAR(buf, len), 24);	len += 24;
+	memcpy(data._name, PCHAR(buf, len), MAX_NAME_LEN);	len += MAX_NAME_LEN;
 	data._str = PUINT8(buf, len);				len += 1;
 	data._agi = PUINT8(buf, len);				len += 1;
 	data._vit = PUINT8(buf, len);				len += 1;

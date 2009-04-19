@@ -475,6 +475,19 @@ void Player::on_handle(Packet* p)
 				quit.param.Int = 0;
 				send_packet(&quit);
 			}
+		case EC_CHANGE_DIR:
+			{
+				RoChangeDirUnion u;
+				u._long = p->param.Long;
+				info->_status._head_dir = u._dir._head_dir;
+				//TODO:
+				Packet c(ES_CHANGE_DIR);
+				RoChangedDir dir;
+				dir._id = this->_acc_id;
+				dir._head_dir = info->_status._head_dir;
+				dir._dir = u._dir._dir;
+				_map->send_packet(&c, this->_id, true);
+			}
 		default:
 			break;
 	}

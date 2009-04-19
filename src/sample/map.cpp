@@ -135,6 +135,12 @@ DECLARE(map_move)
 
 DECLARE(change_dir)
 {
+	RoChangeDirUnion c;
+	c._dir._head_dir = PCHAR(src, 7);
+	c._dir._dir = PCHAR(src, 10);
+	dest->op = EC_CHANGE_DIR;
+	dest->len = sizeof(Packet);
+	dest->param.Long = c._long;
 	return 0;
 }
 
@@ -204,7 +210,11 @@ DECLARE(unequip_item)
 
 DECLARE(npc_clicked)
 {
-	return 0;
+	dest->op = EC_CLICK_NPC;
+	dest->len = sizeof(Packet);
+	dest->param.Int = PUINT32(src, 2);
+
+	return 6;
 }
 
 DECLARE(npc_buy_sell_selected)

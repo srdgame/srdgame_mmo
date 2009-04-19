@@ -20,11 +20,11 @@ using namespace srdgame::opcode;
 #endif
 
 LoginSocket::LoginSocket()
-	: LoginSocketBase(/* using the default buffer size */)
+	: LoginSocketBase(/* using the default buffer size */), _info(NULL)
 {
 	_inter = false;
-	_dump_in = true;
-	_dump_out = true;
+	_dump_in = false;
+	_dump_out = false;
 }
 
 LoginSocket::~LoginSocket()
