@@ -6,6 +6,7 @@
 
 namespace srdgame
 {
+class Packet;
 class PlayerObject : RoUnit
 {
 public:

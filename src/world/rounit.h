@@ -42,6 +42,8 @@ public:
 	{
 		return _map;
 	}
+
+	virtual send_packet(const Packet* p) = 0;
 protected:
 	RoPosition _pos;
 	NPriority _pri;

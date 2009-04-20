@@ -112,7 +112,6 @@ void Map::send_msg(const string& msg, int from_id)
 }
 void Map::request_char_name(Player* p, int id)
 {
-	char buf[4096];
 	if (NpcId::is_npc(id))
 	{
 		RoUnit* unit = _mgr.get_unit(id);
@@ -156,6 +155,22 @@ void Map::request_char_name(Player* p, int id)
 				// TODO:
 			}
 		}
+	}
+}
+void Map::click_npc(Player* p, int id)
+{
+	char buf[4096];
+	if (NpcId::is_npc(id))
+	{
+		RoUnit* unit = _mgr.get_unit(id);
+		if (!unit)
+			return;
+		// TODO:
+		unit->clicked(p->get_obj());
+	}
+	else
+	{
+		// TODO:
 	}
 }
 void Map::send_packet(Packet* p, int from_id, bool skip_self)

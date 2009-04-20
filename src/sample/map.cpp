@@ -136,8 +136,8 @@ DECLARE(map_move)
 DECLARE(change_dir)
 {
 	RoChangeDirUnion c;
-	c._dir._head_dir = PCHAR(src, 7);
-	c._dir._dir = PCHAR(src, 10);
+	c._dir._head_dir = *(PCHAR(src, 7));
+	c._dir._dir = *(PCHAR(src, 10));
 	dest->op = EC_CHANGE_DIR;
 	dest->len = sizeof(Packet);
 	dest->param.Long = c._long;

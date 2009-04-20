@@ -515,5 +515,12 @@ TO_DC(0x009c)
 
 	return 9;
 }
+
+TO_DC(0x00c4) // Npc buy sell
+{
+	PUINT16(buf, 0) = 0x00c4;
+	PUINT32(buf, 2) = packet->param.Int;
+	return 6;
+}
 }
 

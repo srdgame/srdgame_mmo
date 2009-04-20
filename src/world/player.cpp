@@ -57,6 +57,11 @@ void Player::load_end_ack()
 	this->send_items();
 }
 
+virtual Object* get_obj()
+{
+	return NULL;
+}
+
 CharInfo* Player::get_info() const
 {
 	return _info;
@@ -475,6 +480,7 @@ void Player::on_handle(Packet* p)
 				quit.param.Int = 0;
 				send_packet(&quit);
 			}
+			break;
 		case EC_CHANGE_DIR:
 			{
 				RoChangeDirUnion u;
@@ -488,6 +494,12 @@ void Player::on_handle(Packet* p)
 				dir._dir = u._dir._dir;
 				_map->send_packet(&c, this->_id, true);
 			}
+			break;
+		case EC_CLICK_NPC:
+			{
+				_map->click_npc(this, p->param.Int);
+			}
+			break;
 		default:
 			break;
 	}

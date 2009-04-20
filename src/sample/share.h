@@ -49,6 +49,8 @@ TO_DC(0x0195); // Send name ex
 TO_DC(0x018b); // ack for quit game.
 
 TO_DC(0x009c); // tell others about one player's change dir.
+
+TO_DC(0x00c4); // NpcBuySell.
 }
 
 #endif

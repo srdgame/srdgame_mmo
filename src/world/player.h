@@ -35,6 +35,8 @@ public:
 	virtual void on_handle(Packet* p);
 
 	virtual void load_end_ack();
+
+	virtual Object* get_obj();
 	// add item.
 	virtual void add_item(ro::RoCharItem& item);
 protected:
