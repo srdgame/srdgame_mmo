@@ -1,4 +1,5 @@
 #include "player.h"
+#include "rounit.h"
 #include "worldsocket.h"
 #include "map.h"
 #include "charinfo.h"
@@ -16,13 +17,14 @@ using namespace srdgame::opcode;
 using namespace ro;
 using namespace std;
 
-Player::Player(int acc_id, int id) : _socket(NULL), _acc_id(acc_id), _id(id), _info(NULL)
+Player::Player(int acc_id, int id) : _socket(NULL), _unit(NULL), _acc_id(acc_id), _id(id), _map(NULL), _info(NULL)
 {
 	// Load player.
 }
 Player::~Player()
 {
 	// Will be deleted by WorldMgr
+	_info_lock.lock();
 	_lock.lock();
 	if (_socket)
 	{
@@ -31,6 +33,7 @@ Player::~Player()
 	}
 	delete _info;
 	_info = NULL;
+	_info_lock.unlock();
 	_lock.unlock();
 }
 
@@ -44,8 +47,12 @@ void Player::set_info(CharInfo* info)
 	}
 
 	_lock.lock();
+	_info_lock.lock();
 	delete _info;
 	_info = info;
+	delete _unit;
+	_unit = new RoUnit(_info->_id, UT_PLAYER);
+	_info_lock.unlock();
 	_lock.unlock();
 }
 void Player::load_end_ack()
@@ -57,9 +64,9 @@ void Player::load_end_ack()
 	this->send_items();
 }
 
-virtual Object* get_obj()
+RoUnit* Player::get_unit()
 {
-	return NULL;
+	return _unit;
 }
 
 CharInfo* Player::get_info() const
@@ -82,7 +89,11 @@ string Player::get_last_map()
 bool Player::set_map(Map* map)
 {
 	_lock.lock();
+	if (_map)
+		_map->remove_unit(_unit);
 	_map = map;
+	if (_map)
+		_map->add_unit(_unit);
 	_lock.unlock();
 	return true;
 }
@@ -110,11 +121,11 @@ void Player::send_packet(Packet* p)
 }
 void Player::add_item(RoCharItem& item)
 {
-	_lock.lock();
+	_info_lock.lock();
 	RoCharInfo * info = (RoCharInfo*)_info;
 	// TODO: check the count.
 	info->_items.push_back(item);
-	_lock.unlock();
+	_info_lock.unlock();
 	
 	RoItemData data;
 	if (item._type == 0)
@@ -168,6 +179,7 @@ void Player::update_look(RoLookType type, int val)
 };
 void Player::send_friend_list()
 {
+	AutoLock lock(_info_lock);
 	// TODO:
 	RoCharInfo* ri = (RoCharInfo*)_info;
 	Packet p;
@@ -183,6 +195,7 @@ void Player::send_friend_list()
 
 void Player::send_items()
 {
+	AutoLock lock(_info_lock);
 	LogError("Player", "Send items !!!!!!!!!!!!!!!!");
 	RoCharInfo* ri = (RoCharInfo*)_info;
 	if (ri->_items.size() == 0)
@@ -241,6 +254,7 @@ void Player::send_items()
 
 void Player::equip_item(short index, short pos)
 {	
+	AutoLock lock(_info_lock);
 	RoCharInfo* info = (RoCharInfo*)_info;
 	
 	RoEquipItemOK ok;
@@ -310,6 +324,7 @@ void Player::equip_item(short index, short pos)
 
 void Player::unequip_item(short index)
 {
+	AutoLock lock(_info_lock);
 	RoCharInfo* info = (RoCharInfo*)_info;
 	
 	RoEquipItemOK ok;
@@ -410,6 +425,7 @@ void Player::on_handle(Packet* p)
 			break;
 		case EC_TICK_COUNT:
 			{
+				// TODO:
 				Packet tick(ES_TICK_COUNT);
 				tick.param.Int = p->param.Int;
 				send_packet(&tick);
@@ -417,6 +433,7 @@ void Player::on_handle(Packet* p)
 			break;
 		case EC_WALK_TO:
 			{
+				// TODO: move to one function.
 				Packet walk(ES_WALK_TO);
 				RoWalkToXY xy;
 				xy._int = p->param.Int;
@@ -492,12 +509,18 @@ void Player::on_handle(Packet* p)
 				dir._id = this->_acc_id;
 				dir._head_dir = info->_status._head_dir;
 				dir._dir = u._dir._dir;
-				_map->send_packet(&c, this->_id, true);
+				_map->send_to_all(&c, this->_id, true);
 			}
 			break;
 		case EC_CLICK_NPC:
 			{
 				_map->click_npc(this, p->param.Int);
+			}
+			break;
+		case EC_NPC_BUY_SELL_SELECT:
+			{
+				RoNpcBuySellSelect* s = (RoNpcBuySellSelect*)p->param.Data;
+				_map->request_buy_sell_list(s->_npc_id, s->_flag);
 			}
 			break;
 		default:

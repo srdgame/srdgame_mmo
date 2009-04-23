@@ -21,16 +21,10 @@ srdgame_worldserver_SOURCES  = worldserver.h \
 				   npcid.cpp \
 				   npc.h \
 				   npc.cpp \
-				   npcobject.h \
-				   npcobject.cpp \
 				   player.h \
 				   player.cpp \
-				   playerobject.h \
-				   playerobject.cpp \
 				   mob.h \
 				   mob.cpp \
-				   mobobject.h \
-				   mobobject.cpp \
 				   spawner.h \
 				   spawner.cpp \
 				   spawnermgr.h \

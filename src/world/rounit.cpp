@@ -1,8 +1,15 @@
 #include "rounit.h"
+#include "player.h"
+#include "packetdefs.h"
+#include "opcode.h"
+#include "ro_defs.h"
+#include "log.h"
 
+using namespace ro;
 using namespace srdgame;
+using namespace srdgame::opcode;
 
-RoUnit::RoUnit(int id) : Unit(id), _pri(NP_NOTHING), _time(0), _by(NULL), _map(NULL)
+RoUnit::RoUnit(int id, UnitType type) : Unit(id), _type(type), _info(NULL), _pri(NP_NOTHING), _time(0), _by(NULL), _map(NULL)
 {
 }
 
@@ -38,4 +45,48 @@ bool RoUnit::attacked(Object* by)
 	return true;
 }
 
+void RoUnit::get_names(Player* p)
+{	
+	_info->_lock.lock();
+	
+	// TODO: test whether we could only use the ex name.
+	if (_type = UT_NPC)
+	{
+		// For npc name.
+		Packet packet(ES_REQUEST_CHAR_NAME);
+		RoRequestCharName name;
+		memset(&name, 0, sizeof(name));
+		name._id = this->get_id();
+		memcpy(name._name, _info->_name.c_str(), MAX_NAME_LEN);
+		packet.len = sizeof(Packet) + sizeof(name);
+		packet.param.Data = (char*) &name;
+		p->send_packet(&packet);
+	}
+	else
+	{
+		Packet packet(ES_REQUEST_CHAR_NAME_EX);
+		RoRequestCharNameEx name;
+		memset(&name, 0, sizeof(name));
+		name._id = this->get_id();
+		memcpy(name._name, _info->_name.c_str(), MAX_NAME_LEN);
+		packet.len =sizeof(packet) + sizeof(name);
+		packet.param.Data = (char*)&name;
+		p->send_packet(&packet);
+	}
 
+	_info->_lock.unlock();
+}
+
+void RoUnit::send_info(Player* p)
+{
+	if (!_info)
+		return;
+	Packet packet(ES_MOB_INFO);
+	packet.len = sizeof(Packet) + sizeof(RoCharInfoBase);
+
+	LogDebug("MAP", "Unit in X:%d \t Y:%d \t TYPE: %d", _info->_last_pos._x, _info->_last_pos._y, _info->_show._class);
+	packet.param.Data = (char*) _info;
+	_info->_lock.lock();
+	p->send_packet(&packet);
+	_info->_lock.unlock();
+}

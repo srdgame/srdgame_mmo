@@ -6,8 +6,6 @@
 #include "packetdefs.h"
 #include "opcode.h"
 #include "npcid.h"
-#include "npcobject.h"
-#include "mobobject.h"
 #include  "strlib.h"
 
 using namespace srdgame;
@@ -63,7 +61,7 @@ bool Map::add_player(Player* p)
 	packet.len = sizeof(Packet) + sizeof(RoCharInfoBase);
 	packet.param.Data = (char*)p->get_info();
 
-	send_packet(&packet, p->get_id(), true);
+	send_to_all_players(&packet, p->get_id(), true);
 
 	_players[p->get_id()] = p;
 	return true;
@@ -108,42 +106,18 @@ void Map::send_msg(const string& msg, int from_id)
 	m._msg = msg.c_str();
 	m._len = msg.length();
 	p.param.Data = (char*)&m;
-	send_packet(&p, from_id, true);
+	send_to_all_players(&p, from_id, true);
 }
 void Map::request_char_name(Player* p, int id)
 {
+	AutoLock lock(_lock);
 	if (NpcId::is_npc(id))
 	{
 		RoUnit* unit = _mgr.get_unit(id);
 		if (!unit)
 			return;
 
-		// TODO: test whether we could only use the ex name.
-		if (dynamic_cast<NpcObject*>(unit))
-		{
-			// For npc name.
-			Packet packet(ES_REQUEST_CHAR_NAME);
-			RoRequestCharName name;
-			memset(&name, 0, sizeof(name));
-			name._id = id;
-			//StringToWChar(name._name, unit->get_info()->_name, MAX_NAME_LEN);
-			memcpy(name._name, unit->get_info()->_name.c_str(), MAX_NAME_LEN);
-			packet.len = sizeof(Packet) + sizeof(name);
-			packet.param.Data = (char*) &name;
-			p->send_packet(&packet);
-		}
-		else
-		{
-			Packet packet(ES_REQUEST_CHAR_NAME_EX);
-			RoRequestCharNameEx name;
-			memset(&name, 0, sizeof(name));
-			name._id = id;
-			//StringToWChar(name._name, unit->get_info()->_name, MAX_NAME_LEN);
-			memcpy(name._name, unit->get_info()->_name.c_str(), MAX_NAME_LEN);
-			packet.len =sizeof(packet) + sizeof(name);
-			packet.param.Data = (char*)&name;
-			p->send_packet(&packet);
-		}
+		unit->get_names(p); // Let unit say its names.
 	}
 	else
 	{
@@ -162,34 +136,69 @@ void Map::click_npc(Player* p, int id)
 	char buf[4096];
 	if (NpcId::is_npc(id))
 	{
+		AutoLock lock(_lock);
 		RoUnit* unit = _mgr.get_unit(id);
 		if (!unit)
 			return;
 		// TODO:
-		unit->clicked(p->get_obj());
+		unit->clicked(p->get_unit());
 	}
 	else
 	{
 		// TODO:
 	}
 }
-void Map::send_packet(Packet* p, int from_id, bool skip_self)
+void Map::request_buy_sell_list(int npc_id, int flag)
+{
+	if (!NpcId::is_npc(npc_id))
+		return;
+
+	AutoLock lock(_lock);
+	RoUnit* unit = _mgr.get_unit(npc_id);
+	if (!unit)
+		return;
+	if (flag == 0)
+	{
+		// buy list.
+		
+	}
+	else
+	{
+		// sell list.
+	}
+}
+void Map::send_to_all(Packet* p, int from_id, bool skip_self)
+{
+	AutoLock lock(_lock);
+	send_to_all_players(p, from_id, skip_self);
+}
+void Map::send_to_all_players(Packet* p, int from_id, bool skip_self)
 {
 	// Send to all user.
 	std::map<int, Player*>::iterator ptr = _players.begin();
 	for (; ptr != _players.end(); ++ptr)
 	{
-		// Do not send back to the user who is sending out message.
+		// Do not send back to the user 	who is sending out message.
 		if (skip_self && ptr->second->get_id() == from_id)
 			continue;
 
 		ptr->second->send_packet(p);
 	}
 }
+/*void Map::send_to_unit(Packet* p, int unit_id)
+{
+	AutoLock lock(_lock);
+	RoUnit* unit = _mgr.get_unit(unit_id);
+	if (unit)
+	{
+		unit->send_packet(p);
+	}
+}*/
+
 void Map::send_all_units(Player* p)
 {
-	Packet packet(ES_MOB_INFO);
-	packet.len = sizeof(Packet) + sizeof(RoCharInfoBase);
+	AutoLock lock(_lock);
+
 	vector<RoUnit*> units;
 	_mgr.get_all(units);
 
@@ -198,10 +207,6 @@ void Map::send_all_units(Player* p)
 	{
 		if (units[i] == NULL)
 			continue;
-		if (units[i]->get_info() == NULL)
-			continue;
-		LogDebug("MAP", "Unit in X:%d \t Y:%d \t TYPE: %d", units[i]->get_info()->_last_pos._x, units[i]->get_info()->_last_pos._y, units[i]->get_info()->_show._class);
-		packet.param.Data = (char*) units[i]->get_info();
-		p->send_packet(&packet);
+		units[i]->send_info(p);
 	}
 }

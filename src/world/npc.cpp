@@ -1,7 +1,6 @@
 #include "npc.h"
 #include "npcid.h"
 #include "spawner.h"
-#include "npcobject.h"
 #include "mapmgr.h"
 #include "map.h"
 #include "ro_defs.h"
@@ -9,7 +8,7 @@
 
 using namespace srdgame;
 
-Npc::Npc(Spawner* sp) : _sp (sp), _obj(NULL)
+Npc::Npc(Spawner* sp) : _sp (sp), _unit(NULL)
 {
 	LogDebug("NPC", "Creating NPC..................");
 	_info._id = NpcId::generate(); // generate the id;
@@ -29,22 +28,22 @@ Npc::Npc(Spawner* sp) : _sp (sp), _obj(NULL)
 	if (map)
 	{
 		LogDebug("NPC", "Adding npc : %d to map", _info._id);
-		NpcObject* obj = new NpcObject(*this);
-		map->add_unit(obj);
+		_unit = new RoUnit(_info._id, UT_NPC);
+		map->add_unit(_unit);
 	}
 }
 
 Npc::~Npc()
 {
-	if (_obj)
+	if (_unit)
 	{
 		LogError("NPC", "Removing NPC............");
-		Map* map = _obj->get_map();
+		Map* map = _unit->get_map();
 		if (map)
 		{
-			map->remove_unit(_obj);
+			map->remove_unit(_unit);
 		}
-		delete _obj;
+		delete _unit;
 	}
 }
 

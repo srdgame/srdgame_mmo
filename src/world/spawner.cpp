@@ -24,12 +24,12 @@
 using namespace srdgame;
 using namespace std;
 
-Spawner::Spawner(int id) : RoUnit(id)
+Spawner::Spawner(int id) : RoUnit(id, UT_SPAWNER)
 {
 	//
 }
 
-Spawner::Spawner(int id, const SpawnerInfo& info) : RoUnit(id), _info(info)
+Spawner::Spawner(int id, const SpawnerInfo& info) : RoUnit(id, UT_SPAWNER), _info(info)
 {
 }
 

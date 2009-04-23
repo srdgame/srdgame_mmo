@@ -481,5 +481,10 @@ struct RoChangedDir
 	int _head_dir; // 0 if it is not player.
 	int _dir; // dir;
 };
+struct RoNpcBuySellSelect
+{
+	int _npc_id;
+	unsigned char _flag;
+};
 }
 #endif

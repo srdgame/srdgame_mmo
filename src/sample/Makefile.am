@@ -1,6 +1,6 @@
 AUTOMAKE_OPTION=foreign
 
-INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../shared/packet -I$(srcdir)/../shared/util -I$(srcdir)/../shared/crypto -I$(srcdir)/../shared/sample -I$(srcdir)/../shared/game
+INCLUDES = $(SRDGAME_INCLUDES) -I$(srcdir) -I$(srcdir)/../shared/packet -I$(srcdir)/../shared/util -I$(srcdir)/../shared/crypto -I$(srcdir)/../shared/sample -I$(srcdir)/../shared/game -I$(srcdir)/../shared/thread
 
 lib_LTLIBRARIES = libsample.la
 

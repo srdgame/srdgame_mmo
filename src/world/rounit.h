@@ -10,10 +10,21 @@ using ro::RoCharInfoBase;
 namespace srdgame
 {
 class Map;
+class Packet;
+class Player;
+enum UnitType
+{
+	UT_SPAWNER,
+	UT_MOB,
+	UT_NPC,
+	UT_PLAYER,
+	UT_GM,
+	UT_COUNT,
+};
 class RoUnit : public Unit
 {
 public:
-	RoUnit(int id);
+	RoUnit(int id, UnitType type);
 	// Will be deleted by who?  At last UnitMgr will delete all in its destructor.
 	virtual ~RoUnit();
 
@@ -33,7 +44,6 @@ public:
 	{
 		return &_pos;
 	}
-	virtual RoCharInfoBase* get_info() = 0;
 	inline void set_map(Map* map)
 	{
 		_map = map;
@@ -42,9 +52,17 @@ public:
 	{
 		return _map;
 	}
+	void set_info(RoCharInfoBase* info)
+	{
+		_info = info;	
+	}
 
-	virtual send_packet(const Packet* p) = 0;
+	void get_names(Player* p);
+	void send_info(Player* p);
 protected:
+	Mutex _lock;
+	UnitType _type;
+	RoCharInfoBase* _info;
 	RoPosition _pos;
 	NPriority _pri;
 	long _time;

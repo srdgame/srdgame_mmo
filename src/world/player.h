@@ -13,6 +13,7 @@ class Map;
 class WorldSocket;
 class Position;
 struct Packet;
+class RoUnit;
 class Player
 {
 public:
@@ -36,7 +37,7 @@ public:
 
 	virtual void load_end_ack();
 
-	virtual Object* get_obj();
+	virtual RoUnit* get_unit();
 	// add item.
 	virtual void add_item(ro::RoCharItem& item);
 protected:
@@ -50,10 +51,13 @@ protected:
 protected:
 	Mutex _lock;
 	WorldSocket* _socket;
+	RoUnit* _unit;
 	int _acc_id;
 	int _id;
-	CharInfo* _info;
 	Map* _map;
+
+	Mutex _info_lock;
+	CharInfo* _info;
 };
 }
 

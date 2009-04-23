@@ -8,7 +8,6 @@ using ro::RoCharInfoBase;
 namespace srdgame
 {
 class Spawner;
-class NpcObject;
 class RoUnit;
 class Npc
 {
@@ -27,7 +26,7 @@ public:
 protected:
 	RoCharInfoBase _info;
 	Spawner* _sp;
-	RoUnit* _obj;
+	RoUnit* _unit;
 };
 }
 

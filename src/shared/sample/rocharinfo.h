@@ -6,6 +6,7 @@
 #include "ro_defs.h"
 #include "rounitstatus.h"
 #include "itemdefs.h"
+#include "mutex.h"
 #include <cstring>
 #include <vector>
 
@@ -127,6 +128,9 @@ public:
 	// Map
 	RoPosition _last_pos;
 	RoPosition _save_pos;
+
+	// Mutex, for threading
+	srdgame::Mutex _lock;
 };
 class RoCharInfo : public RoCharInfoBase
 {

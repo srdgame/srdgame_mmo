@@ -219,7 +219,13 @@ DECLARE(npc_clicked)
 
 DECLARE(npc_buy_sell_selected)
 {
-	return 0;
+	dest->op = EC_NPC_BUY_SELL_SELECT;
+	dest->len = sizeof(Packet) + sizeof(RoNpcBuySellSelect);
+	RoNpcBuySellSelect* s = new RoNpcBuySellSelect();
+	s->_npc_id = PUINT32(src, 2);
+	s->_flag = PUINT8(src, 6);
+	dest->param.Data = (char*)s;
+	return 7;
 }
 
 DECLARE(npc_buy_list_send)

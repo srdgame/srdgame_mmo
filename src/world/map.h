@@ -36,11 +36,13 @@ public:
 
 	void request_char_name(Player* p, int id);
 	void click_npc(Player* p, int id);
-	
-	void send_packet(Packet* p, int from_id = 0, bool skip_self = false);
+	void request_buy_sell_list(int npc_id, int flag);
 
+	void send_to_all(Packet* p, int from_id, bool skip_self);
 protected:
 	void send_all_units(Player* p);
+	void send_to_all_players(Packet* p, int from_id = 0, bool skip_self = false);
+
 private:
 	std::string _name;
 	int _id;
