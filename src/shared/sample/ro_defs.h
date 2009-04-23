@@ -486,5 +486,28 @@ struct RoNpcBuySellSelect
 	int _npc_id;
 	unsigned char _flag;
 };
+struct RoSellingItem
+{
+	int _val; // The value from DB
+	int _s_val; // The value for current player, it may cheaper if player has the skill.
+	int _item_type; // item type.
+	int _item_id; // The id in DB
+};
+struct RoSellingItemList
+{
+	int _count;
+	RoSellingItem* _items;
+};
+struct RoItemValue
+{
+	int _index; // The index in item list of Player
+	int _val;
+	int _s_val;
+};
+struct RoItemValueList
+{
+	int _count;
+	RoItemValue* _items;
+};
 }
 #endif

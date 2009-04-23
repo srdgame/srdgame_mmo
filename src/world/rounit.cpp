@@ -36,6 +36,7 @@ bool RoUnit::move_to(Position* pos, Object* by)
 bool RoUnit::clicked(Object* by)
 {
 	_by = by;
+	
 	return true;
 }
 
@@ -47,7 +48,6 @@ bool RoUnit::attacked(Object* by)
 
 void RoUnit::get_names(Player* p)
 {	
-	_info->_lock.lock();
 	
 	// TODO: test whether we could only use the ex name.
 	if (_type = UT_NPC)
@@ -74,19 +74,47 @@ void RoUnit::get_names(Player* p)
 		p->send_packet(&packet);
 	}
 
-	_info->_lock.unlock();
 }
 
 void RoUnit::send_info(Player* p)
 {
 	if (!_info)
+	{
+		LogError("MAP", "Unit has no info");
 		return;
+	}
+
 	Packet packet(ES_MOB_INFO);
 	packet.len = sizeof(Packet) + sizeof(RoCharInfoBase);
 
-	LogDebug("MAP", "Unit in X:%d \t Y:%d \t TYPE: %d", _info->_last_pos._x, _info->_last_pos._y, _info->_show._class);
 	packet.param.Data = (char*) _info;
-	_info->_lock.lock();
 	p->send_packet(&packet);
-	_info->_lock.unlock();
+
+	LogDebug("MAP", "Unit in X:%d \t Y:%d \t TYPE: %d", _info->_last_pos._x, _info->_last_pos._y, _info->_show._class);
+}
+
+void RoUnit::get_item_value(Player* p)
+{
+	// Check all the items player has, and provide the values of his/her items.
+	//TODO:	
+}
+void RoUnit::get_selling_list(Player* p)
+{
+	// Send out the items we are selling.
+	RoSellingItem items[10];
+	memset(items, 0, sizeof(RoSellingItem) * 10);
+	items[0]._val = 10;
+	items[0]._s_val = 0;
+	items[0]._item_type = 4;
+	items[0]._item_id = 1201;
+	RoSellingItemList list;
+	list._count = 1;
+	list._items = items;
+	
+	Packet selling(ES_NPC_SELLING_LIST);
+	selling.len = sizeof(Packet) + sizeof(list);
+	selling.param.Data = (char*) &list;
+
+	p->send_packet(&selling);
+
 }

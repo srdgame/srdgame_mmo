@@ -3,6 +3,7 @@
 
 #include "unit.h"
 #include "rocharinfo.h"
+#include "mutex.h"
 
 using ro::RoPosition;
 using ro::RoCharInfoBase;
@@ -52,13 +53,23 @@ public:
 	{
 		return _map;
 	}
-	void set_info(RoCharInfoBase* info)
+	inline void set_info(RoCharInfoBase* info)
 	{
 		_info = info;	
 	}
 
+	inline UnitType get_type(RoUnit* unit)
+	{
+		// TODO: return different type when unit is different.
+		return _type;
+	}
+
 	void get_names(Player* p);
+
 	void send_info(Player* p);
+
+	void get_item_value(Player* p);// Check all the items player has, and provide the values of his/her items.
+	void get_selling_list(Player* p);// Send out the items we are selling.
 protected:
 	Mutex _lock;
 	UnitType _type;

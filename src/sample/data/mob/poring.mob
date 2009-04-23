@@ -2,6 +2,7 @@
 
 name = poring
 type = MOB
+# for what should be the id, please refer to mob_db.  I think this mob_db was got from client app.
 id = 1002
 
 #postion info

@@ -12,6 +12,7 @@
 
 #include "ro_defs.h"
 #include "roitemdb.h"
+#include "rocharinfo.h"
 
 using namespace ro;
 using namespace srdgame;

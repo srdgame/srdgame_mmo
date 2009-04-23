@@ -24,13 +24,14 @@
 using namespace srdgame;
 using namespace std;
 
-Spawner::Spawner(int id) : RoUnit(id, UT_SPAWNER)
+Spawner::Spawner(int id) : RoUnit(id, UT_SPAWNER), _loaded(false)
 {
 	//
 }
 
-Spawner::Spawner(int id, const SpawnerInfo& info) : RoUnit(id, UT_SPAWNER), _info(info)
+Spawner::Spawner(int id, const SpawnerInfo& info) : RoUnit(id, UT_SPAWNER), _loaded(true), _info(info)
 {
+	_pri = NP_HAVE_TO; // trigger update.
 }
 
 Spawner::~Spawner()
@@ -43,7 +44,8 @@ Spawner::~Spawner()
 }
 long Spawner::notify(long time)
 {
-	if (_npcs.size() >= _info._count)
+	//LogDebug("Spawner", "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
+	if (!_loaded || _npcs.size() >= _info._count)
 		return 0;
 
 	Npc * one = NULL;
@@ -63,6 +65,7 @@ long Spawner::notify(long time)
 	if (!one)
 		return 0;
 	_npcs.push_back(one);
+	_pri = NP_NOTHING;
 	return 0;
 }
 
@@ -125,6 +128,8 @@ bool Spawner::load(const std::string& fn)
 	_info._count = file.get_value<unsigned int>(SP_COUNT);
 	_info._script = file.get_value<string>(SP_SCRIPT);
 	LogDebug("Spawner", "Finished to load one spawner[ name:%s\tid:%d\tmap:%s]", _info._name.c_str(), _info._id, _info._map.c_str());
+	_loaded = true;
+	_pri = NP_HAVE_TO;
 	return true;
 }
 

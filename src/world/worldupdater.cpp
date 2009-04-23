@@ -100,7 +100,7 @@ void WorldUpdater::update()
 	if (_queues[_doing]._queue->try_pop(w))
 	{
 		if (_removing.find(w) != _removing.end())
-			return;// Remove the wect.
+			return;// Remove the waitor.
 
 		//LogDebug("Updater", "Update one!!!");
 		w->notify(gettick());
@@ -134,7 +134,7 @@ void WorldUpdater::select()
 	assert(_new_queue == NULL);
 	int delay = 0;
 	int now_time = gettick();
-	for (int i = 0; i < NP_COUNT; i++)
+	for (int i = 0; i < NP_COUNT - 1; i++)
 	{
 		if (_queues[i]._queue->get_size() == 0)
 		{
@@ -145,7 +145,7 @@ void WorldUpdater::select()
 		_queues[i]._delay += now_time - _last_select_time;
 
 		//LogDebug("Updater", "trying to select one");
-		int i_delay = _queues[i]._delay * (NP_COUNT - i);
+		int i_delay = _queues[i]._delay * i;
 		if (i_delay >= delay)
 		{
 			delay = i_delay;

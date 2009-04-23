@@ -6,9 +6,10 @@
 #include "ro_defs.h"
 #include "rocharinfo.h"
 
+using ro::RoCharInfo;
+
 namespace srdgame
 {
-struct CharInfo;
 class Map;
 class WorldSocket;
 class Position;
@@ -21,8 +22,8 @@ public:
 	// Will be deleted by WorldMgr, triggered by WorldSocket::on_close();
 	virtual ~Player();
 	
-	virtual void set_info(CharInfo* info);
-	virtual CharInfo* get_info() const; // warry about this.
+	virtual void set_info(RoCharInfo* info);
+	virtual RoCharInfo* get_info() const; // warry about this.
 
 	virtual std::string get_last_map();
 	virtual bool set_map(Map* map);
@@ -57,7 +58,7 @@ protected:
 	Map* _map;
 
 	Mutex _info_lock;
-	CharInfo* _info;
+	RoCharInfo* _info;
 };
 }
 

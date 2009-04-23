@@ -522,5 +522,47 @@ TO_DC(0x00c4) // Npc buy sell
 	PUINT32(buf, 2) = packet->param.Int;
 	return 6;
 }
+
+TO_DC(0x00c6) // Npc selling items
+{
+	RoSellingItemList* list = (RoSellingItemList*)packet->param.Data;
+
+	if (list->_count <= 0)
+		return 0;
+
+	size_t res = 0;
+	PUINT16(buf, res) = 0x00c6;					res += 2;
+	PUINT16(buf, res) = list->_count * 11 + 4;	res += 2;
+	for (int i = 0; i < list->_count; ++i)
+	{
+		PUINT32(buf, res) = list->_items[i]._val;	res += 4;
+		PUINT32(buf, res) = list->_items[i]._s_val;	res += 4;
+		PUINT8(buf, res) = list->_items[i]._item_type; res += 1;
+		PUINT16(buf, res) = list->_items[i]._item_id;	res += 2;
+	}
+	assert(res == list->_count * 11 + 4);
+
+	return res;
+}
+TO_DC(0x00c7) // Send value of player's items
+{
+	RoItemValueList* list = (RoItemValueList*)packet->param.Data;
+
+	if (list->_count <= 0)
+		return 0;
+
+	size_t res = 0;
+	PUINT16(buf, res) = 0x00c6;					res += 2;
+	PUINT16(buf, res) = list->_count * 10 + 4;	res += 2;
+	for (int i = 0; i < list->_count; ++i)
+	{
+		PUINT16(buf, res) = list->_items[i]._index + 2;		res += 2;
+		PUINT32(buf, res) = list->_items[i]._val;	res += 4;
+		PUINT32(buf, res) = list->_items[i]._s_val;	res += 4;
+	}
+	assert(res == list->_count * 10 + 4);
+
+	return res;
+}
 }
 

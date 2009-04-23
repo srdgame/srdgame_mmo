@@ -36,7 +36,7 @@ public:
 
 	void request_char_name(Player* p, int id);
 	void click_npc(Player* p, int id);
-	void request_buy_sell_list(int npc_id, int flag);
+	void request_buy_sell_list(int npc_id, int flag, Player* p);
 
 	void send_to_all(Packet* p, int from_id, bool skip_self);
 protected:

@@ -57,6 +57,7 @@ public:
 		return NULL;
 	}
 protected:
+	bool _loaded;
 	SpawnerInfo _info;
 	std::vector<Npc*> _npcs;
 };

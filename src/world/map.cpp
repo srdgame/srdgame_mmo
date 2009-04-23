@@ -141,14 +141,32 @@ void Map::click_npc(Player* p, int id)
 		if (!unit)
 			return;
 		// TODO:
-		unit->clicked(p->get_unit());
+		if (!unit->clicked(p->get_unit()))
+			return;
+		switch (unit->get_type(p->get_unit()))
+		{
+			case UT_NPC:
+				{
+					Packet bs(ES_CLICK_NPC_BUY_SELL);
+					bs.param.Int = id;
+					p->send_packet(&bs);
+				}
+				break;
+			case UT_MOB:
+				{
+					// TODO:
+				}
+				break;
+			default:
+				break;
+		}
 	}
 	else
 	{
 		// TODO:
 	}
 }
-void Map::request_buy_sell_list(int npc_id, int flag)
+void Map::request_buy_sell_list(int npc_id, int flag, Player* p)
 {
 	if (!NpcId::is_npc(npc_id))
 		return;
@@ -159,12 +177,13 @@ void Map::request_buy_sell_list(int npc_id, int flag)
 		return;
 	if (flag == 0)
 	{
-		// buy list.
-		
+		// ask for npc's sell items.
+		unit->get_selling_list(p);
 	}
 	else
 	{
-		// sell list.
+		// sell to npc about items.
+		unit->get_item_value(p);
 	}
 }
 void Map::send_to_all(Packet* p, int from_id, bool skip_self)

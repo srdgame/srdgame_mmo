@@ -29,6 +29,7 @@ Npc::Npc(Spawner* sp) : _sp (sp), _unit(NULL)
 	{
 		LogDebug("NPC", "Adding npc : %d to map", _info._id);
 		_unit = new RoUnit(_info._id, UT_NPC);
+		_unit->set_info(&_info);
 		map->add_unit(_unit);
 	}
 }

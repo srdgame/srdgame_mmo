@@ -1,16 +1,16 @@
 # Npc test.
 
-name = ÖÐÎÄ
+name = ËïÑà×Ë
 type = NPC
 # What should be the id?  refer to http://the-aria.org/Enhancements/npclist.html
-id = 909
+id = 756
 
 #postion info
 map = new_1-1
 pos_x = 55
-pos_y = 111
+pos_y = 101
 
 #spawn info
 time = 10000
 count = 1
-script = test.lua
+script = sun.lua

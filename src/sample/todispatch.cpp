@@ -44,7 +44,10 @@ static struct {
 	{to_send_0x0095, ES_REQUEST_CHAR_NAME},
 	{to_send_0x0195, ES_REQUEST_CHAR_NAME_EX},
 	{to_send_0x018b, ES_QUIT_GAME},
-	{to_send_0x009c, ES_CHANGE_DIR},
+	{to_send_0x009c, ES_CHANGE_DIR}, // TODO:
+	{to_send_0x00c4, ES_CLICK_NPC_BUY_SELL},
+	{to_send_0x00c6, ES_NPC_SELLING_LIST},
+	{to_send_0x00c7, ES_ITEM_VALUES},
 	{NULL, 0},
 };
 

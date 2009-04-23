@@ -141,7 +141,7 @@ DECLARE(change_dir)
 	dest->op = EC_CHANGE_DIR;
 	dest->len = sizeof(Packet);
 	dest->param.Long = c._long;
-	return 0;
+	return 11;
 }
 
 DECLARE(emotion)
@@ -214,7 +214,8 @@ DECLARE(npc_clicked)
 	dest->len = sizeof(Packet);
 	dest->param.Int = PUINT32(src, 2);
 
-	return 6;
+	// TODO: what is the last byte?
+	return 7;
 }
 
 DECLARE(npc_buy_sell_selected)

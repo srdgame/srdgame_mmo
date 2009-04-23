@@ -37,7 +37,7 @@ Player::~Player()
 	_lock.unlock();
 }
 
-void Player::set_info(CharInfo* info)
+void Player::set_info(RoCharInfo* info)
 {
 	LogError("Player", "Set_info~~~~~~~~~~~~~~~");
 	if (info->_id != _id)
@@ -52,6 +52,7 @@ void Player::set_info(CharInfo* info)
 	_info = info;
 	delete _unit;
 	_unit = new RoUnit(_info->_id, UT_PLAYER);
+	_unit->set_info(_info);
 	_info_lock.unlock();
 	_lock.unlock();
 }
@@ -69,7 +70,7 @@ RoUnit* Player::get_unit()
 	return _unit;
 }
 
-CharInfo* Player::get_info() const
+RoCharInfo* Player::get_info() const
 {
 	return _info;
 }
@@ -79,9 +80,8 @@ string Player::get_last_map()
 	if (!_info)
 		return "";
 	_lock.lock();
-	RoCharInfo* ri = (RoCharInfo*)_info;
-	LogDebug("Player", "The player last map is %s", ri->_last_pos._map_name);
- 	string map(ri->_last_pos._map_name);
+	LogDebug("Player", "The player last map is %s", _info->_last_pos._map_name);
+ 	string map(_info->_last_pos._map_name);
 	_lock.unlock();
 	return map;
 }
@@ -122,16 +122,16 @@ void Player::send_packet(Packet* p)
 void Player::add_item(RoCharItem& item)
 {
 	_info_lock.lock();
-	RoCharInfo * info = (RoCharInfo*)_info;
 	// TODO: check the count.
-	info->_items.push_back(item);
-	_info_lock.unlock();
+	_info->_items.push_back(item);
 	
 	RoItemData data;
 	if (item._type == 0)
 		data._fail = 1;
 
-	data._index = info->_items.size() - 1;
+	data._index = _info->_items.size() - 1;
+	_info_lock.unlock();
+
 	data._id = item._type;
 	data._identify = item._identify;
 	data._equiped_point = item._equip;
@@ -181,12 +181,11 @@ void Player::send_friend_list()
 {
 	AutoLock lock(_info_lock);
 	// TODO:
-	RoCharInfo* ri = (RoCharInfo*)_info;
 	Packet p;
 	p.op = ES_FRIEND_LIST;
 	p.len = sizeof(Packet) + sizeof(RoFriendList);
 	RoFriendList list;
-	list._friends = &(ri->_friends);
+	list._friends = &(_info->_friends);
 	p.param.Data = (char*)&list;
 	send_packet(&p);
 	// TODO:
@@ -197,25 +196,24 @@ void Player::send_items()
 {
 	AutoLock lock(_info_lock);
 	LogError("Player", "Send items !!!!!!!!!!!!!!!!");
-	RoCharInfo* ri = (RoCharInfo*)_info;
-	if (ri->_items.size() == 0)
+	if (_info->_items.size() == 0)
 		return;
 
 	vector<RoItemListData> list; // equipable?
 	vector<RoItemListData> list2; 
-	for (size_t i = 0; i < ri->_items.size(); ++i)
+	for (size_t i = 0; i < _info->_items.size(); ++i)
 	{
 		// TODO: for pet egg.
-		const RoDBItem* db = RoItemDB::get_singleton().get_item(ri->_items[i]._type);
+		const RoDBItem* db = RoItemDB::get_singleton().get_item(_info->_items[i]._type);
 		RoItemListData data;
-		//data._info = &(ri->_items[i]);
-		data._id = ri->_items[i]._type;
+		//data._info = &(_info->_items[i]);
+		data._id = _info->_items[i]._type;
 		data._type = db->_item_type;
-		data._identify = ri->_items[i]._identify;
-		data._equiped_point = ri->_items[i]._equip;
-		data._attrs = ri->_items[i]._attrs;
-		data._refine = ri->_items[i]._refine;
-		data._amount = ri->_items[i]._amount;
+		data._identify = _info->_items[i]._identify;
+		data._equiped_point = _info->_items[i]._equip;
+		data._attrs = _info->_items[i]._attrs;
+		data._refine = _info->_items[i]._refine;
+		data._amount = _info->_items[i]._amount;
 		if (!isstackable2(db))
 		{
 			// Non-stackable (Equippable)
@@ -255,23 +253,22 @@ void Player::send_items()
 void Player::equip_item(short index, short pos)
 {	
 	AutoLock lock(_info_lock);
-	RoCharInfo* info = (RoCharInfo*)_info;
 	
 	RoEquipItemOK ok;
 
-	const RoDBItem* db = RoItemDB::get_singleton().get_item(info->_items[index]._type);
-	if (index < info->_items.size() && db)
+	const RoDBItem* db = RoItemDB::get_singleton().get_item(_info->_items[index]._type);
+	if (index < _info->_items.size() && db)
 	{
 		ok._index = index;
 		ok._pos = equippoint(db);
-		info->_items[index]._equip = ok._pos; // change
+		_info->_items[index]._equip = ok._pos; // change
 		ok._ok = 1;
 		
 		// Unequip item if it has.
 		// TODO: Improve this.
-		for (size_t i = 0; i < info->_items.size(); ++i)
+		for (size_t i = 0; i < _info->_items.size(); ++i)
 		{
-			if (info->_items[i]._equip = ok._pos && i != index)
+			if (_info->_items[i]._equip = ok._pos && i != index)
 			{
 				unequip_item(index);
 			}
@@ -294,27 +291,27 @@ void Player::equip_item(short index, short pos)
 		// Update look
 		if (ok._pos & EQP_HAND_R)
 		{
-			info->_show._weapon = db->_look;
-			update_look(LOOK_WEAPON, info->_show._weapon);
+			_info->_show._weapon = db->_look;
+			update_look(LOOK_WEAPON, _info->_show._weapon);
 		}
 		if (ok._pos & EQP_HEAD_LOW)
 		{
-			info->_show._head_bottom = db->_look;
-			update_look(LOOK_HEAD_BOTTOM, info->_show._head_bottom);
+			_info->_show._head_bottom = db->_look;
+			update_look(LOOK_HEAD_BOTTOM, _info->_show._head_bottom);
 		}
 		if (ok._pos & EQP_HEAD_MID)
 		{
-			info->_show._head_middle = db->_look;
+			_info->_show._head_middle = db->_look;
 			update_look(LOOK_HEAD_MID, db->_look);
 		}
 		if (ok._pos & EQP_HEAD_TOP)
 		{
-			info->_show._head_top = db->_look;
+			_info->_show._head_top = db->_look;
 			update_look(LOOK_HEAD_TOP, db->_look);
 		}
 		if (ok._pos & EQP_HAND_L)
 		{
-			info->_show._shield = db->_look;
+			_info->_show._shield = db->_look;
 			update_look(LOOK_SHIELD, db->_look);
 		}
 		// TODO: MOre looks
@@ -325,16 +322,15 @@ void Player::equip_item(short index, short pos)
 void Player::unequip_item(short index)
 {
 	AutoLock lock(_info_lock);
-	RoCharInfo* info = (RoCharInfo*)_info;
 	
 	RoEquipItemOK ok;
 
-	const RoDBItem* db = RoItemDB::get_singleton().get_item(info->_items[index]._type);
-	if (index < info->_items.size() && db)
+	const RoDBItem* db = RoItemDB::get_singleton().get_item(_info->_items[index]._type);
+	if (index < _info->_items.size() && db)
 	{
 		ok._index = index;
 		ok._pos = equippoint(db);
-		info->_items[index]._equip = ok._pos; // change
+		_info->_items[index]._equip = ok._pos; // change
 		ok._ok = 1;
 	}
 	else
@@ -354,27 +350,27 @@ void Player::unequip_item(short index)
 		// Update look
 		if (ok._pos & EQP_HAND_R)
 		{
-			info->_show._weapon = 0;
-			update_look(LOOK_WEAPON, info->_show._weapon);
+			_info->_show._weapon = 0;
+			update_look(LOOK_WEAPON, _info->_show._weapon);
 		}
 		if (ok._pos & EQP_HEAD_LOW)
 		{
-			info->_show._head_bottom = 0;
+			_info->_show._head_bottom = 0;
 			update_look(LOOK_HEAD_BOTTOM, 0);
 		}
 		if (ok._pos & EQP_HEAD_MID)
 		{
-			info->_show._head_middle = 0;
+			_info->_show._head_middle = 0;
 			update_look(LOOK_HEAD_MID, 0);
 		}
 		if (ok._pos & EQP_HEAD_TOP)
 		{
-			info->_show._head_top = 0;
+			_info->_show._head_top = 0;
 			update_look(LOOK_HEAD_TOP, 0);
 		}
 		if (ok._pos & EQP_HAND_L)
 		{
-			info->_show._shield = 0;
+			_info->_show._shield = 0;
 			update_look(LOOK_SHIELD, 0);
 		}
 		// TODO: MOre looks
@@ -386,7 +382,7 @@ void Player::unequip_item(short index)
 void Player::on_handle(Packet* p)
 {
 	LogDebug("Player", "On Player::on_handle, op : %d", p->op);
-	RoCharInfo* info = (RoCharInfo*)_info;
+	RoCharInfo* info = _info;
 	switch (p->op)
 	{
 		case EC_LOAD_END_ACK:
@@ -520,7 +516,7 @@ void Player::on_handle(Packet* p)
 		case EC_NPC_BUY_SELL_SELECT:
 			{
 				RoNpcBuySellSelect* s = (RoNpcBuySellSelect*)p->param.Data;
-				_map->request_buy_sell_list(s->_npc_id, s->_flag);
+				_map->request_buy_sell_list(s->_npc_id, (int)s->_flag, this);
 			}
 			break;
 		default:
