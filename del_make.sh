@@ -23,4 +23,5 @@ rm .tm_project2.cache
 rm TODO.tasks
 rm libtool
 rm ltmain.sh
+rm tags
 
